@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Heroes of Astoria — Magic Battle</title>
+<!-- Сначала экран загрузки — до спрайтов и скриптов UI -->
+<link rel="preload" as="image" href="assets/ui/loading_screen.webp" type="image/webp" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500;600;700;800;900&family=Lilita+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" width="1280" height="720"></canvas>
+  <div id="ui"></div>
+  <div id="modal"></div>
+</div>
+<script src="js/sprites.js"></script>
+<script src="js/core.js"></script>
+<script src="js/net.js"></script>
+<script src="js/art.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
