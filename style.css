@@ -233,15 +233,16 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; }
 .loading .load-label {
   position: absolute;
   left: 50%;
-  bottom: 9.2%;
-  transform: translateX(-50%);
-  z-index: 2;
-  color: #ffe9b0;
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: .4px;
-  text-shadow: 0 2px 0 rgba(0,0,0,.7), 0 0 8px rgba(0,0,0,.5);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  color: #3a2414;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: .3px;
+  text-shadow: 0 1px 0 rgba(255, 244, 200, .6);
   pointer-events: none;
+  white-space: nowrap;
 }
 .loading .load-label::after { content: ''; animation: ldDots 1.2s steps(4, end) infinite; }
 @keyframes ldDots {
@@ -946,21 +947,25 @@ html, body, button, input, textarea { font-family: var(--font-ui); }
   z-index: 100; pointer-events: none; white-space: nowrap;
 }
 
-.dqbox { margin-top: 14px; padding: 12px 14px 28px; border-radius: 14px; background: linear-gradient(180deg, #7a4f2a, #5d3a1d); border: 3px solid #3a2414; color: #fff4dc; }
+.dqbox { margin-top: 14px; padding: 14px 24px 48px; border-radius: 14px; background: linear-gradient(180deg, #7a4f2a, #5d3a1d); border: 3px solid #3a2414; color: #fff4dc; overflow: visible; }
 .dqhead { text-align: center; font-weight: 800; font-size: 16px; line-height: 1.35; margin-bottom: 10px; }
 .dqhead b { color: #ffe566; }
 .dqrow { display: flex; align-items: center; gap: 10px; }
 .dqcheck { width: 44px; height: 44px; border-radius: 50%; background: #e07a1a; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; flex: none; }
 .dqcheck svg, .dqcheck img { width: 26px; height: 26px; }
 .dqcount { font-size: 18px; font-weight: 900; min-width: 64px; }
-.dqtrack { position: relative; flex: 1; height: 16px; border-radius: 8px; background: #3a2414; box-shadow: inset 0 2px 4px rgba(0,0,0,.45); overflow: hidden; }
+.dqtrack { position: relative; flex: 1; height: 36px; border-radius: 18px; background: #3a2414; box-shadow: inset 0 2px 4px rgba(0,0,0,.45); overflow: visible; }
 .dqtrack > i { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #7fd04a, #3f9a24); }
-.dqmark { position: absolute; top: -18px; transform: translateX(-50%); text-align: center; width: 72px; }
-.dqgift { width: 42px; height: 42px; padding: 0; border: 0; background: none; cursor: pointer; }
-.dqgift svg, .dqgift img { width: 36px; height: 36px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.4)); }
-.dqgift.ready { animation: chestglow 1s ease-in-out infinite alternate; }
-.dqgift.done { filter: grayscale(.3); }
+.dqmark { position: absolute; top: 50%; left: 0; transform: translate(-50%, -50%); text-align: center; width: 80px; z-index: 2; pointer-events: none; }
+.dqgift { position: relative; width: 42px; height: 42px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; display: block; margin: 0 auto; }
+.dqgift svg, .dqgift img { width: 36px; height: 36px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.55)); display: block; margin: 0 auto; }
+.dqnum { position: absolute; right: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #e07a1a; color: #fff; border: 2px solid #fff; font-style: normal; font-size: 11px; font-weight: 900; line-height: 14px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+.dqlabel { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 11px; font-weight: 800; color: #ffe9b0; text-shadow: 0 1px 1px rgba(0,0,0,.6); }
+.dqgift.ready { animation: dqClaimPulse 0.9s ease-in-out infinite; }
+.dqgift.ready svg, .dqgift.ready img { filter: drop-shadow(0 0 8px #ffe566) drop-shadow(0 0 16px #ffb020); }
+.dqgift.done { filter: grayscale(.35) brightness(.9); }
 .dqgift[disabled] { cursor: default; }
-.dqmark b { display: block; font-size: 13px; font-weight: 900; margin-top: 2px; }
-.dqmark span { display: block; font-size: 10px; font-weight: 700; opacity: .95; line-height: 1.1; }
-.dqmark em { display: block; font-style: normal; color: #b6ff7a; font-weight: 900; font-size: 12px; }
+@keyframes dqClaimPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
