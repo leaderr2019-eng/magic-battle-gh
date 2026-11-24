@@ -277,7 +277,14 @@
     } catch (e) { /* нет сохранения */ }
     return MB.newSave();
   }
-  function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* хранилище недоступно */ } }
+  let persistTimer = 0;
+  function persist() {
+    if (persistTimer) return;
+    persistTimer = setTimeout(() => {
+      persistTimer = 0;
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* хранилище недоступно */ }
+    }, 120);
+  }
   // активные облики героев -> префиксы спрайтов в ART (облик применяется только если он куплен)
   function syncSkins() { ART.heroArt = {}; if (save.skinUse) for (const k in save.skinUse) if (save.skins && save.skins[k] && save.skinUse[k]) ART.heroArt[k] = save.skinUse[k]; }
 
@@ -285,7 +292,7 @@
   const clock = { t: 0, speed: 1 }, tweens = [];
   function tween(o, p, to, ms) { return new Promise(r => tweens.push({ o: o, p: p, from: o[p], to: to, t0: clock.t, ms: ms, r: r })); }
   function sleep(ms) { return new Promise(r => tweens.push({ t0: clock.t, ms: ms, r: r })); }
-  let lastTs = 0;
+  let lastTs = 0, frameAcc = 0;
   function frame(ts) {
     const dt = Math.min(50, ts - lastTs || 16); lastTs = ts; clock.t += dt * clock.speed;
     for (let i = tweens.length - 1; i >= 0; i--) {
@@ -293,7 +300,11 @@
       if (w.o) w.o[w.p] = w.from + (w.to - w.from) * (1 - (1 - k) * (1 - k));
       if (k >= 1) { tweens.splice(i, 1); w.r(); }
     }
-    draw(); requestAnimationFrame(frame);
+    // В меню хватает ~30 кадров: меньше нагрузки на телефон
+    const cap = (scene && scene.mode === 'battle') ? 16 : 33;
+    frameAcc += dt;
+    if (frameAcc >= cap) { frameAcc = 0; draw(); }
+    requestAnimationFrame(frame);
   }
 
   /* ---------- Фоновая музыка (меню / бой) с плавным затуханием ---------- */
@@ -309,7 +320,7 @@
     tracks.menu.loop = true;
     tracks.battle.loop = true;
     tracks.menu.preload = 'auto';
-    tracks.battle.preload = 'auto';
+    tracks.battle.preload = 'none';
     tracks.menu.volume = 0;
     tracks.battle.volume = 0;
 
@@ -1589,7 +1600,7 @@
         '<b>' + q.wins + '</b><span>' + q.label + '</span>' + (done ? '<em>✔</em>' : '') + '</div>';
     });
     const questBlock = '<div class="dqbox"><div class="dqhead">Выигрывайте бои каждый день и забирайте награды!<br>Обновление через: <b>' + hh + 'ч ' + mm + 'м</b></div>' +
-      '<div class="dqload">Идёт загрузка</div>' +
+      
       '<div class="dqrow"><div class="dqcheck">' + ic('spark') + '</div><b class="dqcount">' + dq.wins + '/' + maxW + '</b>' +
       '<div class="dqtrack"><i style="width:' + Math.max(pct, 6) + '%"></i>' + marks + '</div></div></div>';
     openModal('<div class="panel win" style="position:relative;width:920px"><button class="x" data-act="close">✕</button><h2 class="out">Награда за вход</h2><div class="paper"><p style="font-weight:700">Заходите каждый день с понедельника по субботу — и в воскресенье заберёте 20 изумрудов. Пропущенный день сгорает, в понедельник серия начинается заново.</p>' +
@@ -2680,6 +2691,7 @@
     g.strokeText(label, d.x, y - 7); g.fillText(label, d.x, y - 7);
     d.st.forEach((s, i) => { const S = MB.STATUS[s]; if (!S) return; const sx = x + 9 + i * 22, sy = y + 26; g.fillStyle = S.color; g.beginPath(); g.arc(sx, sy, 9, 0, 7); g.fill(); g.lineWidth = 2; g.strokeStyle = '#1b120b'; g.stroke(); g.fillStyle = '#1b120b'; g.font = '800 12px ' + UIFONT; g.fillText(S.ch, sx, sy + 4); });
   }
+  const tintCache = {};
   function draw() {
     g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
     const bg = ART.bg(scene.bg);
@@ -2737,16 +2749,25 @@
             const ux = d.x + d.ox + sx, uy = d.y + d.oy;
             const tintColor = (hasPoison && hasFreeze) ? 'rgba(90, 235, 190, 0.34)' : hasPoison ? 'rgba(80, 235, 75, 0.32)' : 'rgba(75, 180, 255, 0.34)';
             const glowColor = (hasPoison && hasFreeze) ? '#70ffd6' : hasPoison ? '#6dff5a' : '#7fd6ff';
-            const oc = document.createElement('canvas');
-            oc.width = Math.max(1, Math.ceil(dw));
-            oc.height = Math.max(1, Math.ceil(dh));
-            const octx = oc.getContext('2d');
-            if (octx) {
-              try {
-                octx.drawImage(s.img, 0, 0, oc.width, oc.height);
+            const tw = Math.max(1, Math.ceil(dw)), th = Math.max(1, Math.ceil(dh));
+            const tkey = (s.img.src || d.u.key) + '|' + tw + 'x' + th + '|' + tintColor;
+            let oc = tintCache[tkey];
+            if (!oc) {
+              oc = document.createElement('canvas');
+              oc.width = tw; oc.height = th;
+              const octx = oc.getContext('2d');
+              if (octx) {
+                octx.drawImage(s.img, 0, 0, tw, th);
                 octx.globalCompositeOperation = 'source-atop';
                 octx.fillStyle = tintColor;
-                octx.fillRect(0, 0, oc.width, oc.height);
+                octx.fillRect(0, 0, tw, th);
+              }
+              tintCache[tkey] = oc;
+              const keys = Object.keys(tintCache);
+              if (keys.length > 24) delete tintCache[keys[0]];
+            }
+            if (oc) {
+              try {
                 g.save();
                 g.globalAlpha = d.alpha;
                 g.translate(ux, uy);
@@ -2873,11 +2894,13 @@
     cv = $('#cv'); g = cv.getContext('2d'); ui = $('#ui'); modal = $('#modal');
     setupPinch();
     fit();
-    window.addEventListener('resize', fit);
+    let fitTimer = 0;
+    const fitSoon = () => { if (fitTimer) return; fitTimer = setTimeout(() => { fitTimer = 0; fit(); }, 80); };
+    window.addEventListener('resize', fitSoon);
     window.addEventListener('orientationchange', () => { setTimeout(fit, 50); setTimeout(fit, 250); setTimeout(fit, 600); });
     if (window.visualViewport) {
-      visualViewport.addEventListener('resize', fit);
-      visualViewport.addEventListener('scroll', fit);
+      visualViewport.addEventListener('resize', fitSoon);
+      visualViewport.addEventListener('scroll', fitSoon);
     }
     let lastUiTap = 0;
     const onUiTap = e => {
@@ -2902,7 +2925,7 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
     ['pointerdown', 'keydown'].forEach(evName => window.addEventListener(evName, () => MUSIC.resumeOnGesture(), { once: true })); if (MB.net && typeof MB.net.attachContext === 'function') MB.net.attachContext(save, persist);
     if (['#nointro', '#battle', '#heroes', '#coliseum', '#clans', '#clanhall', '#lair'].indexOf(location.hash) >= 0 || location.hash.indexOf('#fgeditor') === 0) { save.seenIntro = true; const w = MB.weekInfo(new Date()); save.daily = { week: w.week, claimed: [true, true, true, true, true, true, true] }; }
     // 1) Сначала показываем экран загрузки и ждём его картинку — только потом ART.load
-    ui.innerHTML = '<div class="loading"><img class="loading-bg" src="assets/ui/loading_screen.webp" alt="" fetchpriority="high" decoding="sync"><div class="bar"><i id="ld" style="width:0"></i></div></div>';
+    ui.innerHTML = '<div class="loading"><img class="loading-bg" src="assets/ui/loading_screen.webp" alt="" fetchpriority="high" decoding="sync"><div class="load-label">Идёт загрузка</div><div class="bar"><i id="ld" style="width:0"></i></div></div>';
     const startAssetLoad = () => {
       const topCh = (typeof MB.topChapter === 'function') ? MB.topChapter(save) : 1;
       ART.load(p => { const b = $('#ld'); if (b) b.style.width = Math.round(p * 100) + '%'; }, { unlocked: save.unlocked || ['viking', 'knight'], topChapter: Math.max(1, topCh || 1) }).then(() => {
