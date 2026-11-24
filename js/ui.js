@@ -869,8 +869,8 @@
   function showHelp() {
     openModal('<div class="panel win" style="position:relative"><h2 class="out">' + T('Как играть', 'How to play') + '</h2><div class="paper" style="font-size:17px;line-height:1.5;font-weight:600">' +
       T(
-        '• Проходите <b>Кампанию</b>: 5 глав по 10 уровней, в конце главы — босс.<br>• В бою выберите действие внизу и нажмите на врага. Кнопка <b>АВТО</b> включает автобой, <b>×2</b> ускоряет.<br>• За победы дают <b>Искры</b> — за них повышается уровень героев — и сундук со снаряжением.<br>• С боссов падает <b>Руда</b> для улучшения снаряжения. Боссов можно перепроходить в Логове.<br>• Каждый бой стоит ' + MB.ENERGY.cost + ' энергии из ' + MB.energyMax(save) + '. Энергия восстанавливается сама, а ещё есть банки энергии.<br>• Все герои и враги уже с настоящими картинками.',
-        '• Play the <b>Campaign</b>: 5 chapters × 10 stages, with a boss at the end.<br>• In battle pick an action below and tap an enemy. <b>AUTO</b> enables auto-battle, <b>×2</b> speeds it up.<br>• Wins grant <b>Sparks</b> to level heroes and a chest with gear.<br>• Bosses drop <b>Ore</b> for upgrades. Refight bosses in the Lair.<br>• Each battle costs ' + MB.ENERGY.cost + ' energy of ' + MB.energyMax(save) + '. Energy regenerates, and flasks help too.<br>• Heroes and enemies use full art sprites.'
+        '• Проходите <b>Кампанию</b>: 5 глав по 10 уровней, в конце главы — босс.<br>• В бою выберите действие внизу и нажмите на врага. Кнопка <b>АВТО</b> включает автобой, <b>×2</b> ускоряет.<br>• За победы дают <b>Искры</b> — за них повышается уровень героев — и сундук со снаряжением.<br>• С боссов падает <b>Руда</b> для улучшения снаряжения. Боссов можно перепроходить в Логове.<br>• Каждый бой стоит ' + MB.ENERGY.cost + ' энергии из ' + MB.energyMax(save) + '. Энергия восстанавливается сама, а ещё есть банки энергии.',
+        '• Play the <b>Campaign</b>: 5 chapters × 10 stages, with a boss at the end.<br>• In battle pick an action below and tap an enemy. <b>AUTO</b> enables auto-battle, <b>×2</b> speeds it up.<br>• Wins grant <b>Sparks</b> to level heroes and a chest with gear.<br>• Bosses drop <b>Ore</b> for upgrades. Refight bosses in the Lair.<br>• Each battle costs ' + MB.ENERGY.cost + ' energy of ' + MB.energyMax(save) + '. Energy regenerates, and flasks help too.'
       ) +
       '</div><div class="foot"><button class="btn green" data-act="close">' + T('Понятно', 'Got it') + '</button></div></div>');
   }
@@ -1246,11 +1246,8 @@
         out.ore = 200; save.ore += out.ore;
         out.items.push(grantChest(MB.topChapter(save), 'purple')); out.chest = 'purple';
         MB.clanAddExp(save, MB.CLAN.killExp);
-        out.xp += MB.XP.clanKill; out.cc += MB.CCOIN.clanKill;
-        save.ccoin += MB.CCOIN.clanKill;
-        MB.grantXp(save, partKeys, MB.XP.clanKill).forEach(u => out.notes.push(heroLoc(u.key, 'name') + T(' достиг ', ' reached level ') + u.to + T(' уровня!', '!')));
-        out.notes.push('Победа над боссом: всем соклановцам +' + MB.XP.clanKill + ' XP и +' + MB.CCOIN.clanKill + ' клановых монет!');
-        out.notes.push('Клановый босс повержен! Завтра его место займёт более сильный противник.');
+        registerClanBossReward(clan);
+        out.notes.push('Клановый босс повержен! Награда ' + MB.XP.clanKill + ' XP и ' + MB.CCOIN.clanKill + ' монет доступна всем соклановцам — заберите её в зале клана.');
         clan.bossLvl = MB.CLAN.bossLvl(1);
         clan.bossHp = MB.CLAN.bossHp(1);
       } else {
@@ -1286,11 +1283,8 @@
       out.ore = 200; save.ore += out.ore;
       out.items.push(grantChest(MB.topChapter(save), 'purple')); out.chest = 'purple';
       MB.clanAddExp(save, MB.CLAN.killExp);
-      out.xp += MB.XP.clanKill; out.cc += MB.CCOIN.clanKill;
-      save.ccoin += MB.CCOIN.clanKill;
-      MB.grantXp(save, partKeys, MB.XP.clanKill).forEach(u => out.notes.push(heroLoc(u.key, 'name') + T(' достиг ', ' reached level ') + u.to + T(' уровня!', '!')));
-      out.notes.push('Победа над боссом: всем соклановцам +' + MB.XP.clanKill + ' XP и +' + MB.CCOIN.clanKill + ' клановых монет!');
-      out.notes.push('Клановый босс повержен! Завтра его место займёт более сильный противник.');
+      registerClanBossReward(clan);
+      out.notes.push('Клановый босс повержен! Награда ' + MB.XP.clanKill + ' XP и ' + MB.CCOIN.clanKill + ' монет доступна всем соклановцам — заберите её в зале клана.');
       clan.bossLvl = MB.CLAN.bossLvl(1);
       clan.bossHp = MB.CLAN.bossHp(1);
     } else {
@@ -1591,13 +1585,14 @@
     const hh = Math.floor(rem / 3600000), mm = Math.floor((rem % 3600000) / 60000);
     let marks = '';
     MB.DAILY_QUESTS.forEach((q, i) => {
-      const left = Math.round((q.wins / maxW) * 100);
+      const left = Math.round(8 + (q.wins / maxW) * 84);
       const ready = dq.wins >= q.wins && !dq.claimed[i];
       const done = !!dq.claimed[i];
       const icon = q.chest ? ART.icon('chest', MB.CHESTS[q.chest].col) : q.pot ? ART.icon('potion', '#a855f7') : ic('spark');
       marks += '<div class="dqmark" style="left:' + left + '%">' +
-        '<button class="dqgift' + (ready ? ' ready' : '') + (done ? ' done' : '') + '" data-act="dqclaim" data-i="' + i + '" ' + (ready ? '' : 'disabled') + '>' + icon + '</button>' +
-        '<b>' + q.wins + '</b><span>' + q.label + '</span>' + (done ? '<em>✔</em>' : '') + '</div>';
+        '<button class="dqgift' + (ready ? ' ready' : '') + (done ? ' done' : '') + '" data-act="dqclaim" data-i="' + i + '" ' + (ready ? '' : 'disabled') + '>' +
+          icon + '<i class="dqnum">' + q.wins + '</i></button>' +
+        '<span class="dqlabel">' + q.label + (done ? ' ✔' : '') + '</span></div>';
     });
     const questBlock = '<div class="dqbox"><div class="dqhead">Выигрывайте бои каждый день и забирайте награды!<br>Обновление через: <b>' + hh + 'ч ' + mm + 'м</b></div>' +
       
@@ -1885,6 +1880,39 @@
       '<div class="shopcard">' + ART.clanEmblem(MB.defaultEmblem(), 68) + '<b>Свой клан</b><span>Вы станете лидером</span><span>Вместимость: 10 игроков</span>' +
       '<button class="btn small gold" data-act="clancreate" ' + (save.gems < MB.CLAN.createCost ? 'disabled' : '') + '>Создать ' + ic('gem') + MB.CLAN.createCost + '</button></div>' + cards + '</div></div>';
   }
+  function registerClanBossReward(clan) {
+    if (!clan) return;
+    clan.bossKillSeq = (clan.bossKillSeq || 0) + 1;
+    const id = 'kill_' + clan.bossKillSeq + '_' + Date.now().toString(36);
+    if (!Array.isArray(clan.bossRewards)) clan.bossRewards = [];
+    clan.bossRewards.push({ id: id, xp: MB.XP.clanKill, cc: MB.CCOIN.clanKill, at: Date.now() });
+    if (clan.bossRewards.length > 8) clan.bossRewards = clan.bossRewards.slice(-8);
+  }
+  function skipExistingClanRewards(clan) {
+    if (!clan || !Array.isArray(clan.bossRewards)) return;
+    if (!save.clanBossDone || typeof save.clanBossDone !== 'object') save.clanBossDone = {};
+    clan.bossRewards.forEach(r => { if (r && r.id) save.clanBossDone[r.id] = true; });
+    save.clanBossPending = null;
+  }
+  function clanRewardState(clan) {
+    if (!clan || !Array.isArray(clan.bossRewards)) return null;
+    if (!save.clanBossDone || typeof save.clanBossDone !== 'object') save.clanBossDone = {};
+    const pending = save.clanBossPending;
+    if (pending && pending.id && !save.clanBossDone[pending.id]) return { reward: pending, pending: true };
+    const open = clan.bossRewards.find(r => r && r.id && !save.clanBossDone[r.id]);
+    return open ? { reward: open, pending: false } : null;
+  }
+  function showClanXpPicker(reward) {
+    const heroes = (save.unlocked || []).filter(k => save.heroes[k]);
+    const cards = heroes.map(k =>
+      '<button class="btn" data-act="applyclanxp" data-k="' + k + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;min-width:90px">' +
+        pt(k, '', '', 72) + '<b>' + heroLoc(k, 'name') + '</b><span class="note">Ур. ' + save.heroes[k].lvl + '</span></button>'
+    ).join('');
+    openModal('<div class="panel win" style="position:relative;width:640px"><button class="x" data-act="close">✕</button><h2 class="out">Награда за босса</h2>' +
+      '<div class="paper"><p style="font-weight:700">Выберите героя, который получит <b>' + reward.xp + ' XP</b>.</p>' +
+      '<p class="note">Монеты уже начислены. Если закрыть окно, опыт можно будет забрать позже — награда не пропадёт.</p>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px">' + cards + '</div></div></div>');
+  }
   function showClanHall(tab) {
     if (tab) clanTab = tab;
     const clan = MB.ensureClan(save); if (!clan) return showClans();
@@ -1919,11 +1947,16 @@
     const rewDot = readyChests > 0 ? '<span class="dot">' + readyChests + '</span>' : '';
     const buildDot = (clan.pts || 0) > 0 ? '<span class="dot">' + clan.pts + '</span>' : '';
 
+    const bossReward = clanRewardState(clan);
+    const claimBtn = bossReward
+      ? '<button class="btn small green" data-act="claimbossreward" style="margin-left:auto">Забрать награду</button>'
+      : '';
     const tabsHtml = '<div class="tabs" style="justify-content:flex-start;margin-bottom:4px">' +
       '<button class="btn small ' + (clanTab === 'boss' ? 'gold' : '') + '" data-act="clantab" data-t="boss">Клановый босс</button>' +
       '<button class="btn small ' + (clanTab === 'builds' ? 'gold' : '') + '" data-act="clantab" data-t="builds" style="position:relative">Прокачка клана' + buildDot + '</button>' +
       '<button class="btn small ' + (clanTab === 'rewards' ? 'gold' : '') + '" data-act="clantab" data-t="rewards" style="position:relative">Награды и вклад' + rewDot + '</button>' +
-      '<button class="btn small blue" data-act="shoptab" data-t="clan" data-from="clankeys" style="margin-left:auto">Лавка клана</button>' +
+      claimBtn +
+      '<button class="btn small blue" data-act="shoptab" data-t="clan" data-from="clankeys"' + (claimBtn ? '' : ' style="margin-left:auto"') + '>Лавка клана</button>' +
       '</div>';
 
     let rightBody = '';
@@ -2007,9 +2040,13 @@
         '</div>';
       }).join('');
 
+      const resetMs = MB.lairNextResetMs(now());
+      const rem = Math.max(0, resetMs - now());
+      const rd = Math.floor(rem / 86400000), rh = Math.floor((rem % 86400000) / 3600000), rm = Math.floor((rem % 3600000) / 60000);
+      const resetTxt = rd + 'д ' + rh + 'ч ' + rm + 'м';
       rightBody =
         '<div class="paper">' +
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b>Сундуки активности клана за неделю</b><span>Очков: <b>' + (clan.actPts || 0) + ' / ' + maxPts + '</b></span></div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px"><b>Сундуки активности клана за неделю</b><span>Сброс через: <b style="color:#a02a1e">' + resetTxt + '</b></span><span>Очков: <b>' + (clan.actPts || 0) + ' / ' + maxPts + '</b></span></div>' +
           '<div class="expbar"><i style="width:' + actPct + '%"></i><span>' + (clan.actPts || 0) + ' / ' + maxPts + ' очков активности</span></div>' +
           '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">' + chestsHtml + '</div>' +
         '</div>' +
@@ -2198,6 +2235,7 @@
       }
       const npcIcons2 = (MB.CLAN_ICONS && MB.CLAN_ICONS.length) ? MB.CLAN_ICONS : [{ id: 'axes_red' }];
       save.clan = MB.mkClan(save, c.name, false, c.lvl, c.emblem, '', c.icon || npcIcons2[idx % npcIcons2.length].id, rec);
+      skipExistingClanRewards(save.clan);
       persist(); showClanHall(); toast('Вы вступили в клан «' + c.name + '»');
     },
     clancreate: () => showEmblemEditor('create'),
@@ -2256,6 +2294,7 @@
       save.gems -= MB.CLAN.createCost;
       const iconId = (embDraft && embDraft.icon) || 'axes_red';
       save.clan = MB.mkClan(save, chk.value, true, 1, embDraft, desc, iconId);
+      skipExistingClanRewards(save.clan);
       persist(); closeModal(); showClanHall(); toast('Клан «' + chk.value + '» создан!');
     },
     clanboss: () => { if (!save.clan) return; if (!MB.clanKeys(save)) { ACT.clanbuykeys(); return; } openPrep({ type: 'clan', ch: MB.topChapter(save) }); },
@@ -2288,6 +2327,34 @@
       if (myRole !== 'leader') { toast('Улучшать постройки клана может только Лидер'); return; }
       if (!MB.clanUpgradeBuild(save, d.k)) { toast('Недостаточно очков прокачки или достигнут максимум (20 ур.)'); return; }
       persist(); showClanHall('builds'); toast('Постройка клана улучшена!');
+    },
+    claimbossreward: () => {
+      const clan = save.clan; if (!clan) return;
+      const st = clanRewardState(clan); if (!st) { toast('Награда уже получена'); return; }
+      const r = st.reward;
+      if (!save.clanBossPending || save.clanBossPending.id !== r.id) {
+        if (save.clanBossDone && save.clanBossDone[r.id]) return;
+        save.ccoin = (save.ccoin || 0) + (r.cc || MB.CCOIN.clanKill);
+        save.clanBossPending = { id: r.id, xp: r.xp || MB.XP.clanKill, coinsGiven: true };
+        persist();
+        toast('+' + (r.cc || MB.CCOIN.clanKill) + ' клановых монет. Выберите героя для опыта.');
+      }
+      showClanXpPicker(save.clanBossPending);
+    },
+    applyclanxp: d => {
+      const p = save.clanBossPending;
+      if (!p || !p.id || (save.clanBossDone && save.clanBossDone[p.id])) { closeModal(); return; }
+      const k = d.k;
+      if (!k || !save.heroes[k] || (save.unlocked || []).indexOf(k) < 0) return;
+      if (!save.clanBossDone || typeof save.clanBossDone !== 'object') save.clanBossDone = {};
+      save.clanBossDone[p.id] = true;
+      const ups = MB.grantXp(save, [k], p.xp || MB.XP.clanKill);
+      save.clanBossPending = null;
+      persist();
+      closeModal();
+      const upTxt = ups.length ? (' ' + heroLoc(k, 'name') + ' достиг ' + ups[0].to + ' уровня!') : '';
+      toast(heroLoc(k, 'name') + ' получил ' + (p.xp || MB.XP.clanKill) + ' XP.' + upTxt);
+      showClanHall();
     },
     clanactclaim: d => {
       const idx = +d.i, c = MB.ensureClan(save), ch = MB.CLAN_CHESTS[idx];
@@ -2925,7 +2992,7 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
     ['pointerdown', 'keydown'].forEach(evName => window.addEventListener(evName, () => MUSIC.resumeOnGesture(), { once: true })); if (MB.net && typeof MB.net.attachContext === 'function') MB.net.attachContext(save, persist);
     if (['#nointro', '#battle', '#heroes', '#coliseum', '#clans', '#clanhall', '#lair'].indexOf(location.hash) >= 0 || location.hash.indexOf('#fgeditor') === 0) { save.seenIntro = true; const w = MB.weekInfo(new Date()); save.daily = { week: w.week, claimed: [true, true, true, true, true, true, true] }; }
     // 1) Сначала показываем экран загрузки и ждём его картинку — только потом ART.load
-    ui.innerHTML = '<div class="loading"><img class="loading-bg" src="assets/ui/loading_screen.webp" alt="" fetchpriority="high" decoding="sync"><div class="load-label">Идёт загрузка</div><div class="bar"><i id="ld" style="width:0"></i></div></div>';
+    ui.innerHTML = '<div class="loading"><img class="loading-bg" src="assets/ui/loading_screen.webp" alt="" fetchpriority="high" decoding="sync"><div class="bar"><i id="ld" style="width:0"></i><div class="load-label">Идёт загрузка</div></div></div>';
     const startAssetLoad = () => {
       const topCh = (typeof MB.topChapter === 'function') ? MB.topChapter(save) : 1;
       ART.load(p => { const b = $('#ld'); if (b) b.style.width = Math.round(p * 100) + '%'; }, { unlocked: save.unlocked || ['viking', 'knight'], topChapter: Math.max(1, topCh || 1) }).then(() => {

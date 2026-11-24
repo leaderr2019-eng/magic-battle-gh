@@ -12,6 +12,7 @@
   function putSprite(k) {
     if (cache[k] || !window.MB_SPRITES[k]) return null;
     const im = new Image();
+    im.decoding = 'async';
     const m = window.MB_SPRITES[k], o = POSE_OVR[k] || {};
     cache[k] = { img: im, w: m.w, h: m.h, ax: o.ax != null ? o.ax : m.ax, ay: o.ay != null ? o.ay : m.ay, s: o.s != null ? o.s : m.s };
     im.src = 'assets/sprites/' + k + '.webp';
@@ -20,6 +21,7 @@
   function putBg(k) {
     if (cache['bg:' + k]) return null;
     const im = new Image();
+    im.decoding = 'async';
     cache['bg:' + k] = im;
     im.src = 'assets/bg/' + k + '.jpg';
     return im;
@@ -27,6 +29,7 @@
   function putFx(k) {
     if (cache['fx:' + k]) return null;
     const im = new Image();
+    im.decoding = 'async';
     cache['fx:' + k] = im;
     im.src = 'assets/fx/' + k + '.webp';
     return im;
@@ -34,6 +37,7 @@
   function putFg(k) {
     if (cache['fg:' + k]) return null;
     const im = new Image();
+    im.decoding = 'async';
     cache['fg:' + k] = im;
     im.src = 'assets/bg/' + k + '.png';
     return im;
@@ -145,8 +149,8 @@
     (ess.fxs || []).forEach(k => { essSet.fx[k] = 1; });
     (ess.fgs || []).forEach(k => { essSet.fg[k] = 1; });
 
-    return loadBatch(essJobs, onProgress, 10).then(() => {
-      // фон: всё остальное, низкий параллелизм чтобы не мешать игре
+    // Хаб открывается сразу после обязательного набора. Остальное — в фоне.
+    return loadBatch(essJobs, onProgress, 6).then(() => {
       const rest = { spriteKeys: [], bgs: [], fxs: [], fgs: [] };
       Object.keys(window.MB_SPRITES || {}).forEach(k => { if (!essSet.sp[k]) rest.spriteKeys.push(k); });
       MB.CHAPTERS.map(c => c.bg).concat(['fon_coliseum', 'fon_menu', 'fon_lich']).forEach(k => {
@@ -154,9 +158,10 @@
       });
       ART.FX_NAMES.forEach(k => { if (!essSet.fx[k]) rest.fxs.push(k); });
       ART.FG_FILES.forEach(k => { if (!essSet.fg[k]) rest.fgs.push(k); });
-      ART._bgLoading = loadBatch(jobsFromLists(rest), null, 4);
-      return ART._bgLoading;
-    }).then(() => {}, () => {});
+      const startBg = () => { ART._bgLoading = loadBatch(jobsFromLists(rest), null, 2); };
+      if (window.requestIdleCallback) requestIdleCallback(startBg, { timeout: 1500 });
+      else setTimeout(startBg, 400);
+    });
   };
 
   /** Догрузить конкретные спрайты до боя (если фон ещё не успел). */
