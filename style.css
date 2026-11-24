@@ -918,3 +918,27 @@ html, body, button, input, textarea { font-family: var(--font-ui); }
   border-radius: 12px; padding: 8px 14px; font-weight: 800; font-size: 14px;
   z-index: 100; pointer-events: none; white-space: nowrap;
 }
+
+.dqbox { margin-top: 14px; padding: 12px 14px 28px; border-radius: 14px; background: linear-gradient(180deg, #7a4f2a, #5d3a1d); border: 3px solid #3a2414; color: #fff4dc; }
+.dqhead { text-align: center; font-weight: 800; font-size: 16px; line-height: 1.35; margin-bottom: 10px; }
+.dqhead b { color: #ffe566; }
+.dqload { text-align: center; font-weight: 800; font-size: 14px; margin: 2px 0 6px; color: #ffe9b0; letter-spacing: .3px; }
+.dqload::after { content: ''; animation: dqdots 1.2s steps(4, end) infinite; }
+@keyframes dqdots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+@keyframes dqshimmer { 0% { background-position: -120% 0; } 100% { background-position: 220% 0; } }
+@keyframes dqpulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.25); } }
+.dqrow { display: flex; align-items: center; gap: 10px; }
+.dqcheck { width: 44px; height: 44px; border-radius: 50%; background: #e07a1a; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+.dqcheck svg, .dqcheck img { width: 26px; height: 26px; }
+.dqcount { font-size: 18px; font-weight: 900; min-width: 64px; }
+.dqtrack { position: relative; flex: 1; height: 16px; border-radius: 8px; background: #3a2414; box-shadow: inset 0 2px 4px rgba(0,0,0,.45); overflow: hidden; }
+.dqtrack > i { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #7fd04a, #c6ff8a, #3f9a24); background-size: 200% 100%; animation: dqshimmer 1.4s linear infinite, dqpulse 1.1s ease-in-out infinite; min-width: 8px; }
+.dqmark { position: absolute; top: -18px; transform: translateX(-50%); text-align: center; width: 72px; }
+.dqgift { width: 42px; height: 42px; padding: 0; border: 0; background: none; cursor: pointer; }
+.dqgift svg, .dqgift img { width: 36px; height: 36px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.4)); }
+.dqgift.ready { animation: chestglow 1s ease-in-out infinite alternate; }
+.dqgift.done { filter: grayscale(.3); }
+.dqgift[disabled] { cursor: default; }
+.dqmark b { display: block; font-size: 13px; font-weight: 900; margin-top: 2px; }
+.dqmark span { display: block; font-size: 10px; font-weight: 700; opacity: .95; line-height: 1.1; }
+.dqmark em { display: block; font-style: normal; color: #b6ff7a; font-weight: 900; font-size: 12px; }
