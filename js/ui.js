@@ -2764,35 +2764,83 @@
   }
 
   /* ---------- Запуск ---------- */
+  let zoom = 1, panX = 0, panY = 0;
+  function viewBox() {
+    const vv = window.visualViewport;
+    return {
+      w: vv ? vv.width : window.innerWidth,
+      h: vv ? vv.height : window.innerHeight,
+      ox: vv ? vv.offsetLeft : 0,
+      oy: vv ? vv.offsetTop : 0
+    };
+  }
   function fit() {
     const st = $('#stage'); if (!st) return;
-    const vv = window.visualViewport;
-    // Только видимая область: на iOS layout-высота больше экрана, и top:50% уводит сцену вниз
-    const w = vv ? vv.width : window.innerWidth;
-    const h = vv ? vv.height : window.innerHeight;
-    const ox = vv ? vv.offsetLeft : 0;
-    const oy = vv ? vv.offsetTop : 0;
-    const k = Math.min(w / W, h / H);
-    st.style.transformOrigin = '0 0';
-    st.style.left = (ox + (w - W * k) / 2) + 'px';
-    st.style.top = (oy + (h - H * k) / 2) + 'px';
-    st.style.transform = 'scale(' + k + ')';
+    const v = viewBox(), portrait = v.h > v.w;
+    const viewW = portrait ? v.h : v.w, viewH = portrait ? v.w : v.h;
+    const baseK = Math.min(viewW / W, viewH / H);
+    const k = baseK * zoom;
+    st.style.transformOrigin = 'center center';
+    st.style.left = (v.ox + v.w / 2) + 'px';
+    st.style.top = (v.oy + v.h / 2) + 'px';
+    const rot = portrait ? ' rotate(90deg)' : '';
+    st.style.transform = 'translate(-50%, -50%)' + rot + ' scale(' + k + ') translate(' + panX + 'px,' + panY + 'px)';
+    let hint = document.getElementById('rot-hint');
+    if (portrait) {
+      if (!hint) {
+        hint = document.createElement('div');
+        hint.id = 'rot-hint';
+        hint.innerHTML = '↻ Поверните телефон для удобства';
+        document.body.appendChild(hint);
+      }
+      hint.style.display = 'block';
+    } else if (hint) hint.style.display = 'none';
   }
-  function lockViewport() {
-    const prevent = e => { e.preventDefault(); };
-    ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, prevent, { passive: false }));
-    document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
-    document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
-    let last = 0;
+  function clampZoom() {
+    zoom = Math.max(1, Math.min(3, zoom));
+    const max = 420;
+    panX = Math.max(-max, Math.min(max, panX));
+    panY = Math.max(-max, Math.min(max, panY));
+  }
+  function setupPinch() {
+    let startDist = 0, startZoom = 1, startPan = null, startMid = null;
+    const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const mid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
+    document.addEventListener('touchstart', e => {
+      if (e.touches.length === 2) {
+        startDist = dist(e.touches);
+        startZoom = zoom;
+        startPan = { x: panX, y: panY };
+        startMid = mid(e.touches);
+        e.preventDefault();
+      }
+    }, { passive: false });
+    document.addEventListener('touchmove', e => {
+      if (e.touches.length === 2 && startDist) {
+        const d = dist(e.touches);
+        zoom = startZoom * (d / startDist);
+        const m = mid(e.touches);
+        panX = startPan.x + (m.x - startMid.x) / zoom;
+        panY = startPan.y + (m.y - startMid.y) / zoom;
+        clampZoom();
+        fit();
+        e.preventDefault();
+      }
+    }, { passive: false });
     document.addEventListener('touchend', e => {
-      const now = Date.now();
-      if (now - last < 300) e.preventDefault();
-      last = now;
+      if (e.touches.length < 2) { startDist = 0; startPan = null; }
+    });
+    document.addEventListener('wheel', e => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      zoom *= e.deltaY < 0 ? 1.08 : 0.92;
+      clampZoom();
+      fit();
     }, { passive: false });
   }
   window.addEventListener('load', function () {
     cv = $('#cv'); g = cv.getContext('2d'); ui = $('#ui'); modal = $('#modal');
-    lockViewport();
+    setupPinch();
     fit();
     window.addEventListener('resize', fit);
     window.addEventListener('orientationchange', () => { setTimeout(fit, 50); setTimeout(fit, 250); setTimeout(fit, 600); });
