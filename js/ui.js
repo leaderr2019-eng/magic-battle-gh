@@ -590,8 +590,8 @@
     return '<div class="top">' + (back ? '<button class="btn small" data-act="' + back + '">' + t('back') + '</button>' : '') + '<h1 class="out">' + title + '</h1>' +
       '<button class="dailychest' + (dly.canClaim ? ' glow' : '') + '" data-act="daily" title="' + t('daily_reward') + '"><img src="assets/ui/daily_chest.webp" alt=""></button>' +
       '<div class="res energy" data-act="energy" title="' + t('energy') + (e.next ? ' · ' + fmtT(e.next) : '') + '"><img src="assets/ui/energy.webp" alt=""><span class="val" id="en">' + e.val + '/' + (e.max || MB.ENERGY.max) + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
-      '<div class="res sparks" title="' + t('sparks') + '"><img src="assets/ui/spark.webp" alt=""><span class="val">' + save.sparks + '</span><img class="pls" data-act="shoptab" data-t="free" src="assets/ui/plus_btn.webp" alt="+"></div>' +
-      '<div class="res ore" title="' + t('ore') + '"><img src="assets/ui/ore.webp" alt=""><span class="val">' + save.ore + '</span><img class="pls" data-act="shoptab" data-t="ore" src="assets/ui/plus_btn.webp" alt="+"></div>' +
+      '<div class="res sparks" data-act="shoptab" data-t="free" title="' + t('sparks') + '"><img src="assets/ui/spark.webp" alt=""><span class="val">' + save.sparks + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
+      '<div class="res ore" data-act="shoptab" data-t="ore" title="' + t('ore') + '"><img src="assets/ui/ore.webp" alt=""><span class="val">' + save.ore + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<div class="res ccoin" data-act="shoptab" data-t="clan" title="' + t('clan_coin') + '"><img src="assets/ui/clan_coin.webp" alt=""><span class="val">' + (save.ccoin || 0) + '</span><img class="pls" data-act="shoptab" data-t="clan" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<div class="res gems" data-act="shoptab" data-t="gems" title="' + t('gems') + '"><img src="assets/ui/gem.webp" alt=""><span class="val">' + save.gems + '</span><img class="pls" data-act="shoptab" data-t="gems" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<button type="button" class="btn small gold settings-btn" data-act="settings" title="' + t('settings') + '" style="margin-left:4px;min-width:44px;padding:2px 8px;font-size:20px">⚙</button></div>';
@@ -674,6 +674,14 @@
       '<button class="btn blue hb" data-act="clans" title="' + t('clans') + '">' + mImg('mnu_shield_herald.png') + (save.bosses[2] ? (save.clan && (MB.clanKeys(save) > 0 || MB.clanHasRewards(save)) ? '<span class="dot">!</span>' : '') : '<span class="lk">' + ic('lock') + '</span>') + '</button>' +
       '</div><div class="hubfoot"><span>' + t('save_browser') + '</span></div>';
     if (!save.name) showNamePrompt(); else if (!save.seenIntro) { save.seenIntro = true; persist(); showHelp(); } else if (d.canClaim && !showHub.shown) { showHub.shown = true; showDaily(); }
+  }
+  function refreshHubAvatar() {
+    const btn = ui && ui.querySelector('.pava');
+    if (!btn) return;
+    const av = save.avatar && save.unlocked.indexOf(save.avatar) >= 0 ? save.avatar : save.unlocked[0];
+    const nick = btn.querySelector('.pnick');
+    const nickHtml = nick ? nick.outerHTML : '<span class="pnick">' + (save.name || '') + '</span>';
+    btn.innerHTML = pt(av, '', '<b>' + MB.accountLevel(save) + '</b>', 62) + nickHtml;
   }
   // Никнейм при первом входе: выбирается один раз и не меняется
   function showNamePrompt() {
@@ -894,6 +902,7 @@
     if (ctx.type === 'clan') { const info = MB.clanBossInfo(save.clan); ctx.bossName = info.name; ctx.enemies = [{ type: info.art, lvl: info.lvl, displayLvl: info.displayLvl, boss: true, clanBoss: true, hpMax: info.maxHp, hpCur: save.clan.bossHp }]; }
     else ctx.enemies = ctx.type === 'stage' ? MB.stageEnemies(ctx.ch, ctx.st) : ctx.type === 'col' ? MB.coliseumFloor(ctx.f) : MB.bossEnemies(ctx.ch, ctx.type === 'lair' ? MB.LAIR[ctx.diff].lvl : 0);
     save.team = save.team.filter(k => save.unlocked.indexOf(k) >= 0); if (!save.team.length) save.team = [save.unlocked[0]];
+    if (ctx.type === 'col' && (!ctx.hero || save.unlocked.indexOf(ctx.hero) < 0)) ctx.hero = save.team[0] || save.unlocked[0];
     const title = ctx.type === 'clan' ? 'Клановый босс: ' + ctx.bossName : ctx.type === 'col' ? 'Колизей, арена ' + ctx.f : ctx.type === 'stage' ? 'Глава ' + ctx.ch + ', уровень ' + ctx.st : ctx.type === 'boss' ? 'Босс: ' + MB.BOSSES[C.boss].name : 'Логово: ' + MB.BOSSES[C.boss].name + ' (' + MB.LAIR[ctx.diff].name + ')';
     let en = '';
     ctx.enemies.forEach(e => { const d = MB.ENEMIES[e.type] || MB.BOSSES[e.type]; en += '<div class="e">' + pt(e.type, '', '', 56) + '<span>' + d.name + (e.elite ? ' ★' : '') + '<small>ур. ' + (e.displayLvl || e.lvl) + (e.elite ? ' · элитный' : '') + (e.hpMax ? ' · ❤ ' + e.hpCur + '/' + e.hpMax : '') + '</small></span></div>'; });
@@ -908,7 +917,7 @@
         '<span class="r">' + ic('spark') + '+1 за каждые 300 урона</span></div>' +
         '<p class="note" style="margin-top:6px">За победу над боссом: ✦ +' + MB.XP.clanKill + ' XP и +' + MB.CCOIN.clanKill + ' монет всем соклановцам, ' + ic('gem') + '+200, ' + ic('ore') + '+200' + ', ' + MB.CHESTS.purple.name + '. Ключ тратится даже при поражении.</p></div>';
     } else {
-      const sparkBon = save.team.slice(0, 3).reduce((a, kk) => a + MB.heroStats(save, kk).sparksBonus, 0) + MB.clanSparksBonus(save);
+      const sparkBon = (ctx.type === 'col' ? [ctx.hero] : save.team.slice(0, 3)).reduce((a, kk) => a + (kk ? MB.heroStats(save, kk).sparksBonus : 0), 0) + MB.clanSparksBonus(save);
       const sparkN = (L2, f) => Math.round(MB.sparksFor(L2) * (f ? 2 : 1) * (1 + sparkBon / 100));
       let L, first, minR; const extraFirst = [], rw = []; let note2 = '';
       if (ctx.type === 'stage') { L = MB.stageLevel(ctx.ch, ctx.st); first = (save.progress[ctx.ch] || 0) < ctx.st; minR = 'wood'; }
@@ -935,17 +944,24 @@
         .concat(minR ? ['<span class="r">' + ART.icon('chest', MB.CHESTS[minR].col) + ' ' + (I18N.lang==='en' && CHEST_EN[minR] ? CHEST_EN[minR] : MB.CHESTS[minR].name) + '</span>'] : []);
       rewHtml = '<div class="paper" style="margin-top:10px"><b>Награды за победу</b>' + (first ? ' <span class="note">— первое прохождение, награды повышены</span>' : '') +
         '<div class="prew">' + rows.join('') + '</div>' +
-        '<p class="note" style="margin-top:6px">' + note2 + (ctx.type === 'lair' ? 'Попытка (1 из 5 в неделю) тратится даже при поражении. Награда в Логове — только XP и Руда.' : (first ? 'Повторное прохождение: ✦ +' + MB.XP.win + ' XP, Искры без ×2, сундук тот же. ' : 'Первое прохождение уже получено — награды обычные. ')) + 'За поражение: ✦ +' + MB.XP.loss + ' XP.</p></div>';
+        '<p class="note" style="margin-top:6px">' + note2 + (ctx.type === 'lair' ? 'Попытка (1 из 5 в неделю) тратится даже при поражении. Награда в Логове — только XP и Руда.' : ctx.type === 'col' ? 'Каждую арену можно пройти только один раз. ' : (first ? 'Повторное прохождение: ✦ +' + MB.XP.win + ' XP, Искры без ×2, сундук тот же. ' : 'Первое прохождение уже получено — награды обычные. ')) + 'За поражение: ✦ +' + MB.XP.loss + ' XP.</p></div>';
     }
     let team = '';
+    const colDuel = ctx.type === 'col';
     save.unlocked.forEach(k => {
-      const i = save.team.indexOf(k);
-      team += '<div class="h" data-act="pick" data-k="' + k + '">' + pt(k, i >= 0 ? 'sel' : 'dim', (i >= 0 ? '<i>' + (i + 1) + '</i>' : '') + '<b>' + save.heroes[k].lvl + '</b>') + '<br>' + heroLoc(k, 'name') + '</div>';
+      if (colDuel) {
+        const sel = ctx.hero === k;
+        team += '<div class="h" data-act="colpick" data-k="' + k + '">' + pt(k, sel ? 'sel' : 'dim', '<b>' + save.heroes[k].lvl + '</b>') + '<br>' + heroLoc(k, 'name') + '</div>';
+      } else {
+        const i = save.team.indexOf(k);
+        team += '<div class="h" data-act="pick" data-k="' + k + '">' + pt(k, i >= 0 ? 'sel' : 'dim', (i >= 0 ? '<i>' + (i + 1) + '</i>' : '') + '<b>' + save.heroes[k].lvl + '</b>') + '<br>' + heroLoc(k, 'name') + '</div>';
+      }
     });
+    const fightKeys = colDuel ? [ctx.hero] : save.team.slice(0, 3);
     openModal('<div class="panel win" style="position:relative"><button class="x" data-act="close">✕</button><div class="winscroll"><h2 class="out">' + title + '</h2>' +
-      '<div class="paper"><b>Противники</b><div class="enemyrow" style="margin-top:6px">' + en + '</div>' + boss + '</div>' + rewHtml +
-      '<div class="paper" style="margin-top:10px"><b>Ваш отряд</b> <span class="note">— до 3 героев, номер = место в строю (1 — впереди)</span><div class="teampick">' + team + '</div></div>' +
-      '<p style="text-align:center;font-weight:800;font-size:18px;margin-top:10px">' + (function () { const tp = MB.teamPower(save, save.team.slice(0, 3)), rp = MB.recPower(ctx.enemies); return 'Сила отряда: <span style="color:' + (tp >= rp ? '#8dff8a' : tp >= rp * 0.85 ? '#ffd45e' : '#ff8a7a') + '">' + tp + '</span>' })() + '</p>' +
+      '<div class="paper"><b>' + (colDuel ? 'Противник' : 'Противники') + '</b><div class="enemyrow" style="margin-top:6px">' + en + '</div>' + boss + '</div>' + rewHtml +
+      '<div class="paper" style="margin-top:10px"><b>' + (colDuel ? 'Ваш боец' : 'Ваш отряд') + '</b> <span class="note">' + (colDuel ? '— один герой на дуэль' : '— до 3 героев, номер = место в строю (1 — впереди)') + '</span><div class="teampick">' + team + '</div></div>' +
+      '<p style="text-align:center;font-weight:800;font-size:18px;margin-top:10px">' + (function () { const tp = MB.teamPower(save, fightKeys), rp = MB.recPower(ctx.enemies); return (colDuel ? 'Сила бойца: ' : 'Сила отряда: ') + '<span style="color:' + (tp >= rp ? '#8dff8a' : tp >= rp * 0.85 ? '#ffd45e' : '#ff8a7a') + '">' + tp + '</span>' })() + '</p>' +
       '<div class="foot" style="margin-top:8px"><button class="btn green" data-act="fight" style="min-width:260px;font-size:24px">В бой! <span class="cost">' + (ctx.type === 'clan' ? '<img src="assets/ui/key_clan.webp" alt="" style="width:26px;height:26px;vertical-align:-6px"> 1 ключ · осталось ' + MB.clanKeys(save) : ic('energy') + MB.ENERGY.cost) + '</span></button></div></div></div>');
   }
 
@@ -977,7 +993,8 @@
       lair.used = (lair.used || 0) + 1;
     }
     persist();
-    const C = MB.CHAPTERS[ctx.ch - 1], b = MB.createBattle(save, save.team.slice(0, 3), ctx.enemies);
+    const fighters = ctx.type === 'col' ? [ctx.hero || save.unlocked[0]] : save.team.slice(0, 3);
+    const C = MB.CHAPTERS[ctx.ch - 1], b = MB.createBattle(save, fighters, ctx.enemies);
     const BGS = MB.CHAPTERS.map(c => c.bg);
     const cleared = isBattleCleared(ctx);
     const bv = { b: b, ctx: ctx, units: {}, fx: [], sfx: [], floats: [], projs: [], current: null, pick: null, sel: 0, shake: 0, dim: 0, waiting: null, cleared: cleared, auto: cleared ? !!save.auto : false, startMs: Date.now(), resultReady: false, skipping: false };
@@ -1011,7 +1028,7 @@
     const autoDis = BV.cleared ? '' : ' disabled title="' + t('after_clear') + '"';
     const resDis = (BV.cleared && BV.resultReady) ? '' : ' disabled title="' + (BV.cleared ? T('Станет доступно через 5 сек. боя', 'Available after 5 sec of battle') : t('after_clear')) + '"';
     ui.innerHTML = '<div class="bhud"><div class="bleft"><button class="btn small red" data-act="flee">' + t('flee') + '</button><b class="out">' + title + '</b></div>' +
-      '<div class="queue" id="queue"></div><div class="bright"><button class="btn small" data-act="layout" title="' + T('Расставить бойцов', 'Arrange units') + '">⇲ ' + T('Позиции', 'Positions') + '</button><button class="btn small tog ' + (BV.auto ? 'on' : '') + '" data-act="auto"' + autoDis + '>' + T('АВТО', 'AUTO') + '</button><button class="btn small tog ' + (clock.speed > 1 ? 'on' : '') + '" data-act="speed">×2</button><button class="btn small gold" id="btn-result" data-act="skipresult"' + resDis + '>' + T('Результат', 'Result') + '</button></div>' +
+      '<div class="queue" id="queue"></div><div class="bright"><button class="btn small gold settings-btn" data-act="settings" title="' + t('settings') + '" style="min-width:44px;padding:2px 8px;font-size:20px">⚙</button><button class="btn small tog ' + (BV.auto ? 'on' : '') + '" data-act="auto"' + autoDis + '>' + T('АВТО', 'AUTO') + '</button><button class="btn small tog ' + (clock.speed > 1 ? 'on' : '') + '" data-act="speed">×2</button><button class="btn small gold" id="btn-result" data-act="skipresult"' + resDis + '>' + T('Результат', 'Result') + '</button></div>' +
       '<div class="hint" id="hint" style="display:none"></div><div class="actions" id="actions"></div></div>';
   }
   function renderQueue(cur) {
@@ -1279,7 +1296,7 @@
     const partKeys = bv.b.units.filter(u => u.side === 'hero').map(u => u.key);
     let xp = win ? MB.XP.win : MB.XP.loss;
     if (win) {
-      const bonus = save.team.slice(0, 3).reduce((a, k) => a + MB.heroStats(save, k).sparksBonus, 0) + MB.clanSparksBonus(save);
+      const bonus = (c.type === 'col' ? [c.hero] : save.team.slice(0, 3)).reduce((a, k) => a + (k ? MB.heroStats(save, k).sparksBonus : 0), 0) + MB.clanSparksBonus(save);
       let L, first = false, minR = 'wood';
       if (c.type === 'col') {
         L = MB.coliseumFloor(c.f)[0].lvl; first = save.col.best < c.f; minR = c.f % 5 === 0 ? 'purple' : 'blue';
@@ -1744,7 +1761,7 @@
       '<span class="btxt"><b class="out">Босс: ' + BB.name + ' · ур. ' + ben[0].lvl + '</b><i>' + (bst === 'locked' ? 'Откроется после 9-й арены' : BB.mechText) + '</i></span></button>';
     const H = MB.HEROES[MB.COLISEUM.reward], got = save.unlocked.indexOf(MB.COLISEUM.reward) >= 0;
     ui.innerHTML = topbar(t('coliseum'), 'hub') + '<div class="colz"><div class="panel colinfo"><img src="' + ART.url(MB.COLISEUM.reward) + '" alt=""><b class="out">' + (heroLoc(MB.COLISEUM.reward, 'full') || H.full) + '</b><span>' + (got ? (I18N.lang === 'en' ? 'Already in your team!' : 'Уже в вашем отряде!') : (I18N.lang === 'en' ? 'Clear all 10 arenas and she will join you.' : 'Пройдите все 10 арен, и она присоединится к вам.')) + '</span>' +
-      '<p>Каждая арена — сильные враги из всех глав, на 5-й босс, а на 10-й — Минотавр Арены. За первую победу на арене: 30 Изумрудов, Руда и синий сундук, на 5-й и 10-й — фиолетовый.</p></div><div class="colarena">' + fl + '</div></div>';
+      '<p>Дуэли 1 на 1: выберите одного героя. Каждую арену можно пройти только один раз. На 5-й — босс, на 10-й — Минотавр Арены. За победу: 30 Изумрудов, Руда и синий сундук, на 5-й и 10-й — фиолетовый.</p></div><div class="colarena">' + fl + '</div></div>';
   }
 
   /* ---------- Кланы ---------- */
@@ -2098,7 +2115,7 @@
     },
     daily: showDaily, close: closeModal,
     profile: () => showProfile(),
-    setavatar: d => { if (save.unlocked.indexOf(d.k) < 0) return; save.avatar = d.k; persist(); showProfile(); },
+    setavatar: d => { if (save.unlocked.indexOf(d.k) < 0) return; save.avatar = d.k; persist(); refreshHubAvatar(); showProfile(); },
     setname: () => { const inp = $('#nick'), v = inp ? inp.value.trim() : ''; if (v.length < 2) { toast('Имя должно быть от 2 до 16 символов'); return; } save.name = v; persist(); closeModal(); showHub(); toast('Добро пожаловать, ' + v + '!'); },
     chapter: d => { if (!chOpen(+d.ch)) return; showCampaign(+d.ch); },
     stage: d => { const p = save.progress[campCh] || 0; if (+d.st > p + 1) { toast('Сначала пройдите предыдущий уровень'); return; } openPrep({ type: 'stage', ch: campCh, st: +d.st }); },
@@ -2107,11 +2124,17 @@
     campheroes: () => { showHeroes.back = 'campaign'; showHeroes(); },
     lairfight: d => openPrep({ type: 'lair', ch: +d.ch, diff: +d.d }),
     pick: d => { const i = save.team.indexOf(d.k); if (i >= 0) { if (save.team.length > 1) save.team.splice(i, 1); } else if (save.team.length < 3) save.team.push(d.k); else toast('В отряде уже 3 героя — сначала уберите одного'); openPrep(prep); },
+    colpick: d => { if (!prep || prep.type !== 'col' || save.unlocked.indexOf(d.k) < 0) return; prep.hero = d.k; openPrep(prep); },
     fight: () => { if (prep.type === 'clan') { if (!MB.spendClanKey(save)) { toast('Нет ключей кланового босса — 2 новых дадут завтра, ещё можно купить в клановом магазине'); return; } prep.bossHp0 = save.clan.bossHp; persist(); startBattle(prep); return; } if (!MB.spendEnergy(save, Date.now())) { showEnergy(true); return; } persist(); startBattle(prep); },
     energy: () => showEnergy(false), drink: d => { if (save.potions[d.p] > 0) { save.potions[d.p]--; save.energy.val += MB.POTIONS[d.p].amt; SFX.play('potion_drink', 0.76); persist(); toast('+' + MB.POTIONS[d.p].amt + ' энергии'); refreshTop(); showEnergy(showEnergy.need); } },
     shop: () => { showShop.back = 'hub'; showShop(); },
     shoptab: d => { if (d.from === 'clankeys') showShop.back = 'clans'; showShop(d.t); }, coliseum: () => { if (!MB.coliseumOpen(save)) { toast('Колизей откроется после победы над боссом главы ' + MB.COLISEUM.needBoss + ' и ' + MB.COLISEUM.needLvl + '-го уровня любого героя'); return; } showColiseum(); },
-    colfight: d => { if (+d.f > save.col.best + 1) { toast('Сначала пройдите предыдущую арену'); return; } openPrep({ type: 'col', ch: 5, f: +d.f }); }, rating: () => showRating(), ratetab: d => showRating(d.t),
+    colfight: d => {
+      const f = +d.f;
+      if (f <= (save.col && save.col.best || 0)) { toast(T('Эта арена уже пройдена', 'This arena is already cleared')); return; }
+      if (f > (save.col && save.col.best || 0) + 1) { toast(T('Сначала пройдите предыдущую арену', 'Clear the previous arena first')); return; }
+      openPrep({ type: 'col', ch: 5, f: f });
+    }, rating: () => showRating(), ratetab: d => showRating(d.t),
     elixir: d => elixirConfirm(d.from),
     elixirbuy: () => { if (!MB.buyEnergyElixir(save, Date.now())) { closeModal(); return; } SFX.play('energy_elixir', 0.8); persist(); refreshTop(); toast('Максимум энергии: ' + MB.energyMax(save)); if (elixirConfirm.from === 'modal') showEnergy(showEnergy.need); else showShop(); },
     elixircancel: () => { if (elixirConfirm.from === 'modal') showEnergy(showEnergy.need); else closeModal(); },
@@ -2742,12 +2765,39 @@
 
   /* ---------- Запуск ---------- */
   function fit() {
-    const st = $('#stage'), k = Math.min(window.innerWidth / W, window.innerHeight / H);
-    st.style.transform = 'scale(' + k + ')'; st.style.left = (window.innerWidth - W * k) / 2 + 'px'; st.style.top = (window.innerHeight - H * k) / 2 + 'px';
+    const st = $('#stage'); if (!st) return;
+    const vv = window.visualViewport;
+    const w = vv ? vv.width : window.innerWidth;
+    const h = vv ? vv.height : window.innerHeight;
+    const k = Math.min(w / W, h / H);
+    const cx = (vv ? vv.offsetLeft : 0) + w / 2;
+    const cy = (vv ? vv.offsetTop : 0) + h / 2;
+    st.style.left = cx + 'px';
+    st.style.top = cy + 'px';
+    st.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+  }
+  function lockViewport() {
+    const prevent = e => { e.preventDefault(); };
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => document.addEventListener(ev, prevent, { passive: false }));
+    document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+    document.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+    let last = 0;
+    document.addEventListener('touchend', e => {
+      const now = Date.now();
+      if (now - last < 300) e.preventDefault();
+      last = now;
+    }, { passive: false });
   }
   window.addEventListener('load', function () {
     cv = $('#cv'); g = cv.getContext('2d'); ui = $('#ui'); modal = $('#modal');
-    fit(); window.addEventListener('resize', fit);
+    lockViewport();
+    fit();
+    window.addEventListener('resize', fit);
+    window.addEventListener('orientationchange', () => { setTimeout(fit, 50); setTimeout(fit, 250); setTimeout(fit, 600); });
+    if (window.visualViewport) {
+      visualViewport.addEventListener('resize', fit);
+      visualViewport.addEventListener('scroll', fit);
+    }
     $('#stage').addEventListener('click', onClick);
 cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointermove', onMove); cv.addEventListener('pointerup', onUp); cv.addEventListener('pointercancel', onUp); cv.addEventListener('wheel', onWheel, { passive: false });
     save = loadSave(); syncSkins();

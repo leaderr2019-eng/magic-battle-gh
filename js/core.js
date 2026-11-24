@@ -6,10 +6,10 @@
   /* ---------- Справочники ---------- */
   MB.RARITY = [
     { name: 'Обычная', color: '#9aa3ad', mult: 1.0, maxUp: 10, ore: 1 },
-    { name: 'Необычная', color: '#4caf50', mult: 1.5, maxUp: 20, ore: 2 },
-    { name: 'Редкая', color: '#3d8bfd', mult: 2.2, maxUp: 30, ore: 4 },
-    { name: 'Эпическая', color: '#a855f7', mult: 3.2, maxUp: 50, ore: 8 },
-    { name: 'Легендарная', color: '#f5b301', mult: 4.5, maxUp: 70, ore: 15 }
+    { name: 'Необычная', color: '#4caf50', mult: 1.5, maxUp: 20, ore: 1 },
+    { name: 'Редкая', color: '#3d8bfd', mult: 2.2, maxUp: 30, ore: 2 },
+    { name: 'Эпическая', color: '#a855f7', mult: 3.2, maxUp: 50, ore: 3 },
+    { name: 'Легендарная', color: '#f5b301', mult: 4.5, maxUp: 70, ore: 5 }
   ];
   MB.RARITY_CHANCE = [60, 25, 10, 4, 1];
   // Сундуки и шансы редкости вещи (в процентах: обычная, необычная, редкая, эпическая, легендарная)
@@ -249,15 +249,14 @@
     { text: '300 Искр', sparks: 300 }, { text: 'Зелёный сундук', chest: 'green' }, { text: '20 Руды', ore: 20 },
     { text: '20 Изумрудов', gems: 20 }
   ];
-  // Колизей: 10 арен, проход всех — герой Кира
-  MB.COLISEUM = { needBoss: 3, needLvl: 25, floors: 10, reward: 'ninja' };
+  // Колизей: 10 арен 1 на 1, финал — Минотавр, проход всех — герой Кира
+  MB.COLISEUM = { needBoss: 3, needLvl: 20, floors: 10, reward: 'ninja' };
   MB.coliseumFloor = function (f) {
-    const L = 26 + f * 4, pool = ['goblin', 'wolf', 'penek', 'kobold', 'bat', 'beetle', 'frog', 'mosquito', 'sporeling', 'trollkid', 'spider', 'shaman', 'imp', 'yeti', 'guard'];
+    const L = 26 + f * 4, pool = ['goblin', 'wolf', 'penek', 'kobold', 'bat', 'beetle', 'frog', 'mosquito', 'sporeling', 'trollkid', 'spider', 'shaman', 'imp', 'yeti', 'guard', 'hedgehog', 'rat', 'wisp', 'bear', 'shard'];
     const bosses = ['golem', 'kirka', 'king', 'troll', 'dragon'];
-    const pick = i => pool[(f * 7 + i * 5) % pool.length];
-    if (f === MB.COLISEUM.floors) return [{ type: 'minotaur', lvl: L, boss: true }, { type: pick(1), lvl: L - 2 }, { type: pick(2), lvl: L - 2 }];   // финал арены — Минотавр
-    if (f % 5 === 0) return [{ type: bosses[(f / 5 - 1 + 2) % 5], lvl: L, boss: true }, { type: pick(1), lvl: L - 2 }, { type: pick(2), lvl: L - 2 }];
-    return [{ type: pick(0), lvl: L, elite: f >= 3 }, { type: pick(1), lvl: L }, { type: pick(2), lvl: L }];
+    if (f === MB.COLISEUM.floors) return [{ type: 'minotaur', lvl: L, boss: true }];
+    if (f % 5 === 0) return [{ type: bosses[(f / 5 - 1 + 2) % 5], lvl: L, boss: true }];
+    return [{ type: pool[(f * 7) % pool.length], lvl: L, elite: f >= 3 }];
   };
   MB.coliseumOpen = function (save) { return !!save.bosses[MB.COLISEUM.needBoss] && MB.HERO_ORDER.some(k => save.unlocked.indexOf(k) >= 0 && save.heroes[k].lvl >= MB.COLISEUM.needLvl); };
   MB.DAY_NAMES = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
