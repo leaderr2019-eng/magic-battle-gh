@@ -2767,14 +2767,16 @@
   function fit() {
     const st = $('#stage'); if (!st) return;
     const vv = window.visualViewport;
+    // Только видимая область: на iOS layout-высота больше экрана, и top:50% уводит сцену вниз
     const w = vv ? vv.width : window.innerWidth;
     const h = vv ? vv.height : window.innerHeight;
+    const ox = vv ? vv.offsetLeft : 0;
+    const oy = vv ? vv.offsetTop : 0;
     const k = Math.min(w / W, h / H);
-    const cx = (vv ? vv.offsetLeft : 0) + w / 2;
-    const cy = (vv ? vv.offsetTop : 0) + h / 2;
-    st.style.left = cx + 'px';
-    st.style.top = cy + 'px';
-    st.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+    st.style.transformOrigin = '0 0';
+    st.style.left = (ox + (w - W * k) / 2) + 'px';
+    st.style.top = (oy + (h - H * k) / 2) + 'px';
+    st.style.transform = 'scale(' + k + ')';
   }
   function lockViewport() {
     const prevent = e => { e.preventDefault(); };
