@@ -244,6 +244,21 @@
     const nextMonUtc3 = Date.UTC(u.getUTCFullYear(), u.getUTCMonth(), u.getUTCDate() + daysUntilMon, 0, 0, 0, 0);
     return nextMonUtc3 - 3 * 3600000;
   };
+  MB.DAILY_QUESTS = [
+    { wins: 5, sparks: 100, label: '100 искр' },
+    { wins: 10, chest: 'blue', label: 'Синий сундук' },
+    { wins: 15, sparks: 200, label: '200 искр' },
+    { wins: 20, pot: 'm', label: 'Средняя банка' },
+    { wins: 30, sparks: 500, label: '500 искр' }
+  ];
+  MB.dailyQuestState = function (save, now) {
+    const day = MB.dayKey(now || new Date());
+    if (!save.dailyQuest || save.dailyQuest.day !== day) {
+      save.dailyQuest = { day: day, wins: 0, claimed: [false, false, false, false, false] };
+    }
+    if (!save.dailyQuest.claimed) save.dailyQuest.claimed = [false, false, false, false, false];
+    return save.dailyQuest;
+  };
   MB.DAILY = [
     { text: '100 Искр', sparks: 100 }, { text: 'Деревянный сундук', chest: 'wood' }, { text: 'Малая банка энергии', pot: 's' },
     { text: '300 Искр', sparks: 300 }, { text: 'Зелёный сундук', chest: 'green' }, { text: '20 Руды', ore: 20 },

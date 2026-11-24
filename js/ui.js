@@ -1330,6 +1330,10 @@
       save.sparks += out.sparks; save.ore += out.ore;
     }
     if (win && save.clan) MB.clanTaskProgress(save, 'battles', 1);
+    if (win && c.type !== 'clan') {
+      const dq = MB.dailyQuestState(save, now());
+      dq.wins = (dq.wins || 0) + 1;
+    }
     out.xp = xp;
     MB.grantXp(save, partKeys, xp).forEach(u => out.notes.push(heroLoc(u.key, 'name') + T(' достиг ', ' reached level ') + u.to + T(' уровня!', '!')));
     if (win) bv.cleared = true; persist(); showResult(bv, out, win);
@@ -1568,8 +1572,29 @@
       days += '<div class="day ' + st + '"><b>' + MB.DAY_NAMES[i] + '</b>' + (R.chest ? ART.icon('chest', MB.CHESTS[R.chest].col) : R.pot ? ART.icon('potion', '#5db3f0') : ic(R.sparks ? 'spark' : R.gems ? 'gem' : 'ore')) + R.text +
         (st === 'claimed' ? '<span class="mark">✔</span>' : st === 'missed' ? '<span class="mark">✕</span>' : st === 'locked' ? '<em>Серия прервана</em>' : '') + '</div>';
     });
-    openModal('<div class="panel win" style="position:relative;width:900px"><button class="x" data-act="close">✕</button><h2 class="out">Награда за вход</h2><div class="paper"><p style="font-weight:700">Заходите каждый день с понедельника по субботу — и в воскресенье заберёте 20 изумрудов. Пропущенный день сгорает, в понедельник серия начинается заново.</p>' +
-      '<div class="daily">' + days + '</div>' + (d.broken ? '<p style="font-weight:800;color:#a02a1e">Серия прервана — новая начнётся в понедельник. Награды оставшихся дней недели всё равно можно забирать.</p>' : '') + '</div>' +
+    const dq = MB.dailyQuestState(save, now());
+    const maxW = MB.DAILY_QUESTS[MB.DAILY_QUESTS.length - 1].wins;
+    const pct = Math.min(100, Math.round((dq.wins / maxW) * 100));
+    const mid = new Date(); mid.setHours(24, 0, 0, 0);
+    const rem = mid - now();
+    const hh = Math.floor(rem / 3600000), mm = Math.floor((rem % 3600000) / 60000);
+    let marks = '';
+    MB.DAILY_QUESTS.forEach((q, i) => {
+      const left = Math.round((q.wins / maxW) * 100);
+      const ready = dq.wins >= q.wins && !dq.claimed[i];
+      const done = !!dq.claimed[i];
+      const icon = q.chest ? ART.icon('chest', MB.CHESTS[q.chest].col) : q.pot ? ART.icon('potion', '#a855f7') : ic('spark');
+      marks += '<div class="dqmark" style="left:' + left + '%">' +
+        '<button class="dqgift' + (ready ? ' ready' : '') + (done ? ' done' : '') + '" data-act="dqclaim" data-i="' + i + '" ' + (ready ? '' : 'disabled') + '>' + icon + '</button>' +
+        '<b>' + q.wins + '</b><span>' + q.label + '</span>' + (done ? '<em>✔</em>' : '') + '</div>';
+    });
+    const questBlock = '<div class="dqbox"><div class="dqhead">Выигрывайте бои каждый день и забирайте награды!<br>Обновление через: <b>' + hh + 'ч ' + mm + 'м</b></div>' +
+      '<div class="dqload">Идёт загрузка</div>' +
+      '<div class="dqrow"><div class="dqcheck">' + ic('spark') + '</div><b class="dqcount">' + dq.wins + '/' + maxW + '</b>' +
+      '<div class="dqtrack"><i style="width:' + Math.max(pct, 6) + '%"></i>' + marks + '</div></div></div>';
+    openModal('<div class="panel win" style="position:relative;width:920px"><button class="x" data-act="close">✕</button><h2 class="out">Награда за вход</h2><div class="paper"><p style="font-weight:700">Заходите каждый день с понедельника по субботу — и в воскресенье заберёте 20 изумрудов. Пропущенный день сгорает, в понедельник серия начинается заново.</p>' +
+      '<div class="daily">' + days + '</div>' + (d.broken ? '<p style="font-weight:800;color:#a02a1e">Серия прервана — новая начнётся в понедельник. Награды оставшихся дней недели всё равно можно забирать.</p>' : '') +
+      questBlock + '</div>' +
       '<div class="foot"><button class="btn green" data-act="claim" ' + (d.canClaim ? '' : 'disabled') + '>' + (d.canClaim ? 'Забрать награду' : d.days[d.idx] === 'claimed' ? 'Сегодня уже получено' : 'Сегодня награды нет') + '</button></div></div>');
   }
 
@@ -2501,6 +2526,17 @@
     treetab: d => { treeTab = d.t; const b = $('.treebox'); if (b) b.scrollTop = 0; showStats(); },
     node: d => { const h = save.heroes[heroTab], c = +d.c; if (MB.freePts(h) > 0 && h.tr[treeTab][c] === +d.r) { h.tr[treeTab][c]++; persist(); showStats(); } else if (h.tr[treeTab][c] < +d.r) toast('Сначала возьмите узел выше'); else if (h.tr[treeTab][c] === +d.r) toast('Нет свободных очков — повысьте уровень героя'); },
     resetpts: () => { const h = save.heroes[heroTab], c = MB.resetCost(h); if (save.gems < c) return; save.gems -= c; h.resets++; h.tr = MB.newTree(); persist(); showStats(); refreshTop(); },
+    dqclaim: d => {
+      const dq = MB.dailyQuestState(save, now());
+      const i = +d.i, q = MB.DAILY_QUESTS[i];
+      if (!q || dq.claimed[i] || dq.wins < q.wins) return;
+      dq.claimed[i] = true;
+      let msg = q.label;
+      if (q.sparks) { save.sparks += q.sparks; }
+      if (q.chest) { grantChest(1, q.chest); }
+      if (q.pot) { save.potions[q.pot] = (save.potions[q.pot] || 0) + 1; }
+      persist(); showDaily(); toast('Награда: ' + msg);
+    },
     claim: () => {
       const d = MB.dailyState(save, now()); if (!d.canClaim) return; const R = MB.DAILY[d.idx]; save.daily.claimed[d.idx] = true;
       SFX.play('daily_reward', 0.82);
