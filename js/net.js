@@ -17,32 +17,180 @@
     return (prefix || 'tx') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
   }
 
-  // Адаптер профиля игрока: при наличии SDK площадки (например games.pikabu.ru) берёт ID и имя оттуда,
-  // иначе использует профиль из сохранения игры.
-  function resolvePlayerProfile(save) {
-    const sdk = root.PikabuSDK || root.GameSDK || null;
-    let platformId = save.playerId || '';
-    let platformName = save.name || '';
-    try {
-      if (sdk && typeof sdk.getPlayer === 'function') {
-        const p = sdk.getPlayer();
-        if (p && p.id) platformId = String(p.id);
-        if (p && p.name && !platformName) platformName = String(p.name);
-      } else if (sdk && sdk.player && sdk.player.id) {
-        platformId = String(sdk.player.id);
-        if (sdk.player.name && !platformName) platformName = String(sdk.player.name);
-      }
-    } catch (e) { /* игнорируем ошибки SDK при локальном запуске */ }
+  /* ---------- Валидация подлинности аккаунтов ---------- */
+  // Источники ID: platform (SDK площадки) — доверенный; guest (локальный plr_*) — не для рейтинга/кланов на площадке
+  const AUTH = {
+    // Локальные/гостевые ID, сгенерированные клиентом
+    guestIdRe: /^(plr_|tx_|m_\d+_)/i,
+    // Запрещённые/тестовые префиксы и имена
+    bannedIdRe: /^(bot_|npc_|test_|fake_|dummy_)/i,
+    bannedNameRe: /^(bot|npc|test|admin|null|undefined|guest|гость)$/i,
+    // Допустимый ID: 2–64 символа, буквы/цифры/_-:.@
+    idRe: /^[A-Za-z0-9_.:\-@]{2,64}$/,
+    nameMax: 24
+  };
 
-    if (!platformId) {
-      platformId = uid('plr');
+  function getPlatformSdk() {
+    return root.PikabuSDK || root.GameSDK || root.YandexGamesSDK || null;
+  }
+
+  function sanitizeName(raw) {
+    let n = String(raw == null ? '' : raw).replace(/[\u0000-\u001f\u007f]/g, '').trim();
+    n = n.replace(/\s+/g, ' ').slice(0, AUTH.nameMax);
+    return n;
+  }
+
+  function isGuestId(id) {
+    return !id || AUTH.guestIdRe.test(String(id));
+  }
+
+  function isBannedId(id) {
+    return !id || AUTH.bannedIdRe.test(String(id));
+  }
+
+  function isValidIdFormat(id) {
+    return typeof id === 'string' && AUTH.idRe.test(id) && !isBannedId(id);
+  }
+
+  function isValidDisplayName(name) {
+    const n = sanitizeName(name);
+    if (!n || n.length < 2) return false;
+    if (AUTH.bannedNameRe.test(n)) return false;
+    return true;
+  }
+
+  // Читает игрока из SDK площадки (если доступен)
+  function readSdkPlayer() {
+    const sdk = getPlatformSdk();
+    if (!sdk) return null;
+    try {
+      if (typeof sdk.getPlayer === 'function') {
+        const p = sdk.getPlayer();
+        if (p && (p.id || p.uid || p.userId)) {
+          return {
+            id: String(p.id || p.uid || p.userId),
+            name: sanitizeName(p.name || p.displayName || p.nickname || ''),
+            avatar: p.avatar || p.photo || '',
+            source: 'sdk'
+          };
+        }
+      }
+      if (sdk.player && (sdk.player.id || sdk.player.uid)) {
+        return {
+          id: String(sdk.player.id || sdk.player.uid),
+          name: sanitizeName(sdk.player.name || sdk.player.displayName || ''),
+          avatar: sdk.player.avatar || '',
+          source: 'sdk'
+        };
+      }
+    } catch (e) { /* SDK недоступен */ }
+    return null;
+  }
+
+  /**
+   * Проверка подлинности аккаунта.
+   * verified = true только если ID пришёл с площадки (SDK) или уже помечен как platform.
+   * guest/local — можно играть офлайн, но не попадают в общий рейтинг/кланы как «реальные».
+   */
+  function validateAccount(save, opts) {
+    opts = opts || {};
+    const sdkPlayer = readSdkPlayer();
+    let id = '';
+    let name = '';
+    let source = 'guest';
+    let verified = false;
+    const reasons = [];
+
+    if (sdkPlayer && isValidIdFormat(sdkPlayer.id) && !isGuestId(sdkPlayer.id)) {
+      id = sdkPlayer.id;
+      name = sdkPlayer.name || sanitizeName(save && save.name) || 'Игрок';
+      source = 'platform';
+      verified = true;
+    } else if (save && save.playerId && isValidIdFormat(save.playerId) && !isGuestId(save.playerId) && save.authSource === 'platform') {
+      // Ранее подтверждённый platform-ID (SDK был, сейчас недоступен — доверяем сохранённому флагу)
+      id = String(save.playerId);
+      name = sanitizeName(save.name) || 'Игрок';
+      source = 'platform';
+      verified = true;
+      reasons.push('sdk_unavailable_cached');
+    } else {
+      // Гостевой режим: стабильный локальный ID
+      id = (save && save.playerId && isValidIdFormat(save.playerId)) ? String(save.playerId) : uid('plr');
+      if (!isValidIdFormat(id) || isGuestId(id) === false && isBannedId(id)) {
+        id = uid('plr');
+      }
+      name = sanitizeName(save && save.name) || 'Игрок';
+      source = 'guest';
+      verified = false;
+      if (!getPlatformSdk()) reasons.push('no_sdk');
+      else reasons.push('sdk_no_player');
     }
-    save.playerId = platformId;
+
+    if (!isValidIdFormat(id)) {
+      reasons.push('bad_id_format');
+      verified = false;
+    }
+    if (isBannedId(id)) {
+      reasons.push('banned_id');
+      verified = false;
+    }
+    if (!isValidDisplayName(name)) {
+      name = verified ? ('Игрок_' + id.slice(-4)) : 'Игрок';
+      reasons.push('name_sanitized');
+    }
+
+    // Требование платформы (для сетевых действий)
+    if (opts.requirePlatform && !verified) {
+      return {
+        ok: false,
+        verified: false,
+        source: source,
+        id: id,
+        name: name,
+        reasons: reasons.concat(['platform_required']),
+        error: 'Требуется вход через аккаунт площадки'
+      };
+    }
+
     return {
-      id: platformId,
-      name: platformName || save.name || 'Игрок',
+      ok: true,
+      verified: verified,
+      source: source,
+      id: id,
+      name: name,
+      reasons: reasons,
+      error: null
+    };
+  }
+
+  // Фильтр участников/записей рейтинга: только валидные ID, без гостевых и забаненных префиксов
+  function isAuthenticPlayerEntry(entry) {
+    if (!entry || !entry.id) return false;
+    const id = String(entry.id);
+    if (!isValidIdFormat(id)) return false;
+    if (isGuestId(id) || isBannedId(id)) return false;
+    if (entry.name && AUTH.bannedNameRe.test(sanitizeName(entry.name))) return false;
+    return true;
+  }
+
+  // Адаптер профиля игрока: SDK площадки → доверенный ID; иначе гость.
+  function resolvePlayerProfile(save) {
+    const v = validateAccount(save || {});
+    if (save) {
+      save.playerId = v.id;
+      save.authSource = v.source;
+      save.authVerified = !!v.verified;
+      if (v.verified && v.name && (!save.name || save.name === 'Игрок')) {
+        save.name = v.name;
+      }
+    }
+    return {
+      id: v.id,
+      name: (save && save.name) || v.name || 'Игрок',
       power: MB.accountPower ? MB.accountPower(save) : 0,
-      level: MB.accountLevel ? MB.accountLevel(save) : 1
+      level: MB.accountLevel ? MB.accountLevel(save) : 1,
+      verified: v.verified,
+      source: v.source
     };
   }
 
@@ -65,14 +213,17 @@
     if (Array.isArray(snap.actClaimed)) c.actClaimed = snap.actClaimed.slice();
     if (snap.builds && typeof snap.builds === 'object') c.builds = Object.assign({}, snap.builds);
     if (Array.isArray(snap.members)) {
-      c.members = snap.members.map(m => Object.assign({
-        id: m.id,
-        name: m.name || 'Игрок',
-        power: m.power || 0,
-        role: m.role || 'member',
-        contrib: m.contrib || 0,
-        bossDmg: m.bossDmg || 0
-      }, m));
+      c.members = snap.members
+        .map(m => Object.assign({
+          id: m.id,
+          name: sanitizeName(m.name) || 'Игрок',
+          power: m.power || 0,
+          role: m.role || 'member',
+          contrib: m.contrib || 0,
+          bossDmg: m.bossDmg || 0
+        }, m))
+        // Отсекаем гостевые/фейковые записи; себя оставляем всегда
+        .filter(m => m.id === save.playerId || m.isMe || isAuthenticPlayerEntry(m));
       const meRow = c.members.find(m => m.id === save.playerId || m.isMe);
       if (meRow) {
         c.myContrib = meRow.contrib || 0;
@@ -227,6 +378,24 @@
     config: cfg,
     isRemote: isRemoteEnabled,
     getPlayerProfile: resolvePlayerProfile,
+    /** Проверка подлинности текущего/переданного аккаунта */
+    validateAccount: validateAccount,
+    /** Аккаунт подтверждён площадкой (SDK) */
+    isVerified: function (save) {
+      const s = save || currentSaveRef;
+      if (!s) return false;
+      if (typeof s.authVerified === 'boolean') return s.authVerified;
+      return !!(validateAccount(s).verified);
+    },
+    /** Можно ли участвовать в сетевом рейтинге/кланах */
+    canJoinCompetitive: function (save) {
+      const s = save || currentSaveRef;
+      // Локальный режим — всегда можно (одиночная игра)
+      if (!isRemoteEnabled()) return true;
+      return !!(s && validateAccount(s, { requirePlatform: true }).ok);
+    },
+    isAuthenticEntry: isAuthenticPlayerEntry,
+    sanitizeName: sanitizeName,
     subscribe(fn) {
       subscribers.add(fn);
       return () => subscribers.delete(fn);
@@ -235,6 +404,7 @@
       currentSaveRef = save;
       currentPersistRef = persistFn;
       resolvePlayerProfile(save);
+      if (typeof persistFn === 'function') persistFn();
       if (save && save.clan && isRemoteEnabled()) {
         connectRealtime(save.clan.id || cfg.sharedClanId);
       }

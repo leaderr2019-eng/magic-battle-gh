@@ -87,68 +87,132 @@
 
   const HERO_I18N = {
     viking: {
-      en: { name: 'Torvald', full: 'Torvald Redbeard', role: 'Warrior · AoE damage',
+      en: {
+        name: 'Torvald', full: 'Torvald Redbeard', role: 'Warrior · AoE damage',
+        bioTitle: 'Terror of the Northern Fjords',
+        bio: [
+          'Torvald comes from the Northern Fjords, where children learn to throw an axe before they learn to walk. Once he bet he could hurl his axe across the entire fjord. The axe flew past the horizon and is still missing — and ever since Torvald has been proving to every stranger that he throws farther than anyone.',
+          'He has never trimmed his beard. By his own account it hides a spare axe, a chunk of smoked cheese, and a lucky coin. No one dares check.',
+          'Torvald is loud, stubborn, and always charges first. He fears only one thing — tickling — but it is best not to remind him.'
+        ],
         skills: [
           { name: 'Axe Throw', desc: 'Basic attack on one target.' },
           { name: 'Ground Slam', desc: 'Hits all enemies for 80% Attack.' },
           { name: 'War Cry', desc: 'Whole team deals 20% more damage for 2 turns.' }
-        ] }
+        ]
+      }
     },
     knight: {
-      en: { name: 'Lyra', full: 'Lyra Shining Blade', role: 'Fast single-target damage',
+      en: {
+        name: 'Lyra', full: 'Lyra Shining Blade', role: 'Fast single-target damage',
+        bioTitle: 'Young Guard of the Sun Outpost',
+        bio: [
+          'Lyra is the youngest daughter of a guard at the Sun Outpost. From the age of eight she trained on straw dummies and dreamed of a real sword. When her father gave her a blade of pure light, the dummies never stood a chance again.',
+          'She is polite, disciplined, and slightly embarrassed by how much she enjoys a fair fight. In battle the light of her blade blinds foes before they even raise a shield.',
+          'Lyra left the outpost to prove that courage is not measured in years — and to find a worthy company of heroes.'
+        ],
         skills: [
           { name: 'Light Wave', desc: 'Basic attack on one target.' },
           { name: 'Radiant Strike', desc: '140% Attack, always crits.' },
           { name: 'Stance', desc: '+50% dodge until your next turn.' }
-        ] }
+        ]
+      }
     },
     gnome: {
-      en: { name: 'Born', full: 'Born the Anvil', role: 'Tank · team defense',
+      en: {
+        name: 'Born', full: 'Born the Anvil', role: 'Tank · team defense',
+        bioTitle: 'Master of the Deep Forge',
+        bio: [
+          'Born spent half his life in the mines and the other half at the anvil. His hammer can crack rock and still carefully straighten a bent horseshoe.',
+          'He speaks little, eats a lot, and trusts only those who have stood with him under a collapsing ceiling. His iron guard has saved more than one squad.',
+          'Born joined the heroes after a cave-in: he held the tunnel alone until everyone escaped, then calmly walked out last.'
+        ],
         skills: [
           { name: 'Throwing Hammer', desc: 'Basic attack on one target.' },
           { name: 'Molten Hammer', desc: '220% Attack on one target.' },
           { name: 'Iron Guard', desc: 'Shields the team.' }
-        ] }
+        ]
+      }
     },
     witch: {
-      en: { name: 'Burlya', full: 'Burlya', role: 'Support · heal & poison',
+      en: {
+        name: 'Burlya', full: 'Burlya', role: 'Support · heal & poison',
+        bioTitle: 'Swamp Brewmistress',
+        bio: [
+          'Burlya cooked a soup of swamp lilies and climbed into the cauldron to taste it. She never climbed out: the cauldron became her home, her armor, and her way of travel.',
+          'Her potions heal almost anything, though they taste like mud and an old boot. Her poisons are even better than her cures — Burlya calls that her greatest talent.',
+          'The Mushroom King banished her from the swamp, deciding her brews were more dangerous than his spores. Now she dreams of going home and turning the king into stew.'
+        ],
         skills: [
           { name: 'Flask', desc: 'Basic attack, 90% Attack.' },
           { name: 'Poison Brew', desc: 'Poisons all enemies for 3 turns.' },
           { name: 'Healing Draught', desc: 'Heals the whole team for 25% HP.' }
-        ] }
+        ]
+      }
     },
     wizard: {
-      en: { name: 'Merlius', full: 'Merlius the Stargazer', role: 'Mage · crowd control',
+      en: {
+        name: 'Merlius', full: 'Merlius the Stargazer', role: 'Mage · crowd control',
+        bioTitle: 'Star Keeper of Crystal Peak',
+        bio: [
+          'For three hundred years Merlius lived atop Crystal Peak and counted the stars. He almost finished when a Crystal Wyrmling settled on the peak and stars began falling from the sky. Merlius lost count and was deeply offended.',
+          'His magic is powerful but absent-minded. Sometimes ice shackles become a snowfall, and a fireball becomes a cabbage pie. The pies, however, are excellent.',
+          'Merlius wants to restore peace to the sky and finally finish counting the stars. He says only a few million remain.'
+        ],
         skills: [
           { name: 'Magic Bolt', desc: 'Basic attack on one target.' },
           { name: 'Ice Shackles', desc: '120% Attack and freeze: target skips a turn.' },
           { name: 'Curse', desc: '60% Attack to all enemies; they take 25% more damage.' }
-        ] }
+        ]
+      }
     },
     archer: {
-      en: { name: 'Yarra', full: 'Yarra Flamebloom', role: 'Archer · fire damage',
+      en: {
+        name: 'Yarra', full: 'Yarra Flamebloom', role: 'Archer · fire damage',
+        bioTitle: 'Archer of the Burning Grove',
+        bio: [
+          'Yarra grew up in an elven grove where trees bloom with fire and leaves never burn. She learned to shoot before she could speak, and still answers questions with a bullseye shot.',
+          'Her arrows ignite on their own the moment she gets angry. Even dragons prefer not to annoy her.',
+          'She seeks her grandmother’s ancient bow, said to be hidden somewhere on Crystal Peak.'
+        ],
         skills: [
           { name: 'Fire Arrow', desc: 'Basic attack on one target.' },
           { name: 'Arrow Rain', desc: '70% Attack to all enemies.' },
           { name: 'Ignite', desc: '110% Attack and burn for 3 turns.' }
-        ] }
+        ]
+      }
     },
     boar: {
-      en: { name: 'Sir Grunt', full: 'Sir Grunt', role: 'Paladin · tank & heal',
+      en: {
+        name: 'Sir Grunt', full: 'Sir Grunt', role: 'Paladin · tank & heal',
+        bioTitle: 'Knight of the Crystal Trough',
+        bio: [
+          'Sir Grunt is the only boar ever knighted. It happened after he single-handedly pulled the royal carriage from a swamp and barely got dirty. Almost.',
+          'He wears armor polished to a shine and always speaks very politely — even to trolls. Especially to trolls, because after talking to him they are usually on the ground.',
+          'Grunt believes the best medicine is a warm word and a sturdy shield. Friends agree: under his shield it is genuinely warm.'
+        ],
         skills: [
           { name: 'Mace Smash', desc: 'Charges and hits one target.' },
           { name: 'Holy Light', desc: 'Heals the whole team for 18% HP.' },
           { name: 'Shield Oath', desc: 'Shield an ally for 30% of their HP.' }
-        ] }
+        ]
+      }
     },
     ninja: {
-      en: { name: 'Kira', full: 'Kira the Shadow', role: 'Assassin · crits & dodge',
+      en: {
+        name: 'Kira', full: 'Kira the Shadow', role: 'Assassin · crits & dodge',
+        bioTitle: 'Champion of the Coliseum',
+        bio: [
+          'No one knows where Kira came from. One day she simply appeared in the Coliseum, defeated every champion in a row, and vanished in a puff of smoke — forgetting her reward.',
+          'They say she can walk a tightrope of spider silk and hide in her own shadow. Kira says little, but every word hits hard.',
+          'She will join only those who prove their strength on all ten Coliseum arenas.'
+        ],
         skills: [
           { name: 'Shuriken', desc: 'Basic attack on one target.' },
           { name: 'Shadow Strike', desc: 'Sneaks in: 180% Attack, always crits.' },
           { name: 'Smoke Screen', desc: '+50% dodge until your next turn.' }
-        ] }
+        ]
+      }
     }
   };
 
@@ -182,7 +246,14 @@
     const pack = HERO_I18N[key];
     if (I18N.lang === 'en' && pack && pack.en && pack.en[field] != null) return pack.en[field];
     const h = MB.HEROES[key];
-    return h ? (h[field] || key) : key;
+    if (!h) return key;
+    return h[field] != null ? h[field] : key;
+  }
+  function heroBio(key) {
+    const pack = HERO_I18N[key];
+    if (I18N.lang === 'en' && pack && pack.en && Array.isArray(pack.en.bio)) return pack.en.bio;
+    const h = MB.HEROES[key];
+    return (h && Array.isArray(h.bio)) ? h.bio : [];
   }
   function skillLoc(heroKey, idx, field) {
     const pack = HERO_I18N[heroKey];
@@ -309,7 +380,7 @@
 
   /* ---------- Фоновая музыка (меню / бой) с плавным затуханием ---------- */
   const MUSIC = (function () {
-    let targetVol = 0.45;
+    let targetVol = 0.3;
     const FADE_MS = 850;
     const STEP_MS = 35;
 
@@ -510,9 +581,52 @@
       base[k] = a;
     });
 
-    let sfxVol = 1;
+    let sfxVol = 0.2;
     let sfxMuted = false;
     const lastPlayed = {};
+    // Плавное затухание в конце клипа: не длиннее FADE_OUT_MS и не больше 40% длительности
+    const FADE_OUT_MS = 140;
+
+    function attachFadeOut(node, peakVol) {
+      if (!node || peakVol <= 0) return;
+      let fadeTimer = null;
+      let fadeIv = null;
+      const clear = () => {
+        if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+        if (fadeIv) { clearInterval(fadeIv); fadeIv = null; }
+      };
+      const schedule = () => {
+        const dur = node.duration;
+        if (!isFinite(dur) || dur <= 0.08) return;
+        const fadeMs = Math.min(FADE_OUT_MS, dur * 1000 * 0.4);
+        if (fadeMs < 40) return;
+        const startAtMs = Math.max(0, dur * 1000 - fadeMs);
+        const delay = Math.max(0, startAtMs - (node.currentTime || 0) * 1000);
+        clear();
+        fadeTimer = setTimeout(() => {
+          const steps = Math.max(6, Math.round(fadeMs / 20));
+          const stepMs = fadeMs / steps;
+          let i = 0;
+          fadeIv = setInterval(() => {
+            i++;
+            const t = Math.min(1, i / steps);
+            // ease-out quadratic — мягкое затухание
+            node.volume = peakVol * (1 - t) * (1 - t);
+            if (t >= 1) {
+              clear();
+              try { node.pause(); } catch (e) { /* */ }
+            }
+          }, stepMs);
+        }, delay);
+      };
+      node.addEventListener('ended', clear, { once: true });
+      node.addEventListener('pause', clear, { once: true });
+      if (node.readyState >= 1 && isFinite(node.duration) && node.duration > 0) {
+        schedule();
+      } else {
+        node.addEventListener('loadedmetadata', schedule, { once: true });
+      }
+    }
 
     function play(key, vol) {
       if (!key || !MAP[key]) return;
@@ -526,9 +640,11 @@
         const src = base[key] || new Audio(MAP[key]);
         const node = src.cloneNode ? src.cloneNode() : new Audio(MAP[key]);
         const baseVol = vol != null ? vol : 0.72;
-        node.volume = Math.max(0, Math.min(1, baseVol * sfxVol));
+        const peakVol = Math.max(0, Math.min(1, baseVol * sfxVol));
+        node.volume = peakVol;
         const p = node.play();
         if (p && typeof p.catch === 'function') p.catch(() => {});
+        attachFadeOut(node, peakVol);
       } catch (e) { /* */ }
     }
 
@@ -605,7 +721,7 @@
       '<div class="res ore" data-act="shoptab" data-t="ore" title="' + t('ore') + '"><img src="assets/ui/ore.webp" alt=""><span class="val">' + save.ore + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<div class="res ccoin" data-act="shoptab" data-t="clan" title="' + t('clan_coin') + '"><img src="assets/ui/clan_coin.webp" alt=""><span class="val">' + (save.ccoin || 0) + '</span><img class="pls" data-act="shoptab" data-t="clan" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<div class="res gems" data-act="shoptab" data-t="gems" title="' + t('gems') + '"><img src="assets/ui/gem.webp" alt=""><span class="val">' + save.gems + '</span><img class="pls" data-act="shoptab" data-t="gems" src="assets/ui/plus_btn.webp" alt="+"></div>' +
-      '<button type="button" class="btn small gold settings-btn" data-act="settings" title="' + t('settings') + '" style="margin-left:4px;min-width:44px;padding:2px 8px;font-size:20px">⚙</button></div>';
+      '<button type="button" class="settings-gear" data-act="settings" title="' + t('settings') + '"><img src="assets/ui/set_gear.png" alt=""></button></div>';
   }
   function fmtT(ms) { if (!ms) return ''; const t = Math.ceil(ms / 1000), m = Math.floor(t / 60), x = t % 60; return m + ':' + String(x).padStart(2, '0'); }
   setInterval(() => {
@@ -616,7 +732,7 @@
     }
     const a = $('#en'); if (!a || !save) return; const e = MB.energy(save, Date.now()); a.textContent = e.val + '/' + (e.max || MB.ENERGY.max);
   }, 250);
-  function openModal(html) { modal.innerHTML = html; modal.classList.add('on'); SFX.play('ui_open', 0.65); }
+  function openModal(html) { modal.innerHTML = HT(html); modal.classList.add('on'); SFX.play('ui_open', 0.65); }
   function closeModal() { const wasOpen = modal && modal.classList.contains('on'); modal.classList.remove('on'); modal.innerHTML = ''; if (wasOpen) SFX.play('ui_back', 0.65); }
   let toastT = 0;
   function toast(text) {
@@ -626,31 +742,572 @@
     const isErr = /недостаточно|нет |нельзя|сначала|уже |ошибк|заблокирован|отклоняет|огранич|лимит|not enough|cannot|first|already|error|blocked|limit/.test(s);
     SFX.play(isErr ? 'ui_error' : 'ui_toast', 0.65);
   }
+  /* Полный словарь UI-фраз RU→EN + автоперевод тостов и подписей */
+    const PHRASE_EN = {
+      'Заходите каждый день с понедельника по субботу — и в воскресенье заберёте 20 изумрудов. Пропущенный день сгорает, в понедельник серия начинается заново.': 'Log in every day Mon–Sat to claim 20 emeralds on Sunday. A missed day breaks the streak; it resets on Monday.',
+      'Шкала активности и сундуки клана обновляются раз в неделю. Очки активности (и личный вклад) зарабатываются общими усилиями участников:': 'The activity bar and clan chests refresh weekly. Activity points (and personal contribution) are earned by members together:',
+      'Покупка разовая и действует навсегда, повторно купить эликсир нельзя. Саму энергию он не добавляет: шкала просто становится больше.': 'One-time permanent purchase; cannot buy again. It does not add energy — the bar simply becomes larger.',
+      'Дуэли 1 на 1: выберите одного героя. Каждую арену можно пройти только один раз. На 5-й — босс, на 10-й — финал.': '1v1 duels: pick one hero. Each arena can be cleared only once. Arena 5 is a boss, arena 10 is the finale.',
+      'Пока нет открытых кланов для вступления. Создайте свой или дождитесь, когда появятся кланы других игроков.': 'No open clans to join yet. Create your own or wait for other players’ clans.',
+      'Это прототип: покупки за рубли тестовые, деньги не списываются. В игре здесь откроется оплата площадки.': 'Prototype: ruble purchases are simulated and not charged. Platform billing will appear in the live build.',
+      'За бой с клановым боссом: +20 монет, за победу: +400 всем соклановцам. Ключи: 2 бесплатно каждый день.': 'Clan boss battle: +20 coins, victory: +400 to all members. Keys: 2 free every day.',
+      'за успешный бой с нанесением урона боссу начисляется +5 очков активности (и +5 к личному вкладу).': 'a successful fight that damages the boss grants +5 activity (+5 personal contribution).',
+      'Монеты уже начислены. Если закрыть окно, опыт можно будет забрать позже — награда не пропадёт.': 'Coins already granted. If you close this, XP can be claimed later — the reward will not be lost.',
+      'Нет ключей кланового босса — 2 новых дадут завтра, ещё можно купить в клановом магазине': 'No clan boss keys — 2 free tomorrow, or buy more in the clan shop',
+      'Одно очко за каждый уровень героя. Узел открывается, если все предыдущие в ветке взяты.': 'One point per hero level. A node unlocks when all previous nodes in the branch are taken.',
+      'Вам доступен золотой сундук за лучший урон прошлой недели — нажмите «Забрать награду».': 'Golden chest for last week’s top damage is ready — tap “Claim reward”.',
+      'Вы единственный участник клана — сначала примите игрока и передайте ему статус лидера': 'You are the only member — accept a player first and transfer leadership',
+      'Новая неделя: клановый босс обновлён. Вы лучший по урону — заберите золотой сундук!': 'New week: clan boss refreshed. You dealt the most damage — claim your golden chest!',
+      'Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ': 'Account power is the sum of all hero power; level is the sum of their levels. You are #',
+      'Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. ': 'Account power is the sum of all hero power; level is the sum of their levels. ',
+      'Логово боссов откроется после прохождения 1-й главы (победа над боссом).': 'Boss Lair unlocks after clearing chapter 1 (defeat the boss).',
+      'Открыто «Логово боссов»! Теперь можно сражаться с боссами повторно.': 'Boss Lair unlocked! You can now refight bosses.',
+      'Открыты «Кланы»! Вступайте в клан и сражайтесь с клановым боссом.': 'Clans unlocked! Join a clan and fight the clan boss.',
+      'Кланы откроются после прохождения 2-й главы (победа над боссом).': 'Clans unlock after clearing chapter 2 (defeat the boss).',
+      'Весь прогресс, герои и вещи будут удалены. Это нельзя отменить.': 'All progress, heroes and items will be deleted. This cannot be undone.',
+      'руды — +50 очков активности) и продвигает клан к новому уровню.': 'ore — +50 activity) and progresses the clan level.',
+      'Герб выбирается только при создании клана и больше не меняется': 'The emblem is chosen at clan creation and cannot be changed',
+      'У вас закончились ключи для боя с клановым боссом (осталось: ': 'You have no keys left for the clan boss (remaining: ',
+      'Недостаточно очков прокачки или достигнут максимум (20 ур.)': 'Not enough upgrade points or max level (20) reached',
+      'Тащите бойцов мышкой. Позиции запоминаются для этой локации': 'Drag fighters with the mouse. Positions are saved for this location',
+      'Для вступления в клан на площадке нужен вход через аккаунт': 'Sign in with a platform account to join a clan',
+      '(1 раз в неделю) — забрать вместе с наградой за победу.': '(once per week) — claim with the victory reward.',
+      'Вещи лежат в сумке на экране «Герои» и подходят только ': 'Items are in your bag on the Heroes screen and fit only ',
+      'Для создания клана на площадке нужен вход через аккаунт': 'Sign in with a platform account to create a clan',
+      'или дождаться бесплатного пополнения завтра (+2 ключа).': 'or wait for free keys tomorrow (+2).',
+      'Сброс в понедельник 00:00 · 1-е место — золотой сундук': 'Resets Monday 00:00 · 1st place — golden chest',
+      'Вещи лежат в сумке — наденьте их на экране «Герои».': 'Items are in your bag — equip them on the Heroes screen.',
+      '. В рейтинге только проверенные аккаунты площадки.': '. Only verified platform accounts appear in the ranking.',
+      'Колизей откроется после победы над боссом главы ': 'Coliseum unlocks after defeating the chapter ',
+      'Пройдите 10 уровней, чтобы открыть бой с боссом.': 'Clear 10 stages to unlock the boss fight.',
+      'а с ростом уровня расширяется (на 10 уровне — до': 'and grows with level (at level 10 — up to',
+      '(+2 бесплатно каждый день, ещё — в лавке клана)': '(+2 free every day, more in the clan shop)',
+      'Урон сохраняется в течение недели. За урон дают': 'Damage carries through the week. Damage grants',
+      '— нажмите на героя, и он станет вашим аватаром': '— tap a hero to set as your avatar',
+      'В отряде уже 3 героя — сначала уберите одного': 'Team already has 3 heroes — remove one first',
+      'Вы лучший по урону — заберите золотой сундук!': 'You dealt the most damage — claim your golden chest!',
+      'Введите никнейм — он будет виден в рейтинге.': 'Enter a nickname — it will appear on the ranking.',
+      'Менять режим приёма может только лидер клана': 'Only the Leader can change recruitment mode',
+      '✔ Куплено — облик переключается в меню героя': '✔ Owned — switch skin in the hero menu',
+      'Улучшать постройки клана может только Лидер': 'Only the Leader can upgrade clan buildings',
+      '(до 20 символов: буквы, пробел, «-» и «+»)': '(up to 20 characters: letters, space, “-” and “+”)',
+      'Герб клана нельзя изменить после создания': 'Clan emblem cannot be changed after creation',
+      'клановых монет. Выберите героя для опыта.': 'clan coins. Choose a hero for XP.',
+      'Менять описание клана может только Лидер': 'Only the Leader can edit the clan description',
+      'Отряд пал. Герои получают меньше опыта.': 'Your party fell. Heroes gain less XP.',
+      '— приносит опыт клану и очки активности': '— grants clan XP and activity points',
+      'Золотой сундук за лучший урон недели: ': 'Golden chest for weekly top damage: ',
+      'Имя выбирается один раз и не меняется.': 'The name is chosen once and cannot be changed.',
+      'Обновление в Пн 00:00 (+3 UTC) через: ': 'Resets Mon 00:00 (+3 UTC) in: ',
+      'руды даёт +10 очков активности (взнос ': 'ore gives +10 activity (donation of ',
+      'Вещь лежит в сумке на экране «Герои».': 'The item is in your bag on the Heroes screen.',
+      'Вы лидируете по урону на этой неделе.': 'You lead in damage this week.',
+      'Ключ кланового босса куплен! Ключей: ': 'Clan boss key purchased! Keys: ',
+      'Опыт героя: даётся за битвы (победа +': 'Hero XP: earned in battles (win +',
+      'Новая неделя: клановый босс обновлён': 'New week: clan boss refreshed',
+      'Посмотрите короткий ролик и получите': 'Watch a short video and get',
+      'Имя должно быть от 2 до 16 символов': 'Name must be 2–16 characters',
+      'Сначала пройдите предыдущий уровень': 'Clear the previous stage first',
+      'Попытки на этой неделе закончились': 'No attempts left this week',
+      'Босс откроется после 10-го уровня': 'Boss unlocks after stage 10',
+      'Доступно после прохождения уровня': 'Available after clearing the stage',
+      'Нет ключей — 2 новых дадут завтра': 'No keys — 2 free keys tomorrow',
+      'Нет предметов выбранной редкости.': 'No items of the selected rarity.',
+      'Сначала пройдите предыдущую арену': 'Clear the previous arena first',
+      'Выберите героя, который получит ': 'Choose a hero to receive ',
+      'Станет доступно через 5 сек. боя': 'Available after 5 sec of battle',
+      '↻ Поверните телефон для удобства': '↻ Rotate your phone for a better view',
+      'Как начисляются очки активности': 'How activity points work',
+      'роли (Лидер, Офицер, Участник)': 'roles (Leader, Officer, Member)',
+      'Максимум энергии вырастет на ': 'Energy cap will increase by ',
+      'Нет ключей — докупить в лавке': 'No keys — buy in the shop',
+      'Передать права лидера игроку ': 'Transfer leadership to ',
+      'Эту вещь может носить только ': 'Only this hero can equip: ',
+      'Ключ кланового босса куплен!': 'Clan boss key purchased!',
+      'Локальный профиль (гостевой)': 'Local profile (guest)',
+      'Скопировать для разработчика': 'Copy for developer',
+      'Недостаточно клановых монет': 'Not enough clan coins',
+      'Пожертвования руды в казну:': 'Ore donations to the treasury:',
+      'Расскажите о вашем клане...': 'Tell about your clan...',
+      'Сумка общая на всех героев.': 'The bag is shared by all heroes.',
+      'наибольшим уроном за неделю': 'the highest weekly damage',
+      'Восстановление: +1 каждые ': 'Regen: +1 every ',
+      'Атаки на кланового босса:': 'Clan boss attacks:',
+      'Заблокировано от разборки': 'Locked from scrapping',
+      'Лимиты рекламы обновлены!': 'Ad limits refreshed!',
+      'Постройка клана улучшена!': 'Clan building upgraded!',
+      'При создании клан вмещает': 'A new clan holds',
+      'В бой с боссом! (1 ключ)': 'Fight the boss! (1 key)',
+      'Надето — сначала снимите': 'Equipped — unequip first',
+      'Обновление каждый день в': 'Refreshes every day at',
+      'Описание клана обновлено': 'Clan description updated',
+      'Попыток на этой неделе: ': 'Attempts this week: ',
+      'Вместимость: 10 игроков': 'Capacity: 10 players',
+      'Суммарный урон по боссу': 'Total damage to boss',
+      'прокачка построек клана': 'clan building upgrades',
+      'В клане вас ждёт общий': 'In a clan you get a shared',
+      'Вернулся обычный облик': 'Default skin restored',
+      'Недостаточно изумрудов': 'Not enough emeralds',
+      'Эта арена уже пройдена': 'This arena is already cleared',
+      'нажмите кнопку ещё раз': 'tap the button again',
+      'Большая банка энергии': 'Large Energy Flask',
+      'Золотой облик включён': 'Golden skin enabled',
+      'Очки прокачки клана: ': 'Clan upgrade points: ',
+      'Перейти в Лавку клана': 'Go to Clan Shop',
+      'Пожертвование в казну': 'Donate to the treasury',
+      'Сброс лимитов рекламы': 'Ad limits reset',
+      'Соклановцы принесли +': 'Clan members brought +',
+      'Средняя банка энергии': 'Medium Energy Flask',
+      'для рангов снаряжения': 'for gear ranks',
+      'награды за активность': 'activity rewards',
+      'Вы вступили в клан «': 'You joined clan «',
+      'Награда уже получена': 'Reward already claimed',
+      'Недостаточно энергии': 'Not enough energy',
+      'Вы можете перейти в': 'You can go to the',
+      'Малая банка энергии': 'Small Energy Flask',
+      'нажмите на союзника': 'tap an ally',
+      'понедельник в 00:00': 'Monday at 00:00',
+      'Вы станете лидером': 'You will be the Leader',
+      'Добро пожаловать, ': 'Welcome, ',
+      'Заявки отклоняются': 'Applications closed',
+      'Исключить из клана': 'Kick from clan',
+      'Максимум энергии: ': 'Energy cap: ',
+      'Назначить Офицером': 'Promote to Officer',
+      'Не состоит в клане': 'Not in a clan',
+      'Победа над боссом:': 'Boss victory:',
+      'Сбросить прогресс?': 'Reset progress?',
+      'Снять роль Офицера': 'Remove Officer role',
+      'Это имя недоступно': 'This name is not available',
+      'и докупить ключ за': 'and buy a key for',
+      'снята роль офицера': 'officer role removed',
+      ' и покинуть клан?': ' and leave the clan?',
+      ' — клан вырос до ': ' — clan reached level ',
+      'Language: English': 'Language: English',
+      'Деревянный сундук': 'Wooden Chest',
+      'Клановые монеты: ': 'Clan coins: ',
+      'Максимум (20 ур.)': 'Max (lv. 20)',
+      'Награды за победу': 'Victory rewards',
+      'Недостаточно искр': 'Not enough sparks',
+      'Недостаточно руды': 'Not enough ore',
+      'Осталось сегодня:': 'Left today:',
+      'Только для Лидера': 'Leader only',
+      'Улучшить (1 очко)': 'Upgrade (1 point)',
+      'Фиолетовый сундук': 'Purple Chest',
+      'исключён из клана': 'kicked from the clan',
+      'назначен офицером': 'promoted to officer',
+      'Аккаунт площадки': 'Platform account',
+      'Бонус к Искрам: ': 'Sparks bonus: ',
+      'Вы покинули клан': 'You left the clan',
+      'Колизей · арена ': 'Coliseum · arena ',
+      'Музыка выключена': 'Music disabled',
+      'Награда за босса': 'Boss reward',
+      'Нет ключей босса': 'No boss keys',
+      'Одобрение заявки': 'Application required',
+      'Подготовка к бою': 'Battle prep',
+      'Редактор позиций': 'Position editor',
+      'Реклама за Искры': 'Ad for Sparks',
+      'Сделать аватаром': 'Set as avatar',
+      'Сохранить иконку': 'Save icon',
+      'всем соклановцам': 'to all clan members',
+      'нажмите на врага': 'tap an enemy',
+      '+1 бой · есть: ': '+1 fight · owned: ',
+      'Забрать награду': 'Claim reward',
+      'Заявка в клан «': 'Application to clan «',
+      'Звуки выключены': 'Sounds disabled',
+      'Клановая монета': 'Clan Coin',
+      'Клановый босс: ': 'Clan boss: ',
+      'Музыка включена': 'Music enabled',
+      'Набор изумрудов': 'Emerald pack',
+      'Награда за вход': 'Daily reward',
+      'Награды и вклад': 'Rewards & contribution',
+      'Покинуть клан «': 'Leave clan «',
+      'Сдаться и выйти': 'Surrender and leave',
+      'Уровень клана: ': 'Clan level: ',
+      'Эликсир энергии': 'Energy Elixir',
+      'очки активности': 'activity points',
+      ' принят в клан': ' accepted into the clan',
+      'Босс повержен!': 'Boss defeated!',
+      'Героев открыто': 'Heroes unlocked',
+      'До обновления:': 'Until reset:',
+      'Заявка игрока ': 'Application from ',
+      'Звуки включены': 'Sounds enabled',
+      'Зелёный сундук': 'Green Chest',
+      'Золотой сундук': 'Golden Chest',
+      'Как вас зовут?': 'What is your name?',
+      'Клан вырос до ': 'Clan reached level ',
+      'Лечение за ход': 'Heal per turn',
+      'Название клана': 'Clan name',
+      'Описание клана': 'Clan description',
+      'Открыта арена ': 'Arena unlocked: ',
+      'Открыта глава ': 'Chapter unlocked: ',
+      'Прокачка клана': 'Clan upgrades',
+      'Разблокировать': 'Unlock',
+      'Ранг повышен: ': 'Rank up: ',
+      'Свободный вход': 'Open join',
+      'Уровень игрока': 'Player level',
+      'Урон за неделю': 'Weekly damage',
+      'Урон по боссам': 'Boss damage',
+      'Характеристики': 'Stats',
+      'золотой сундук': 'a golden chest',
+      'клановых монет': 'clan coins',
+      'присоединяется': 'joins',
+      ', поражение +': ', loss +',
+      'Банки энергии': 'Energy flasks',
+      'Заблокировать': 'Lock',
+      'Закрытый клан': 'Closed clan',
+      'Заявка подана': 'Application sent',
+      'Клановый босс': 'Clan boss',
+      'Логово боссов': 'Boss Lair',
+      'Новый герой: ': 'New hero: ',
+      'Повысить ранг': 'Rank up',
+      'Подать заявку': 'Apply',
+      'Покинуть клан': 'Leave clan',
+      'Сила отряда: ': 'Team power: ',
+      'Скорость хода': 'Turn speed',
+      'Сменить отряд': 'Change team',
+      'Снять офицера': 'Demote Officer',
+      'Тестовый клан': 'Test clan',
+      'Топ-20 кланов': 'Top 20 clans',
+      'Язык: Русский': 'Language: Russian',
+      'клановый босс': 'clan boss',
+      'особый амулет': 'special amulet',
+      'пак за монеты': 'pack for coins',
+      '-м месте из ': ' of ',
+      '» отправлена': '» sent',
+      'Иконка клана': 'Clan icon',
+      'Сброс босса:': 'Boss reset:',
+      'Сила бойца: ': 'Fighter power: ',
+      'Синий сундук': 'Blue Chest',
+      'Создать клан': 'Create clan',
+      'Урон боссу: ': 'Damage to boss: ',
+      'Участников: ': 'Members: ',
+      ' (Ваш клан)': ' (Your clan)',
+      ' · уровень ': ' · stage ',
+      ' активности': ' activity',
+      'Боевой клич': 'War Cry',
+      'Босс главы ': 'Chapter boss ',
+      'Босс уцелел': 'Boss survived',
+      'Ваш вклад: ': 'Your contribution: ',
+      'Ваш никнейм': 'Your nickname',
+      'Ваша роль: ': 'Your role: ',
+      'Доп. атака!': 'Extra attack!',
+      'Каждый бой:': 'Each battle:',
+      'Лавка Клана': 'Clan Shop',
+      'Лавка клана': 'Clan shop',
+      'Лавку клана': 'Clan Shop',
+      'Легендарная': 'Legendary',
+      'Лучшая цена': 'Best value',
+      'Новый герой': 'New hero',
+      'Разобрано: ': 'Scrapped: ',
+      'Сложность: ': 'Difficulty: ',
+      ' · Искры +': ' · Sparks +',
+      ' · элитный': ' · elite',
+      ' опыта и +': ' XP and +',
+      ' отклонена': ' rejected',
+      'Арена Лича': 'Lich Arena',
+      'Выделить (': 'Select (',
+      'До сброса:': 'Until reset:',
+      'Доп. атака': 'Extra attack',
+      'Заморожен!': 'Frozen!',
+      'Как играть': 'How to play',
+      'Ключ босса': 'Boss key',
+      'Крит. урон': 'Crit damage',
+      'Мастерство': 'Mastery',
+      'Надеть на ': 'Equip on ',
+      'Подготовка': 'Prepare',
+      'Получено ✔': 'Claimed ✔',
+      'Получено: ': 'Received: ',
+      'Пробивание': 'Pierce',
+      'Противники': 'Enemies',
+      'Реклама за': 'Ad for',
+      'Снаряжение': 'Equipment',
+      'активности': 'activity',
+      'доп. атака': 'extra attack',
+      'пробивание': 'pierce',
+      '✔ В отряде': '✔ In roster',
+      ' · глава ': ' · chapter ',
+      ' получил ': ' gained ',
+      '» создан!': '» created!',
+      'Без имени': 'No name',
+      'Бесплатно': 'Free',
+      'Биография': 'Biography',
+      'В Колизей': 'To Coliseum',
+      'Ваш отряд': 'Your team',
+      'Загрузка…': 'Loading…',
+      'Заморозка': 'Freeze',
+      'Изумрудов': 'Emeralds',
+      'Куплено: ': 'Purchased: ',
+      'Логово · ': 'Lair · ',
+      'Мои герои': 'My heroes',
+      'Награда: ': 'Reward: ',
+      'Настройки': 'Settings',
+      'Необычная': 'Uncommon',
+      'Нет очков': 'No points',
+      'Оглушение': 'Stun',
+      'По вкладу': 'By contribution',
+      'По уровню': 'By level',
+      'Повторить': 'Retry',
+      'Популярно': 'Popular',
+      'Поражение': 'Defeat',
+      'Пройдено ': 'Cleared ',
+      'Проклятие': 'Curse',
+      'Разобрать': 'Scrap',
+      'Результат': 'Result',
+      'С игрока ': 'From player ',
+      'Свой клан': 'Your clan',
+      'Сохранить': 'Save',
+      'Спецатаки': 'Specials',
+      'Стойкость': 'Fortitude',
+      'Эпическая': 'Epic',
+      'оглушение': 'stun',
+      ' · мест ': ' · slots ',
+      ' достиг ': ' reached level ',
+      ' уровня!': '!',
+      '1 вещь (': '1 item (',
+      'В логово': 'To Lair',
+      'Вступить': 'Join',
+      'Загрузка': 'Loading',
+      'Здоровье': 'Health',
+      'Изумруды': 'Emeralds',
+      'Кампания': 'Campaign',
+      'Ключей: ': 'Keys: ',
+      'Надето: ': 'Equipped: ',
+      'Оглушён!': 'Stunned!',
+      'Перчатки': 'Gloves',
+      'Прокачка': 'Upgrades',
+      'Сбросить': 'Reset',
+      'Смотреть': 'Watch',
+      'Создать ': 'Create ',
+      'Улучшить': 'Upgrade',
+      'Уровень ': 'Level ',
+      'Участник': 'Member',
+      'получает': 'gets',
+      ' · ур. ': ' · lv. ',
+      'Автобой': 'Auto-battle',
+      'Ещё раз': 'Again',
+      'Забрать': 'Claim',
+      'Закрыто': 'Locked',
+      'Закрыть': 'Close',
+      'Игрок с': 'The player with',
+      'Искры +': 'Sparks +',
+      'История': 'Story',
+      'К карте': 'To map',
+      'Колизей': 'Coliseum',
+      'Магазин': 'Shop',
+      'Награды': 'Rewards',
+      'Обычная': 'Common',
+      'Отлично': 'Great',
+      'По силе': 'By power',
+      'Понятно': 'Got it',
+      'Приём: ': 'Recruitment: ',
+      'Профиль': 'Profile',
+      'Рейтинг': 'Ranking',
+      'Реклама': 'Ads',
+      'Русский': 'Russian',
+      'Сдаться': 'Surrender',
+      'Сложная': 'Hard',
+      'Создать': 'Create',
+      'Сундуки': 'Chests',
+      'Уворот!': 'Dodge!',
+      'Уровень': 'Level',
+      'Энергия': 'Energy',
+      'игроков': 'players',
+      'энергии': 'energy',
+      'энергия': 'energy',
+      '← Назад': '← Back',
+      '0м 00с': '0m 00s',
+      'Амулет': 'Amulet',
+      'Болото': 'Swamp',
+      'В бой!': 'Fight!',
+      'В клан': 'To clan',
+      'Вы на ': 'You are #',
+      'Глава ': 'Chapter ',
+      'Готово': 'Done',
+      'Защита': 'Defense',
+      'Клан «': 'Clan «',
+      'Кошмар': 'Nightmare',
+      'Купить': 'Buy',
+      'Логово': 'Lair',
+      'Музыка': 'Music',
+      'Оружие': 'Weapon',
+      'Отмена': 'Cancel',
+      'Офицер': 'Officer',
+      'Победа': 'Victory',
+      'Поляна': 'Meadow',
+      'Правая': 'Right',
+      'Ранг: ': 'Rank: ',
+      'Редкая': 'Rare',
+      'Сапоги': 'Boots',
+      'Стойка': 'Stance',
+      'Тестер': 'Tester',
+      'Уворот': 'Dodge',
+      'Ярость': 'Enrage',
+      'вещь: ': 'item: ',
+      'взнос ': 'a donation of ',
+      'каждый': 'every',
+      'мест: ': 'slots: ',
+      'Атака': 'Attack',
+      'Броня': 'Armor',
+      'Герои': 'Heroes',
+      'Звуки': 'Sounds',
+      'Игрок': 'Player',
+      'Искры': 'Sparks',
+      'Кланы': 'Clans',
+      'Левая': 'Left',
+      'Лидер': 'Leader',
+      'Назад': 'Back',
+      'Отряд': 'Team',
+      'Снять': 'Unequip',
+      'Шахта': 'Mine',
+      'Щит +': 'Shield +',
+      'мест ': 'slots ',
+      'монет': 'coins',
+      'опыта': 'XP',
+      ' XP.': ' XP.',
+      ' мин': ' min',
+      'АВТО': 'AUTO',
+      'Блок': 'Block',
+      'Босс': 'Boss',
+      'Выкл': 'Off',
+      'Искр': 'Sparks',
+      'Клан': 'Clan',
+      'Крит': 'Crit',
+      'Руда': 'Ore',
+      'Руды': 'Ore',
+      'Сила': 'Power',
+      'Слой': 'Layer',
+      'Ур. ': 'Lv. ',
+      'Ход:': 'Turn:',
+      'Шлем': 'Helmet',
+      'Язык': 'Language',
+      'блок': 'block',
+      'есть': 'owned',
+      'опыт': 'XP',
+      'Вкл': 'On',
+      'Все': 'All',
+      'Нет': 'No',
+      'Пик': 'Peak',
+      'ур.': 'lv.',
+      'щит': 'shield',
+      '»?': '»?',
+      'Вы': 'You',
+      'Да': 'Yes',
+      'Яд': 'Poison',
+      'из': 'of',
+      'и': 'and',
+  };
+
+  function L(text) {
+    if (I18N.lang !== 'en' || text == null) return text;
+    const s = String(text);
+    if (!s) return s;
+    if (PHRASE_EN[s]) return PHRASE_EN[s];
+    return localizeToast(s);
+  }
+
+  function chestName(key) {
+    if (I18N.lang === 'en' && CHEST_EN[key]) return CHEST_EN[key];
+    return (MB.CHESTS[key] && MB.CHESTS[key].name) || key;
+  }
+  function potionName(key) {
+    if (I18N.lang === 'en' && POTION_EN[key]) return POTION_EN[key];
+    return (MB.POTIONS[key] && MB.POTIONS[key].name) || key;
+  }
+  function statusName(key) {
+    if (I18N.lang === 'en' && STATUS_EN[key]) return STATUS_EN[key];
+    return (MB.STATUS[key] && MB.STATUS[key].name) || key;
+  }
+  function slotName(sl) {
+    if (I18N.lang === 'en' && SLOT_EN[sl]) return SLOT_EN[sl];
+    return MB.SLOT_NAME[sl] || sl;
+  }
+  function elixirName() {
+    return T('Эликсир энергии', 'Energy Elixir');
+  }
+
+  let _phraseKeysCache = null;
+  function phraseKeysSorted() {
+    if (!_phraseKeysCache || _phraseKeysCache.length !== Object.keys(PHRASE_EN).length) {
+      _phraseKeysCache = Object.keys(PHRASE_EN).sort((a, b) => b.length - a.length);
+    }
+    return _phraseKeysCache;
+  }
+  /** Переводит HTML/текст целиком по словарю (для экранов с жёстко прошитым русским). */
+  function HT(html) {
+    if (I18N.lang !== 'en' || html == null) return html;
+    let s = String(html);
+    if (!s || !/[А-Яа-яЁё]/.test(s)) return s;
+    const keys = phraseKeysSorted();
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      // Короткие/корневые ключи («опыт» внутри «попыток») ломают HTML
+      if (k.length < 8) continue;
+      if (s.indexOf(k) >= 0) s = s.split(k).join(PHRASE_EN[k]);
+    }
+    return s;
+  }
+  function applyUILang() {
+    if (I18N.lang !== 'en' || !ui) return;
+    try { ui.innerHTML = HT(ui.innerHTML); } catch (e) { /* */ }
+  }
+
   function localizeToast(text) {
     if (I18N.lang !== 'en' || !text) return text;
-    const map = {
-      'Музыка выключена': 'Music disabled', 'Музыка включена': 'Music enabled',
-      'Звуки выключены': 'Sounds disabled', 'Звуки включены': 'Sounds enabled',
-      'Сначала пройдите предыдущий уровень': 'Clear the previous stage first',
-      'Доступно после прохождения уровня': 'Available after clearing the stage',
-      'Недостаточно энергии': 'Not enough energy',
-      'В отряде уже 3 героя — сначала уберите одного': 'Team already has 3 heroes — remove one first',
-      'Босс откроется после 10-го уровня': 'Boss unlocks after stage 10',
-      'Имя должно быть от 2 до 16 символов': 'Name must be 2–16 characters'
-    };
-    if (map[text]) return map[text];
-    // pattern: "X достиг N уровня!"
-    let m = text.match(/^(.+) достиг (\d+) уровня!$/);
+    let s = String(text);
+    if (PHRASE_EN[s]) return PHRASE_EN[s];
+    // longest-key substring replace for composite messages
+    const keys = Object.keys(PHRASE_EN).sort((a, b) => b.length - a.length);
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      if (k.length >= 4 && s.indexOf(k) >= 0) s = s.split(k).join(PHRASE_EN[k]);
+    }
+    let m = s.match(/^(.+) reached level (\d+)!$/);
+    if (m) return s;
+    m = s.match(/^(.+) достиг (\d+) уровня!$/);
     if (m) return m[1] + ' reached level ' + m[2] + '!';
-    m = text.match(/^Новый герой: (.+)!$/);
+    m = s.match(/^Новый герой: (.+)!$/);
     if (m) return 'New hero: ' + m[1] + '!';
-    m = text.match(/^\+(\d+) энергии$/);
+    m = s.match(/^New hero: (.+)!$/);
+    if (m) return s;
+    m = s.match(/^\+(\d+) энергии$/);
     if (m) return '+' + m[1] + ' energy';
-    m = text.match(/^\+(\d+) Изумрудов$/);
+    m = s.match(/^\+(\d+) energy$/);
+    if (m) return s;
+    m = s.match(/^\+(\d+) Изумрудов$/);
     if (m) return '+' + m[1] + ' Emeralds';
-    m = text.match(/^(.+) в вашем отряде!$/);
+    m = s.match(/^\+(\d+) Искр$/);
+    if (m) return '+' + m[1] + ' Sparks';
+    m = s.match(/^\+(\d+) Руды$/);
+    if (m) return '+' + m[1] + ' Ore';
+    m = s.match(/^\+(\d+) монет/);
+    if (m) return s.replace('монет', 'coins').replace('клановых ', 'clan ');
+    m = s.match(/^(.+) в вашем отряде!$/);
     if (m) return m[1] + ' joined your team!';
-    return text;
+    m = s.match(/^Добро пожаловать, (.+)!$/);
+    if (m) return 'Welcome, ' + m[1] + '!';
+    m = s.match(/^Welcome, (.+)!$/);
+    if (m) return s;
+    m = s.match(/^Вы вступили в клан «(.+)»$/);
+    if (m) return 'You joined clan «' + m[1] + '»';
+    m = s.match(/^Клан «(.+)» создан!$/);
+    if (m) return 'Clan «' + m[1] + '» created!';
+    m = s.match(/^Заявка в клан «(.+)» отправлена$/);
+    if (m) return 'Application to clan «' + m[1] + '» sent';
+    m = s.match(/^Ключ кланового босса куплен! Ключей: (\d+)$/);
+    if (m) return 'Clan boss key purchased! Keys: ' + m[1];
+    m = s.match(/^Максимум энергии: (\d+)$/);
+    if (m) return 'Energy cap: ' + m[1];
+    m = s.match(/^Куплено: (.+)$/);
+    if (m) return 'Purchased: ' + m[1];
+    m = s.match(/^Награда: (.+)$/);
+    if (m) return 'Reward: ' + m[1];
+    m = s.match(/^(.+) получил (\d+) XP/);
+    if (m) return m[1] + ' gained ' + m[2] + ' XP' + s.slice(m[0].length);
+    m = s.match(/^Клан вырос до (\d+) уровня!/);
+    if (m) return 'Clan reached level ' + m[1] + '!';
+    m = s.match(/^Золотой сундук за лучший урон недели: (.+)!$/);
+    if (m) return 'Golden chest for weekly top damage: ' + m[1] + '!';
+    return s;
   }
   // фон и рамка слота под редкость вещи (легендарная — золотая пластина с сиянием)
   const RAR_BG = ['rgba(70, 72, 80, .55)', 'rgba(46, 104, 52, .5)', 'rgba(34, 84, 156, .5)', 'rgba(102, 48, 158, .5)', 'linear-gradient(#ffdf8e, #d9a32a 60%, #b87f14)'];
@@ -683,7 +1340,8 @@
       '<button class="btn gold pale hb" data-act="shop" title="' + t('shop') + '">' + mImg('mnu_bag.png') + (totalAdsLeft() ? '<span class="dot">' + totalAdsLeft() + '</span>' : '') + '</button>' +
       '<button class="btn copper hb" data-act="rating" title="' + t('rating') + '">' + mImg('mnu_trophy.png') + '</button>' +
       '<button class="btn blue hb" data-act="clans" title="' + t('clans') + '">' + mImg('mnu_shield_herald.png') + (save.bosses[2] ? (save.clan && (MB.clanKeys(save) > 0 || MB.clanHasRewards(save)) ? '<span class="dot">!</span>' : '') : '<span class="lk">' + ic('lock') + '</span>') + '</button>' +
-      '</div><div class="hubfoot"><span>' + t('save_browser') + '</span></div>';
+      '</div>';
+    applyUILang();
     if (!save.name) showNamePrompt(); else if (!save.seenIntro) { save.seenIntro = true; persist(); showHelp(); } else if (d.canClaim && !showHub.shown) { showHub.shown = true; showDaily(); }
   }
   function refreshHubAvatar() {
@@ -709,9 +1367,14 @@
     const av = save.avatar && save.unlocked.indexOf(save.avatar) >= 0 ? save.avatar : save.unlocked[0];
     const heroes = save.unlocked.map(k =>
       '<div class="h" data-act="setavatar" data-k="' + k + '" title="' + t('make_avatar') + '">' + pt(k, k === av ? 'sel' : '', '<b>' + save.heroes[k].lvl + '</b>') + '<br>' + heroLoc(k, 'name') + '</div>').join('');
+    const verified = MB.net && MB.net.isVerified ? MB.net.isVerified(save) : !!save.authVerified;
+    const authLabel = verified
+      ? '<span style="color:#3f9a24">✓ Аккаунт площадки</span>'
+      : '<span class="note">Локальный профиль (гостевой)</span>';
     openModal('<div class="panel win" style="position:relative;width:560px"><button class="x" data-act="close">✕</button><h2 class="out">' + t('profile') + '</h2>' +
       '<div class="paper pinfo" style="display:flex;gap:16px;align-items:center">' + pt(av, 'sel', '<b>' + lvl + '</b>', 92) +
       '<div style="text-align:left;font-weight:700"><div style="font-size:24px">' + (save.name || t('no_name')) + '</div>' +
+      '<div style="font-size:13px;margin:2px 0 6px">' + authLabel + '</div>' +
       '<div>' + t('player_level') + ': ' + lvl + '</div><div>' + ic('power') + ' ' + t('power') + ': ' + pw + '</div>' +
       '<div>' + t('heroes_unlocked') + ': ' + save.unlocked.length + ' / ' + MB.HERO_ORDER.length + '</div>' +
       (save.clan ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px">' + ART.clanEmblem(save.clan.emblem, 26) + '<span>' + t('clan') + ': <b>' + save.clan.name + '</b> (' + t('lvl_short') + ' ' + save.clan.lvl + ')</span></div>' : '<div class="note">' + t('no_clan') + '</div>') +
@@ -720,8 +1383,8 @@
   }
 
   function showSettings() {
-    const mVol = Math.round((save.musicVol != null ? save.musicVol : 0.45) * 100);
-    const sVol = Math.round((save.sfxVol != null ? save.sfxVol : 1) * 100);
+    const mVol = Math.round((save.musicVol != null ? save.musicVol : 0.3) * 100);
+    const sVol = Math.round((save.sfxVol != null ? save.sfxVol : 0.2) * 100);
     const musicOn = !save.musicMuted && mVol > 0;
     const sfxOn = !save.sfxMuted && sVol > 0;
     const lang = (save.lang === 'en') ? 'en' : 'ru';
@@ -731,19 +1394,19 @@
         '<h2 class="out">' + t('settings_title') + '</h2>' +
         '<div class="paper settings-body">' +
           '<div class="settings-row">' +
-            '<div class="settings-label">🎵 ' + t('music') + '</div>' +
+            '<div class="settings-label"><img class="set-ic" src="assets/ui/set_music.png" alt=""> ' + t('music') + '</div>' +
             '<button type="button" class="btn small settings-toggle ' + (musicOn ? 'gold' : '') + '" data-act="togglemusic">' + (musicOn ? t('on') : t('off')) + '</button>' +
             '<input type="range" class="settings-slider" id="vol-music" min="0" max="100" value="' + mVol + '">' +
             '<span class="settings-val" id="vol-music-val">' + mVol + '%</span>' +
           '</div>' +
           '<div class="settings-row">' +
-            '<div class="settings-label">🔊 ' + t('sfx') + '</div>' +
+            '<div class="settings-label"><img class="set-ic" src="assets/ui/set_sfx.png" alt=""> ' + t('sfx') + '</div>' +
             '<button type="button" class="btn small settings-toggle ' + (sfxOn ? 'gold' : '') + '" data-act="togglesfx">' + (sfxOn ? t('on') : t('off')) + '</button>' +
             '<input type="range" class="settings-slider" id="vol-sfx" min="0" max="100" value="' + sVol + '">' +
             '<span class="settings-val" id="vol-sfx-val">' + sVol + '%</span>' +
           '</div>' +
           '<div class="settings-row settings-lang-row">' +
-            '<div class="settings-label">🌐 ' + t('language') + '</div>' +
+            '<div class="settings-label"><img class="set-ic" src="assets/ui/set_lang.png" alt=""> ' + t('language') + '</div>' +
             '<div class="settings-lang">' +
               '<button type="button" class="btn small ' + (lang === 'ru' ? 'gold' : '') + '" data-act="setlang" data-l="ru">' + t('lang_ru') + '</button>' +
               '<button type="button" class="btn small ' + (lang === 'en' ? 'gold' : '') + '" data-act="setlang" data-l="en">' + t('lang_en') + '</button>' +
@@ -815,6 +1478,7 @@
       '<button class="btn small" data-act="fgscale" data-k="plus">+</button>' +
       '<button class="btn small" data-act="fgreset">Сброс</button>' +
       '<button class="btn small green" data-act="fgdone">Готово</button></div>';
+    applyUILang();
   }
 
   function showPtEditor() {
@@ -854,7 +1518,8 @@
     }, { passive: false });
   }
   function ensureAdsDay() {
-    const t = MB.utc3DayKey(now());
+    // Сутки рекламы: с 03:00 UTC до 03:00 UTC следующего дня
+    const t = MB.adsDayKey ? MB.adsDayKey(now()) : MB.utc3DayKey(now());
     if (!save.ads || save.ads.date !== t) {
       save.ads = { date: t, n: 0, potN: 0 };
     } else if (save.ads.potN == null) {
@@ -903,6 +1568,7 @@
       '<div class="camphead"><h2 class="out">Глава ' + campCh + '. ' + C.name + '</h2><p class="out">Пройдите 10 уровней, чтобы открыть бой с боссом.</p></div>' + nodes +
       '<button class="bossb ' + bst + '" data-act="boss"><span class="bport">' + pt(C.boss, '', '', 90) + '</span><span class="bframe"></span>' +
       '<span class="btxt"><b class="out">Босс: ' + B.name + ' · ур. ' + MB.bossLevel(campCh) + '</b><i>' + (bst === 'locked' ? 'Откроется после 10-го уровня' : B.mechText) + '</i></span></button>';
+    applyUILang();
   }
 
   /* ---------- Подготовка к бою ---------- */
@@ -1039,8 +1705,9 @@
     const autoDis = BV.cleared ? '' : ' disabled title="' + t('after_clear') + '"';
     const resDis = (BV.cleared && BV.resultReady) ? '' : ' disabled title="' + (BV.cleared ? T('Станет доступно через 5 сек. боя', 'Available after 5 sec of battle') : t('after_clear')) + '"';
     ui.innerHTML = '<div class="bhud"><div class="bleft"><button class="btn small red" data-act="flee">' + t('flee') + '</button><b class="out">' + title + '</b></div>' +
-      '<div class="queue" id="queue"></div><div class="bright"><button class="btn small gold settings-btn" data-act="settings" title="' + t('settings') + '" style="min-width:44px;padding:2px 8px;font-size:20px">⚙</button><button class="btn small tog ' + (BV.auto ? 'on' : '') + '" data-act="auto"' + autoDis + '>' + T('АВТО', 'AUTO') + '</button><button class="btn small tog ' + (clock.speed > 1 ? 'on' : '') + '" data-act="speed">×2</button><button class="btn small gold" id="btn-result" data-act="skipresult"' + resDis + '>' + T('Результат', 'Result') + '</button></div>' +
+      '<div class="queue" id="queue"></div><div class="bright"><button class="settings-gear" data-act="settings" title="' + t('settings') + '"><img src="assets/ui/set_gear.png" alt=""></button><button class="btn small tog ' + (BV.auto ? 'on' : '') + '" data-act="auto"' + autoDis + '>' + T('АВТО', 'AUTO') + '</button><button class="btn small tog ' + (clock.speed > 1 ? 'on' : '') + '" data-act="speed">×2</button><button class="btn small gold" id="btn-result" data-act="skipresult"' + resDis + '>' + T('Результат', 'Result') + '</button></div>' +
       '<div class="hint" id="hint" style="display:none"></div><div class="actions" id="actions"></div></div>';
+    applyUILang();
   }
   function renderQueue(cur) {
     const q = $('#queue'); if (!q || !BV) return;
@@ -1141,7 +1808,7 @@
             burst(d.x, d.y - d.h / 2, r.crit ? '#ffcf3a' : (PROJ_COLOR[sk.proj] || FX_COLOR[sk.fx] || '#ffffff'), r.crit ? 16 : 9, big);
           else burst(d.x, d.y - d.h / 2, r.crit ? '#ffcf3a' : (PROJ_COLOR[sk.proj] || FX_COLOR[sk.fx] || '#ffffff'), r.crit ? 8 : 4, false);
           d.shakeT = clock.t; if (r.crit || sk.big) bv.shake = clock.t;
-          if (r.status) { floatText(d, MB.STATUS[r.status].name, MB.STATUS[r.status].color, 20, 30); statusFx(d, r.status); }
+          if (r.status) { floatText(d, statusName(r.status), MB.STATUS[r.status].color, 20, 30); statusFx(d, r.status); }
           if (r.steal) { const s = bv.units[r.steal.id]; applySnap(s, r.steal.snap); floatText(s, '+' + r.steal.amt, '#8dff8a', 22); }
         }
         const wasAlive = d.alive; applySnap(d, r.snap);
@@ -1158,7 +1825,7 @@
         burst(d.x, d.y - d.h / 2, col, shown ? 4 : 10);
         if (r.kind === 'heal') floatText(d, '+' + r.amt, '#8dff8a', 28);
         else if (r.kind === 'shield') floatText(d, 'Щит +' + r.amt, '#7fd6ff', 22);
-        else if (r.status) floatText(d, MB.STATUS[r.status].name, MB.STATUS[r.status].color, 22);
+        else if (r.status) floatText(d, statusName(r.status), MB.STATUS[r.status].color, 22);
         else floatText(d, 'Не подействовало', '#cccccc', 18);
       }
     });
@@ -1417,6 +2084,7 @@
       save.team.slice(0, 3).map(tk => '<span data-act="herotab" data-k="' + tk + '" style="cursor:pointer">' + pt(tk, '', '<b>' + save.heroes[tk].lvl + '</b>', 54) + '</span>').join('') + '</div></div></div>' +
       '<div class="panel invR"><div class="filters">' + filt + '</div><div class="bag">' + (items.length ? items.map(i => itemCell(i)).join('') : '<div class="bagempty">Здесь появятся вещи из сундуков.<br>Сундук выпадает после каждой победы.</div>') + '</div>' +
       '<div class="row" style="display:flex;justify-content:space-between;align-items:center"><span class="note">Вещей: ' + save.bag.length + '. Сумка общая на всех героев.</span><button class="btn small" data-act="openscrap" ' + (save.bag.length ? '' : 'disabled') + '>Разобрать</button></div></div></div>';
+    applyUILang();
   }
   function spentOre(it) { let s = 0; for (let i = 1; i <= (it.rank || 0); i++) s += MB.rankCost(i, it); return s; }
   // Окно выбора активного отряда (из меню героев)
@@ -1518,11 +2186,22 @@
   }
 
   function showBio(k) {
-    const D = MB.HEROES[k], base = Object.keys(D.base)[0], names = { stun: 'оглушение', extra: 'доп. атака', block: 'блок', ctrl: 'стойкость к контролю', pierce: 'пробивание' };
+    const D = MB.HEROES[k], base = Object.keys(D.base)[0];
+    const talentNames = {
+      stun: T('оглушение', 'stun'),
+      extra: T('доп. атака', 'extra attack'),
+      block: T('блок', 'block'),
+      ctrl: T('стойкость к контролю', 'crowd-control resist'),
+      pierce: T('пробивание', 'pierce')
+    };
+    const full = heroLoc(k, 'full');
+    const title = heroLoc(k, 'bioTitle');
+    const role = heroLoc(k, 'role');
+    const paragraphs = heroBio(k);
     openModal('<div class="panel win" style="position:relative;width:880px"><button class="x" data-act="close">✕</button><div class="paper biobox"><img class="bio-' + k + '" src="' + ART.url(k, 'idle') + '" alt="">' +
-      '<div><h2 style="text-align:left;margin:0">' + D.full + '</h2><div class="biosub">' + D.bioTitle + ' · ' + D.role + '</div>' +
-      D.bio.map(p => '<p>' + p + '</p>').join('') +
-      '<div class="biotag">Врождённый талант: ' + names[base] + ' ' + D.base[base] + '%</div></div></div></div>');
+      '<div><h2 style="text-align:left;margin:0">' + full + '</h2><div class="biosub">' + title + ' · ' + role + '</div>' +
+      paragraphs.map(p => '<p>' + p + '</p>').join('') +
+      '<div class="biotag">' + T('Врождённый талант:', 'Innate talent:') + ' ' + (talentNames[base] || base) + ' ' + D.base[base] + '%</div></div></div></div>');
   }
 
   /* ---------- Логово ---------- */
@@ -1535,7 +2214,8 @@
     const m = Math.floor((rem % 3600) / 60);
     const s = rem % 60;
     const hh = String(h).padStart(2, '0'), mm = String(m).padStart(2, '0'), ss = String(s).padStart(2, '0');
-    return (days > 0 ? days + ' д. ' : '') + hh + ':' + mm + ':' + ss;
+    const dayLbl = I18N.lang === 'en' ? ' d. ' : ' д. ';
+    return (days > 0 ? days + dayLbl : '') + hh + ':' + mm + ':' + ss;
   }
   function updateLairTimer() {
     const el = $('#lair-timer');
@@ -1555,18 +2235,22 @@
     const remMs = Math.max(0, MB.lairNextResetMs(nDate.getTime()) - nDate.getTime());
     let cards = '';
     MB.CHAPTERS.forEach(C => {
-      const B = MB.BOSSES[C.boss], open = !!save.bosses[C.n], maxD = lair.diff[C.boss] || 0;
-      cards += '<div class="panel lcard ' + (open ? '' : 'locked') + '"><img src="' + ART.url(C.boss) + '" alt=""><b class="out">' + B.name + '</b>' +
-        (open ? '<span class="note">Попыток на неделю: ' + left + ' из ' + maxAtt + '</span>' + MB.LAIR.map((D, i) => {
-          const oreAmt = MB.lairOreFor(C.boss, i);
-          return '<button class="btn ' + (i === 0 ? 'green' : i === 1 ? 'blue' : 'red') + '" data-act="lairfight" data-ch="' + C.n + '" data-d="' + i + '" ' + (left > 0 && i <= maxD ? '' : 'disabled') + '><span>' + D.name + '</span>' + ic('ore') + '<span>' + oreAmt + '</span></button>';
-        }).join('')
-          : '<span class="note">Победите босса главы ' + C.n + ' в кампании</span>') + '</div>';
+      const open = !!save.bosses[C.n], maxD = lair.diff[C.boss] || 0;
+      const bName = bossLoc(C.boss, 'name');
+      cards += '<div class="panel lcard ' + (open ? '' : 'locked') + '"><img src="' + ART.url(C.boss) + '" alt=""><b class="out">' + bName + '</b>' +
+        (open
+          ? '<span class="note">' + T('Попыток на неделю:', 'Attempts this week:') + ' ' + left + ' ' + T('из', 'of') + ' ' + maxAtt + '</span>' + MB.LAIR.map((D, i) => {
+              const oreAmt = MB.lairOreFor(C.boss, i);
+              const dName = (I18N.lang === 'en' && LAIR_EN[i]) ? LAIR_EN[i] : D.name;
+              return '<button class="btn ' + (i === 0 ? 'green' : i === 1 ? 'blue' : 'red') + '" data-act="lairfight" data-ch="' + C.n + '" data-d="' + i + '" ' + (left > 0 && i <= maxD ? '' : 'disabled') + '><span>' + dName + '</span>' + ic('ore') + '<span>' + oreAmt + '</span></button>';
+            }).join('')
+          : '<span class="note">' + T('Победите босса главы', 'Defeat chapter') + ' ' + C.n + ' ' + T('в кампании', 'boss in the campaign') + '</span>') + '</div>';
     });
     ui.innerHTML = topbar(t('lair'), 'hub') +
-      '<div class="lair-top out"><span>Общих попыток на неделю: <b>' + left + ' / ' + maxAtt + '</b></span><span>·</span><span>Обновление в Пн 00:00 (+3 UTC) через: <b id="lair-timer">' + fmtLongT(remMs) + '</b></span></div>' +
+      '<div class="lair-top out"><span>' + T('Общих попыток на неделю:', 'Weekly attempts:') + ' <b>' + left + ' / ' + maxAtt + '</b></span><span>·</span><span>' + T('Обновление в Пн 00:00 (+3 UTC) через:', 'Resets Mon 00:00 (+3 UTC) in:') + ' <b id="lair-timer">' + fmtLongT(remMs) + '</b></span></div>' +
       '<div class="lair">' + cards + '</div>' +
-      '<p class="out" style="position:absolute;left:0;right:0;bottom:18px;text-align:center;font-weight:700">Здесь добывается Руда для улучшения снаряжения. Попытка тратится даже при поражении.</p>';
+      '<p class="out" style="position:absolute;left:0;right:0;bottom:18px;text-align:center;font-weight:700">' + T('Здесь добывается Руда для улучшения снаряжения. Попытка тратится даже при поражении.', 'Ore for gear upgrades is earned here. An attempt is spent even on defeat.') + '</p>';
+    // Не гоняем HT() по экрану — строки уже через T()/bossLoc, иначе «опыт» ломает «попыток»
   }
 
   /* ---------- Ежедневный вход ---------- */
@@ -1601,7 +2285,7 @@
     openModal('<div class="panel win" style="position:relative;width:920px"><button class="x" data-act="close">✕</button><h2 class="out">Награда за вход</h2><div class="paper"><p style="font-weight:700">Заходите каждый день с понедельника по субботу — и в воскресенье заберёте 20 изумрудов. Пропущенный день сгорает, в понедельник серия начинается заново.</p>' +
       '<div class="daily">' + days + '</div>' + (d.broken ? '<p style="font-weight:800;color:#a02a1e">Серия прервана — новая начнётся в понедельник. Награды оставшихся дней недели всё равно можно забирать.</p>' : '') +
       questBlock + '</div>' +
-      '<div class="foot"><button class="btn green" data-act="claim" ' + (d.canClaim ? '' : 'disabled') + '>' + (d.canClaim ? 'Забрать награду' : d.days[d.idx] === 'claimed' ? 'Сегодня уже получено' : 'Сегодня награды нет') + '</button></div></div>');
+      '<div class="foot"><button class="btn green" data-act="claim" ' + (d.canClaim ? '' : 'disabled') + '>' + (d.canClaim ? T('Забрать награду','Claim reward') : d.days[d.idx] === 'claimed' ? 'Сегодня уже получено' : 'Сегодня награды нет') + '</button></div></div>');
   }
 
   /* ---------- Энергия ---------- */
@@ -1648,20 +2332,20 @@
     if (shopTab === 'chests') {
       MB.SHOP.chests.forEach(x => {
         const C = MB.CHESTS[x.chest], i = add({ gems: x.gems, chest: x.chest });
-        cards += '<div class="shopcard">' + ART.icon('chest', C.col) + '<b>' + C.name + '</b><span>1 вещь (' + rarityLoc(C.chance.indexOf(100)).toLowerCase() + ')</span><div class="shopcard-btns">' + price(x.gems, i) + '</div></div>';
+        cards += '<div class="shopcard">' + ART.icon('chest', C.col) + '<b>' + chestName(x.chest) + '</b><span>' + T('1 вещь (', '1 item (') + rarityLoc(C.chance.indexOf(100)).toLowerCase() + ')</span><div class="shopcard-btns">' + price(x.gems, i) + '</div></div>';
       });
     }
     if (shopTab === 'energy') {
       Object.keys(MB.POTIONS).forEach(k => {
         const P = MB.POTIONS[k], i = add({ gems: P.gems, pot: k });
-        cards += '<div class="shopcard">' + ART.icon('potion', k === 's' ? '#5db3f0' : k === 'm' ? '#a855f7' : '#f5b301') + '<b>' + P.name + '</b><span>+' + P.amt + ' энергии · есть ' + save.potions[k] + '</span><div class="shopcard-btns">' + price(P.gems, i) + '</div></div>';
+        cards += '<div class="shopcard">' + ART.icon('potion', k === 's' ? '#5db3f0' : k === 'm' ? '#a855f7' : '#f5b301') + '<b>' + potionName(k) + '</b><span>+' + P.amt + ' ' + T('энергии', 'energy') + ' · ' + T('есть', 'owned') + ' ' + save.potions[k] + '</span><div class="shopcard-btns">' + price(P.gems, i) + '</div></div>';
       });
       cards += elixirCard('shop');
     }
     if (shopTab === 'ore') {
       MB.SHOP.ore.forEach(x => {
         const i = add({ gems: x.gems, ore: x.ore });
-        cards += '<div class="shopcard">' + ic('ore') + '<b>' + x.ore + ' Руды</b><span>для рангов снаряжения</span><div class="shopcard-btns">' + price(x.gems, i) + '</div></div>';
+        cards += '<div class="shopcard">' + ic('ore') + '<b>' + x.ore + ' ' + T('Руды', 'Ore') + '</b><span>' + T('для рангов снаряжения', 'for gear ranks') + '</span><div class="shopcard-btns">' + price(x.gems, i) + '</div></div>';
       });
     }
     if (shopTab === 'clan') {
@@ -1672,17 +2356,30 @@
         const i = add(x);
         if (x.kind === 'sparks') cards += '<div class="shopcard">' + ic('spark') + '<b>' + x.n + ' Искр</b><span>пак за монеты</span><div class="shopcard-btns"><button class="btn small gold" data-act="buygems" data-i="' + i + '" ' + ((save.ccoin || 0) < x.cc ? 'disabled' : '') + '>' + ccImg + x.cc + '</button></div></div>';
         if (x.kind === 'ore') cards += '<div class="shopcard">' + ic('ore') + '<b>' + x.n + ' Руды</b><span>пак за монеты</span><div class="shopcard-btns"><button class="btn small gold" data-act="buygems" data-i="' + i + '" ' + ((save.ccoin || 0) < x.cc ? 'disabled' : '') + '>' + ccImg + x.cc + '</button></div></div>';
-        if (x.kind === 'chest') { const C = MB.CHESTS[x.chest]; cards += '<div class="shopcard">' + ART.icon('chest', C.col) + '<b>' + C.name + '</b><span>1 вещь (' + rarityLoc(C.chance.indexOf(100)).toLowerCase() + ')</span><div class="shopcard-btns"><button class="btn small gold" data-act="buygems" data-i="' + i + '" ' + ((save.ccoin || 0) < x.cc ? 'disabled' : '') + '>' + ccImg + x.cc + '</button></div></div>'; }
+        if (x.kind === 'chest') { const C = MB.CHESTS[x.chest]; cards += '<div class="shopcard">' + ART.icon('chest', C.col) + '<b>' + chestName(x.chest) + '</b><span>' + T('1 вещь (', '1 item (') + rarityLoc(C.chance.indexOf(100)).toLowerCase() + ')</span><div class="shopcard-btns"><button class="btn small gold" data-act="buygems" data-i="' + i + '" ' + ((save.ccoin || 0) < x.cc ? 'disabled' : '') + '>' + ccImg + x.cc + '</button></div></div>'; }
         if (x.kind === 'key') cards += '<div class="shopcard"><img class="mb-ic" src="assets/ui/key_clan.webp" alt=""><b>Ключ босса</b><span>+1 бой · есть: ' + MB.clanKeys(save) + '</span><div class="shopcard-btns"><button class="btn small blue" data-act="buygems" data-i="' + i + '" ' + (save.gems < x.gems ? 'disabled' : '') + '>' + ic('gem') + x.gems + '</button></div></div>';
       });
     }
     if (shopTab === 'free') {
       const L = adsLeft(), amt = adReward();
       const PL = potAdsLeft(), pMax = MB.SHOP.ads.potPerDay || 5, pKey = MB.SHOP.ads.potType || 's', P = MB.POTIONS[pKey];
-      cards += '<div class="shopcard wide">' + ic('spark') + '<b>Реклама за Искры</b><span>Посмотрите короткий ролик и получите ' + amt + ' Искр. Осталось сегодня: ' + L + ' из ' + MB.SHOP.ads.perDay + ' (сброс в 03:00 UTC).</span>' +
-        '<div class="shopcard-btns"><button class="btn small green" data-act="ad" ' + (L ? '' : 'disabled') + '>▶ Смотреть</button></div></div>';
-      cards += '<div class="shopcard wide">' + ART.icon('potion', '#5db3f0') + '<b>Реклама за ' + P.name + '</b><span>Посмотрите короткий ролик и получите ' + P.name + ' (+' + P.amt + ' энергии). Осталось сегодня: ' + PL + ' из ' + pMax + ' (сброс в 03:00 UTC).</span>' +
-        '<div class="shopcard-btns"><button class="btn small green" data-act="adpot" ' + (PL ? '' : 'disabled') + '>▶ Смотреть</button></div></div>';
+      const adResetTarget = MB.nextAdsResetMs(now());
+      const adResetLeft = Math.max(0, adResetTarget - Date.now());
+      const adResetStr = MB.formatDuration(adResetLeft, true, I18N.lang);
+      const adH = MB.ADS_RESET_UTC_HOUR != null ? MB.ADS_RESET_UTC_HOUR : 3;
+      const adM = MB.ADS_RESET_UTC_MINUTE != null ? MB.ADS_RESET_UTC_MINUTE : 0;
+      const adTimeLbl = String(adH).padStart(2, '0') + ':' + String(adM).padStart(2, '0') + ' UTC';
+      // Плашка сброса — отдельной строкой между вкладками и карточками
+      banner = '<div class="paper shopbanner ad-reset-banner">' +
+        '<div style="flex:1;text-align:center">' +
+          '<b>' + T('Сброс лимитов рекламы', 'Ad limits reset') + '</b>' +
+          '<span class="note">' + T('Обновление каждый день в', 'Refreshes every day at') + ' <b>' + adTimeLbl + '</b> · ' + T('До сброса:', 'Until reset:') + ' <b id="shop-ads-reset-timer" style="color:#c4841a" data-target="' + adResetTarget + '">' + adResetStr + '</b></span>' +
+        '</div></div>';
+      const pNm = potionName(pKey);
+      cards += '<div class="shopcard wide">' + ic('spark') + '<b>' + T('Реклама за Искры', 'Ad for Sparks') + '</b><span>' + T('Посмотрите короткий ролик и получите', 'Watch a short video and get') + ' ' + amt + ' ' + T('Искр', 'Sparks') + '. ' + T('Осталось сегодня:', 'Left today:') + ' <b id="shop-ads-left">' + L + '</b> ' + T('из', 'of') + ' ' + MB.SHOP.ads.perDay + '.</span>' +
+        '<div class="shopcard-btns"><button class="btn small green" data-act="ad" ' + (L ? '' : 'disabled') + '>▶ ' + T('Смотреть', 'Watch') + '</button></div></div>';
+      cards += '<div class="shopcard wide">' + ART.icon('potion', '#5db3f0') + '<b>' + T('Реклама за', 'Ad for') + ' ' + pNm + '</b><span>' + T('Посмотрите короткий ролик и получите', 'Watch a short video and get') + ' ' + pNm + ' (+' + P.amt + ' ' + T('энергии', 'energy') + '). ' + T('Осталось сегодня:', 'Left today:') + ' <b id="shop-pot-ads-left">' + PL + '</b> ' + T('из', 'of') + ' ' + pMax + '.</span>' +
+        '<div class="shopcard-btns"><button class="btn small green" data-act="adpot" ' + (PL ? '' : 'disabled') + '>▶ ' + T('Смотреть', 'Watch') + '</button></div></div>';
     }
     if (shopTab === 'heroes') {
       MB.SKIN_PACKS.forEach(p => {
@@ -1696,16 +2393,61 @@
           (own ? '<span class="owned">✔ В отряде</span>' : '<button class="btn small gold" data-act="buyreal" data-hero="' + k + '">' + H.shop.price + ' ₽</button>') +
           '<button class="btn small" data-act="bioshop" data-k="' + k + '">История</button></div></div>';
       });
-      foot = '<p class="note out shopfoot">Это прототип: покупки за рубли тестовые, деньги не списываются. В игре здесь откроется оплата площадки.</p>';
+      foot = '<p class="note out shopfoot">' + T('Это прототип: покупки за рубли тестовые, деньги не списываются. В игре здесь откроется оплата площадки.', 'Prototype: ruble purchases are simulated and not charged. Platform billing will appear in the live build.') + '</p>';
     }
     if (shopTab === 'gems') {
       MB.SHOP.gems.forEach((x, i) => {
-        cards += '<div class="shopcard">' + ic('gem') + '<b>' + x.gems + ' Изумрудов</b><span>' + (i === 3 ? 'Лучшая цена' : i === 2 ? 'Популярно' : 'Набор изумрудов') + '</span><div class="shopcard-btns"><button class="btn small gold" data-act="buyreal" data-g="' + i + '">' + x.rub + ' ₽</button></div></div>';
+        cards += '<div class="shopcard">' + ic('gem') + '<b>' + x.gems + ' ' + T('Изумрудов', 'Emeralds') + '</b><span>' + (i === 3 ? T('Лучшая цена','Best value') : i === 2 ? T('Популярно','Popular') : T('Набор изумрудов','Emerald pack')) + '</span><div class="shopcard-btns"><button class="btn small gold" data-act="buyreal" data-g="' + i + '">' + x.rub + ' ₽</button></div></div>';
       });
-      foot = '<p class="note out shopfoot">Это прототип: покупки за рубли тестовые, деньги не списываются. В игре здесь откроется оплата площадки.</p>';
+      foot = '<p class="note out shopfoot">' + T('Это прототип: покупки за рубли тестовые, деньги не списываются. В игре здесь откроется оплата площадки.', 'Prototype: ruble purchases are simulated and not charged. Platform billing will appear in the live build.') + '</p>';
     }
     ui.innerHTML = topbar(t('shop'), showShop.back || 'hub') + '<div class="shop shop-fit"><div class="tabs" style="justify-content:flex-start;margin-bottom:10px;flex:none">' + tabs + '</div>' + banner + '<div class="' + gridCls + '">' + cards + '</div>' + foot + '</div>';
+    applyUILang();
+    if (shopTab === 'free') startShopAdsResetTimer();
+    else stopShopAdsResetTimer();
   }
+
+  /* ---------- Живой таймер сброса рекламы (00:00 UTC+3) ---------- */
+  let shopAdsResetTimerId = 0;
+  function stopShopAdsResetTimer() {
+    if (shopAdsResetTimerId) {
+      clearInterval(shopAdsResetTimerId);
+      shopAdsResetTimerId = 0;
+    }
+  }
+  function startShopAdsResetTimer() {
+    stopShopAdsResetTimer();
+    if (!document.getElementById('shop-ads-reset-timer')) return;
+    const tick = () => {
+      const node = document.getElementById('shop-ads-reset-timer');
+      if (!node || !document.querySelector('.shop')) {
+        stopShopAdsResetTimer();
+        return;
+      }
+      let target = +node.getAttribute('data-target');
+      if (!target || !isFinite(target)) {
+        target = MB.nextAdsResetMs(new Date());
+        node.setAttribute('data-target', String(target));
+      }
+      const left = target - Date.now();
+      if (left <= 0) {
+        node.textContent = '0м 00с';
+        stopShopAdsResetTimer();
+        // Ровно 03:00 UTC — новый рекламный день
+        ensureAdsDay();
+        persist();
+        toast('Лимиты рекламы обновлены!');
+        setTimeout(() => {
+          if (document.querySelector('.shop') && shopTab === 'free') showShop('free');
+        }, 80);
+        return;
+      }
+      node.textContent = MB.formatDuration(left, true, I18N.lang);
+    };
+    tick();
+    shopAdsResetTimerId = setInterval(tick, 1000);
+  }
+
   function adReward() { return MB.SHOP.ads.reward || 100; }
   function buy(i) {
     const o = showShop.items[i]; if (!o) return;
@@ -1715,7 +2457,7 @@
     if (o.kind === 'sparks') { save.sparks += o.n; toast('+' + o.n + ' Искр'); }
     if (o.kind === 'ore') { save.ore += o.n; toast('+' + o.n + ' Руды'); }
     if (o.ore) { save.ore += o.ore; toast('+' + o.ore + ' Руды'); }
-    if (o.pot) { save.potions[o.pot]++; toast('Куплено: ' + MB.POTIONS[o.pot].name); }
+    if (o.pot) { save.potions[o.pot]++; toast(T('Куплено: ', 'Purchased: ') + potionName(o.pot)); }
     persist();
     if (o.pack) {
       const items = MB.grantSkinPack(save, o.pack), p = MB.SKIN_PACKS.find(x => x.id === o.pack); persist(); syncSkins();
@@ -1793,6 +2535,7 @@
     const H = MB.HEROES[MB.COLISEUM.reward], got = save.unlocked.indexOf(MB.COLISEUM.reward) >= 0;
     ui.innerHTML = topbar(t('coliseum'), 'hub') + '<div class="colz"><div class="panel colinfo"><img src="' + ART.url(MB.COLISEUM.reward) + '" alt=""><b class="out">' + (heroLoc(MB.COLISEUM.reward, 'full') || H.full) + '</b><span>' + (got ? (I18N.lang === 'en' ? 'Already in your team!' : 'Уже в вашем отряде!') : (I18N.lang === 'en' ? 'Clear all 10 arenas and she will join you.' : 'Пройдите все 10 арен, и она присоединится к вам.')) + '</span>' +
       '<p>Дуэли 1 на 1: выберите одного героя. Каждую арену можно пройти только один раз. На 5-й — босс, на 10-й — Минотавр Арены. За победу: 30 Изумрудов, Руда и синий сундук, на 5-й и 10-й — фиолетовый.</p></div><div class="colarena">' + fl + '</div></div>';
+    applyUILang();
   }
 
   /* ---------- Кланы ---------- */
@@ -1873,12 +2616,17 @@
       return '<div class="shopcard">' + ART.clanEmblem(em, 68) + '<b>' + c.name + '</b><span>Уровень ' + c.lvl + ' · мест: ' + curCnt + '/' + cap + '</span><span>Приём: ' + recLbl + ' · Искры +' + c.lvl + '%</span>' +
         btnHtml + '</div>';
     }).join('');
+    const emptyNote = cards
+      ? ''
+      : '<div class="paper" style="margin-bottom:12px;font-weight:600;font-size:15px;line-height:1.45">Пока нет открытых кланов для вступления. Создайте свой или дождитесь, когда появятся кланы других игроков.</div>';
     ui.innerHTML = topbar(t('clans'), 'hub') + '<div class="shop"><div class="paper" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-weight:700;font-size:16px;line-height:1.45">' +
       '<div>В клане вас ждёт общий <b>клановый босс</b>, <b>прокачка построек клана</b>, <b>роли (Лидер, Офицер, Участник)</b> и <b>награды за активность</b>. При создании клан вмещает <b>10 игроков</b>, а с ростом уровня расширяется (на 10 уровне — до <b>20 игроков</b>).</div>' +
       '<button type="button" class="btn small gold" data-act="clantop20" style="flex:none">Топ-20 кланов</button></div>' +
+      emptyNote +
       '<div class="shopgrid">' +
       '<div class="shopcard">' + ART.clanEmblem(MB.defaultEmblem(), 68) + '<b>Свой клан</b><span>Вы станете лидером</span><span>Вместимость: 10 игроков</span>' +
       '<button class="btn small gold" data-act="clancreate" ' + (save.gems < MB.CLAN.createCost ? 'disabled' : '') + '>Создать ' + ic('gem') + MB.CLAN.createCost + '</button></div>' + cards + '</div></div>';
+    applyUILang();
   }
   function registerClanBossReward(clan) {
     if (!clan) return;
@@ -1929,9 +2677,17 @@
     scene = { mode: 'menu', bg: 'fon_coliseum' }; BV = null; clock.speed = 1;
     const t = MB.clanTick(save, now()); persist();
     if (t && t.gain) toast('Соклановцы принесли +' + t.gain + ' опыта и +' + t.actGain + ' активности' + (t.ups ? ' — клан вырос до ' + clan.lvl + ' уровня!' : ''));
+    const weekTick = MB.clanBossWeekTick(save, now());
+    if (weekTick && weekTick.reset) {
+      toast('Новая неделя: клановый босс обновлён' + (weekTick.mvp && weekTick.mvp.me ? '. Вы лучший по урону — заберите золотой сундук!' : ''));
+    }
+    persist();
     const info = MB.clanBossInfo(clan), keys = MB.clanKeys(save); persist();
     const expNeed = MB.CLAN.expFor(clan.lvl), hpPct = Math.max(0, Math.round(100 * clan.bossHp / info.maxHp));
     const totalSparksBon = MB.clanSparksBonus(save);
+    const resetTargetMs = (weekTick && weekTick.nextMs) || MB.nextMondayMs(now());
+    const resetLeftMs = Math.max(0, resetTargetMs - Date.now());
+    const resetLeftStr = MB.formatDuration(resetLeftMs, true, I18N.lang);
 
     // Список участников (сортировка по силе или по вкладу), роли и вместимость клана
     const myRole = clan.myRole || (clan.own ? 'leader' : 'member');
@@ -1939,7 +2695,11 @@
     const isOfficer = myRole === 'officer';
     const canManageApps = isLeader || isOfficer;
     const maxMembers = MB.clanMaxMembers(clan);
-    const rawMembers = [{ id: 'me', name: 'Вы', role: myRole, power: MB.accountPower(save), contrib: clan.myContrib || 0, me: true }].concat(clan.members || []);
+    const selfId = save.playerId || '';
+    const selfName = (save.name || '').trim().toLowerCase();
+    const isSelfMember = m => m && (m.me || m.id === 'me' || (selfId && m.id === selfId) || (selfName && String(m.name || '').trim().toLowerCase() === selfName));
+    const otherMembers = (clan.members || []).filter(m => !isSelfMember(m));
+    const rawMembers = [{ id: 'me', name: 'Вы', role: myRole, power: MB.accountPower(save), contrib: clan.myContrib || 0, me: true }].concat(otherMembers);
     const members = rawMembers.slice().sort((a, b) => memberSort === 'contrib' ? (b.contrib || 0) - (a.contrib || 0) : b.power - a.power);
 
     // Вкладки правой панели
@@ -1948,8 +2708,9 @@
     const buildDot = (clan.pts || 0) > 0 ? '<span class="dot">' + clan.pts + '</span>' : '';
 
     const bossReward = clanRewardState(clan);
-    const claimBtn = bossReward
-      ? '<button class="btn small green" data-act="claimbossreward" style="margin-left:auto">Забрать награду</button>'
+    const mvpPending = !!(save.clanMvpPending && save.clanMvpPending.week && !(save.clanMvpClaimed && save.clanMvpClaimed[save.clanMvpPending.week]));
+    const claimBtn = (bossReward || mvpPending)
+      ? '<button class="btn small green" data-act="claimbossreward" style="margin-left:auto">Забрать награду' + (mvpPending ? ' ★' : '') + '</button>'
       : '';
     const tabsHtml = '<div class="tabs" style="justify-content:flex-start;margin-bottom:4px">' +
       '<button class="btn small ' + (clanTab === 'boss' ? 'gold' : '') + '" data-act="clantab" data-t="boss">Клановый босс</button>' +
@@ -1961,19 +2722,40 @@
 
     let rightBody = '';
     if (clanTab === 'boss') {
+      const dmgRows = MB.clanBossDmgLeaders(save);
+      const top = dmgRows[0];
+      const iAmTop = !!(top && top.me && (top.dmg || 0) > 0);
+      const fightBtn = '<button class="btn ' + (keys ? 'red' : 'gold') + ' clanfight" data-act="' + (keys ? 'clanboss' : 'clanbuykeys') + '">' +
+        (keys ? T('В бой с боссом! (1 ключ)', 'Fight the boss! (1 key)') : T('Нет ключей — докупить в лавке', 'No keys — buy in the shop')) +
+        '</button>';
+      const dmgBoard =
+        '<div class="paper clanboss-dmgboard">' +
+          '<div class="clanboss-dmghead"><b>' + T('Урон за неделю', 'Weekly damage') + '</b>' +
+            '<span class="note">' + T('Сброс в понедельник 00:00 · 1-е место — золотой сундук', 'Resets Monday 00:00 · 1st place — golden chest') + '</span></div>' +
+          '<div class="clanboss-dmglist">' +
+            dmgRows.map((r, i) =>
+              '<div class="clanboss-dmgrow' + (r.me ? ' me' : '') + '">' +
+                '<span class="rank">' + (i === 0 && (r.dmg || 0) > 0 ? '★ ' : '') + (i + 1) + '.</span>' +
+                '<span class="name">' + r.name + '</span>' +
+                '<span class="dmg">⚔ ' + (r.dmg || 0) + '</span>' +
+              '</div>'
+            ).join('') +
+          '</div>' +
+        '</div>';
       rightBody =
         '<div class="clanboss-stage">' +
           '<div class="clanboss-left">' +
-            '<div class="paper clanboss-info">' +
-              '<p>Урон сохраняется между днями. За урон дают <b>Искры</b>, <b>опыт</b> и <b>очки активности</b>.</p>' +
-              '<p>Каждый бой: <b>+20 XP и +20 клановых монет</b>.</p>' +
-              '<p>Победа над боссом: <b>+500 XP и +400 монет</b> всем соклановцам.</p>' +
+            dmgBoard +
+            '<div class="paper clanboss-reset">' +
+              '<b>' + T('Сброс босса:', 'Boss reset:') + '</b> ' + T('каждый', 'every') + ' <b>' + T('понедельник в 00:00', 'Monday at 00:00') + '</b>' +
+              '<div style="margin-top:4px">' + T('До обновления:', 'Until reset:') + ' <b id="clan-boss-reset-timer" style="color:#ffd45e" data-target="' + resetTargetMs + '">' + resetLeftStr + '</b></div>' +
+              (mvpPending ? '<div class="note" style="margin-top:6px;color:#3f9a24">★ ' + T('Вам доступен золотой сундук за лучший урон прошлой недели — нажмите «Забрать награду».', 'Golden chest for last week’s top damage is ready — tap “Claim reward”.') + '</div>' : '') +
+              (iAmTop && !mvpPending ? '<div class="note" style="margin-top:6px">' + T('Вы лидируете по урону на этой неделе.', 'You lead in damage this week.') + '</div>' : '') +
             '</div>' +
             '<div class="clanboss-keys">' +
               '<img src="assets/ui/key_clan.webp" alt="">' +
-              '<div><b>Ключей: ' + keys + '</b><small>(+2 бесплатно каждый день, ещё — в лавке клана)</small></div>' +
+              '<div><b>' + T('Ключей:', 'Keys:') + ' ' + keys + '</b><small>' + T('(+2 бесплатно каждый день, ещё — в лавке клана)', '(+2 free every day, more in the clan shop)') + '</small></div>' +
             '</div>' +
-            '<button class="btn ' + (keys ? 'red' : 'gold') + ' clanfight" data-act="' + (keys ? 'clanboss' : 'clanbuykeys') + '">' + (keys ? 'В бой с боссом! (1 ключ)' : 'Нет ключей — докупить в лавке') + '</button>' +
           '</div>' +
           '<div class="clanboss-right">' +
             '<div class="clanboss-head">' +
@@ -1983,26 +2765,16 @@
             '<div class="clanboss-artbox">' +
               '<img src="' + ART.url(info.art) + '" alt="' + info.name + '">' +
               '<div class="hpbar clanboss-hp"><i style="width:' + hpPct + '%"></i><span>' + clan.bossHp + ' / ' + info.maxHp + '</span></div>' +
+              fightBtn +
             '</div>' +
           '</div>' +
         '</div>' +
-        (function () {
-          const rows = [{ name: 'Вы', dmg: clan.myBossDmg || 0, me: true }]
-            .concat((clan.members || []).map(m => ({ name: m.name, dmg: m.bossDmg || 0, me: false })))
-            .sort((a, b) => (b.dmg || 0) - (a.dmg || 0) || (a.me ? -1 : 1));
-          return '<div class="paper clanboss-dmgboard">' +
-            '<div class="clanboss-dmghead"><b>Суммарный урон по боссу</b><span class="note">От наибольшего к меньшему</span></div>' +
-            '<div class="clanboss-dmglist">' +
-              rows.map((r, i) =>
-                '<div class="clanboss-dmgrow' + (r.me ? ' me' : '') + '">' +
-                  '<span class="rank">' + (i + 1) + '.</span>' +
-                  '<span class="name">' + r.name + '</span>' +
-                  '<span class="dmg">⚔ ' + (r.dmg || 0) + '</span>' +
-                '</div>'
-              ).join('') +
-            '</div>' +
-          '</div>';
-        })();
+        '<div class="paper clanboss-info">' +
+          '<p>' + T('Урон сохраняется в течение недели. За урон дают', 'Damage carries through the week. Damage grants') + ' <b>' + T('Искры', 'Sparks') + '</b>, <b>' + T('опыт', 'XP') + '</b> ' + T('и', 'and') + ' <b>' + T('очки активности', 'activity points') + '</b>.</p>' +
+          '<p>' + T('Каждый бой:', 'Each battle:') + ' <b>+20 XP ' + T('и', 'and') + ' +20 ' + T('клановых монет', 'clan coins') + '</b>.</p>' +
+          '<p>' + T('Победа над боссом:', 'Boss victory:') + ' <b>+500 XP ' + T('и', 'and') + ' +400 ' + T('монет', 'coins') + '</b> ' + T('всем соклановцам', 'to all clan members') + '.</p>' +
+          '<p>' + T('Игрок с', 'The player with') + ' <b>' + T('наибольшим уроном за неделю', 'the highest weekly damage') + '</b> ' + T('получает', 'gets') + ' <b>' + T('золотой сундук', 'a golden chest') + '</b> ' + T('(1 раз в неделю) — забрать вместе с наградой за победу.', '(once per week) — claim with the victory reward.') + '</p>' +
+        '</div>';
     } else if (clanTab === 'builds') {
       const bCards = MB.CLAN_BUILDINGS.map(b => {
         const cur = clan.builds[b.key] || 0, max = MB.CLAN.maxBuildLvl || 20;
@@ -2061,7 +2833,6 @@
           '<ul>' +
             '<li><b>Атаки на кланового босса:</b> за успешный бой с нанесением урона боссу начисляется +5 очков активности (и +5 к личному вкладу).</li>' +
             '<li><b>Пожертвования руды в казну:</b> взнос ' + MB.CLAN.donateOre + ' руды даёт +10 очков активности (взнос ' + (MB.CLAN.donateOre * 5) + ' руды — +50 очков активности) и продвигает клан к новому уровню.</li>' +
-            '<li><b>Ежедневная активность соклановцев:</b> при заходе в клан в новый день участники автоматически приносят клану опыт и активность.</li>' +
           '</ul>' +
         '</div>';
     }
@@ -2084,6 +2855,7 @@
             ? '<div class="clan-recruit-btns">' +
                 Object.keys(MB.CLAN_RECRUIT).map(rk => {
                   const R = MB.CLAN_RECRUIT[rk];
+    applyUILang();
                   return '<button type="button" class="btn small ' + (clan.recruit === rk ? 'gold' : '') + '" data-act="clanrecruit" data-m="' + rk + '" title="' + R.desc + '">' + R.name + '</button>';
                 }).join('') +
               '</div>'
@@ -2130,6 +2902,54 @@
         '</div>' +
       '</div>' +
       '<div class="panel clanR">' + tabsHtml + rightBody + '</div></div>';
+    startClanBossResetTimer();
+  }
+
+  /* ---------- Живой таймер сброса кланового босса (пн 00:00) ---------- */
+  let clanBossResetTimerId = 0;
+  function stopClanBossResetTimer() {
+    if (clanBossResetTimerId) {
+      clearInterval(clanBossResetTimerId);
+      clanBossResetTimerId = 0;
+    }
+  }
+  function startClanBossResetTimer() {
+    stopClanBossResetTimer();
+    const el = document.getElementById('clan-boss-reset-timer');
+    if (!el) return;
+    const tick = () => {
+      const node = document.getElementById('clan-boss-reset-timer');
+      if (!node || !document.querySelector('.clanwrap')) {
+        stopClanBossResetTimer();
+        return;
+      }
+      let target = +node.getAttribute('data-target');
+      if (!target || !isFinite(target)) {
+        target = MB.nextMondayMs(new Date());
+        node.setAttribute('data-target', String(target));
+      }
+      const left = target - Date.now();
+      if (left <= 0) {
+        node.textContent = '0м 00с';
+        stopClanBossResetTimer();
+        // Неделя сменилась — применяем сброс и перерисовываем зал
+        if (save && save.clan) {
+          const wt = MB.clanBossWeekTick(save, new Date());
+          persist();
+          if (wt && wt.reset) {
+            toast('Новая неделя: клановый босс обновлён' + (wt.mvp && wt.mvp.me ? '. Вы лучший по урону — заберите золотой сундук!' : ''));
+          }
+          // Небольшая задержка, чтобы toast успел показаться
+          setTimeout(() => {
+            if (save && save.clan && document.querySelector('.clanwrap')) showClanHall(clanTab);
+          }, 80);
+        }
+        return;
+      }
+      node.textContent = MB.formatDuration(left, true, I18N.lang);
+    };
+    tick();
+    clanBossResetTimerId = setInterval(tick, 1000);
   }
 
   /* ---------- Рейтинг ---------- */
@@ -2137,22 +2957,30 @@
   function showRating(tab) {
     if (tab) rateTab = tab; scene = { mode: 'menu', bg: scene.bg };
     MUSIC.sync('menu'); BV = null;
-    const me = { name: save.name || 'Вы', power: MB.accountPower(save), level: MB.accountLevel(save), me: true };
+    const profile = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId || 'me', name: save.name || 'Вы' };
+    const me = { id: profile.id, name: save.name || profile.name || 'Вы', power: MB.accountPower(save), level: MB.accountLevel(save), me: true, verified: !!(profile.verified || save.authVerified) };
     const key = rateTab === 'power' ? 'power' : 'level';
-    const list = MB.ratingBots().concat([me]).sort((a, b) => b[key] - a[key] || (a.me ? -1 : 1));
-    const pos = list.indexOf(me) + 1;
+    // Только подлинные записи (+ всегда текущий игрок)
+    const others = (MB.ratingBots() || []).filter(p => {
+      if (!p) return false;
+      if (MB.net && MB.net.isAuthenticEntry) return MB.net.isAuthenticEntry(p);
+      return p.id && !/^(plr_|m_\d+_)/i.test(String(p.id));
+    });
+    const list = others.concat([me]).sort((a, b) => b[key] - a[key] || (a.me ? -1 : 1));
+    const pos = list.findIndex(p => p.me) + 1;
     const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '"><span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
     ui.innerHTML = topbar(t('rating'), null) + '<div class="rate"><div class="panel" style="position:relative"><button class="x" data-act="hub" title="' + t('close') + '">✕</button><div class="tabs" style="margin-bottom:10px"><button class="btn small ' + (rateTab === 'power' ? 'gold' : '') + '" data-act="ratetab" data-t="power">' + t('by_power') + '</button><button class="btn small ' + (rateTab === 'level' ? 'gold' : '') + '" data-act="ratetab" data-t="level">' + t('by_level') + '</button></div>' +
       '<div class="paper ratelist">' + list.map((p, i) => row(p, i)).join('') + '</div>' +
-      '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ' + pos + '-м месте из ' + list.length + '. Показаны первые 100 позиций — листайте список вниз. Пока соперники — тестовые боты: настоящий рейтинг игроков появится на площадке.</p></div></div>';
+      '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ' + pos + '-м месте из ' + list.length + '. В рейтинге только проверенные аккаунты площадки.</p></div></div>';
+    applyUILang();
   }
 
   /* ---------- Действия ---------- */
   const ACT = {
     togglemusic: () => {
       save.musicMuted = !save.musicMuted;
-      if (!save.musicMuted && !(save.musicVol > 0)) save.musicVol = 0.45;
-      MUSIC.setVolume(save.musicVol != null ? save.musicVol : 0.45);
+      if (!save.musicMuted && !(save.musicVol > 0)) save.musicVol = 0.3;
+      MUSIC.setVolume(save.musicVol != null ? save.musicVol : 0.3);
       MUSIC.setMuted(!!save.musicMuted);
       persist();
       if (modal && modal.classList.contains('on')) showSettings();
@@ -2161,8 +2989,8 @@
     },
     togglesfx: () => {
       save.sfxMuted = !save.sfxMuted;
-      if (!save.sfxMuted && !(save.sfxVol > 0)) save.sfxVol = 1;
-      SFX.setVolume(save.sfxVol != null ? save.sfxVol : 1);
+      if (!save.sfxMuted && !(save.sfxVol > 0)) save.sfxVol = 0.2;
+      SFX.setVolume(save.sfxVol != null ? save.sfxVol : 0.2);
       SFX.setMuted(!!save.sfxMuted);
       persist();
       if (modal && modal.classList.contains('on')) showSettings();
@@ -2189,7 +3017,16 @@
     daily: showDaily, close: closeModal,
     profile: () => showProfile(),
     setavatar: d => { if (save.unlocked.indexOf(d.k) < 0) return; save.avatar = d.k; persist(); refreshHubAvatar(); showProfile(); },
-    setname: () => { const inp = $('#nick'), v = inp ? inp.value.trim() : ''; if (v.length < 2) { toast('Имя должно быть от 2 до 16 символов'); return; } save.name = v; persist(); closeModal(); showHub(); toast('Добро пожаловать, ' + v + '!'); },
+    setname: () => {
+      const inp = $('#nick');
+      const raw = inp ? inp.value : '';
+      const clean = (MB.net && MB.net.sanitizeName) ? MB.net.sanitizeName(raw) : String(raw || '').trim().slice(0, 16);
+      if (clean.length < 2 || clean.length > 16) { toast('Имя должно быть от 2 до 16 символов'); return; }
+      if (/^(bot|npc|test|admin|null|undefined|guest|гость)$/i.test(clean)) { toast('Это имя недоступно'); return; }
+      save.name = clean;
+      if (MB.net && MB.net.getPlayerProfile) MB.net.getPlayerProfile(save);
+      persist(); closeModal(); showHub(); toast('Добро пожаловать, ' + clean + '!');
+    },
     chapter: d => { if (!chOpen(+d.ch)) return; showCampaign(+d.ch); },
     stage: d => { const p = save.progress[campCh] || 0; if (+d.st > p + 1) { toast('Сначала пройдите предыдущий уровень'); return; } openPrep({ type: 'stage', ch: campCh, st: +d.st }); },
     boss: () => { const p = save.progress[campCh] || 0; if (!save.bosses[campCh] && p < 10) { toast('Босс откроется после 10-го уровня'); return; } openPrep({ type: 'boss', ch: campCh }); },
@@ -2199,7 +3036,7 @@
     pick: d => { const i = save.team.indexOf(d.k); if (i >= 0) { if (save.team.length > 1) save.team.splice(i, 1); } else if (save.team.length < 3) save.team.push(d.k); else toast('В отряде уже 3 героя — сначала уберите одного'); openPrep(prep); },
     colpick: d => { if (!prep || prep.type !== 'col' || save.unlocked.indexOf(d.k) < 0) return; prep.hero = d.k; openPrep(prep); },
     fight: () => { if (prep.type === 'clan') { if (!MB.spendClanKey(save)) { toast('Нет ключей кланового босса — 2 новых дадут завтра, ещё можно купить в клановом магазине'); return; } prep.bossHp0 = save.clan.bossHp; persist(); startBattle(prep); return; } if (!MB.spendEnergy(save, Date.now())) { showEnergy(true); return; } persist(); startBattle(prep); },
-    energy: () => showEnergy(false), drink: d => { if (save.potions[d.p] > 0) { save.potions[d.p]--; save.energy.val += MB.POTIONS[d.p].amt; SFX.play('potion_drink', 0.76); persist(); toast('+' + MB.POTIONS[d.p].amt + ' энергии'); refreshTop(); showEnergy(showEnergy.need); } },
+    energy: () => showEnergy(false), drink: d => { if (save.potions[d.p] > 0) { save.potions[d.p]--; save.energy.val += MB.POTIONS[d.p].amt; SFX.play('potion_drink', 0.76); persist(); toast('+' + MB.POTIONS[d.p].amt + T(' энергии', ' energy')); refreshTop(); showEnergy(showEnergy.need); } },
     shop: () => { showShop.back = 'hub'; showShop(); },
     shoptab: d => { if (d.from === 'clankeys') showShop.back = 'clans'; showShop(d.t); }, coliseum: () => { if (!MB.coliseumOpen(save)) { toast('Колизей откроется после победы над боссом главы ' + MB.COLISEUM.needBoss + ' и ' + MB.COLISEUM.needLvl + '-го уровня любого героя'); return; } showColiseum(); },
     colfight: d => {
@@ -2223,6 +3060,10 @@
     clantab: d => showClanHall(d.t),
     clansort: d => { memberSort = d.s; showClanHall(); },
     clanjoin: d => {
+      if (MB.net && MB.net.isRemote && MB.net.isRemote() && MB.net.canJoinCompetitive && !MB.net.canJoinCompetitive(save)) {
+        toast('Для вступления в клан на площадке нужен вход через аккаунт');
+        return;
+      }
       const idx = +d.i, c = MB.CLAN_NPC[idx]; if (!c || save.clan) return;
       const rec = c.recruit || 'free';
       if (rec === 'closed') { toast('Клан «' + c.name + '» отклоняет заявки на вступление'); return; }
@@ -2286,6 +3127,10 @@
     },
     embsave: () => { toast('Герб клана нельзя изменить после создания'); },
     clancreateok: () => {
+      if (MB.net && MB.net.isRemote && MB.net.isRemote() && MB.net.canJoinCompetitive && !MB.net.canJoinCompetitive(save)) {
+        toast('Для создания клана на площадке нужен вход через аккаунт');
+        return;
+      }
       const el = $('#clanname'), descEl = $('#clandesc');
       const chk = MB.validateClanName(el ? el.value : '');
       if (!chk.ok) { toast(chk.reason); return; }
@@ -2294,6 +3139,12 @@
       save.gems -= MB.CLAN.createCost;
       const iconId = (embDraft && embDraft.icon) || 'axes_red';
       save.clan = MB.mkClan(save, chk.value, true, 1, embDraft, desc, iconId);
+      if (MB.net && MB.net.getPlayerProfile) {
+        const p = MB.net.getPlayerProfile(save);
+        if (p && p.id) {
+          save.clan.members = [{ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'leader', contrib: 0, bossDmg: 0, verified: !!p.verified }];
+        }
+      }
       skipExistingClanRewards(save.clan);
       persist(); closeModal(); showClanHall(); toast('Клан «' + chk.value + '» создан!');
     },
@@ -2330,16 +3181,44 @@
     },
     claimbossreward: () => {
       const clan = save.clan; if (!clan) return;
-      const st = clanRewardState(clan); if (!st) { toast('Награда уже получена'); return; }
-      const r = st.reward;
-      if (!save.clanBossPending || save.clanBossPending.id !== r.id) {
-        if (save.clanBossDone && save.clanBossDone[r.id]) return;
-        save.ccoin = (save.ccoin || 0) + (r.cc || MB.CCOIN.clanKill);
-        save.clanBossPending = { id: r.id, xp: r.xp || MB.XP.clanKill, coinsGiven: true };
-        persist();
-        toast('+' + (r.cc || MB.CCOIN.clanKill) + ' клановых монет. Выберите героя для опыта.');
+      MB.clanBossWeekTick(save, now());
+      const st = clanRewardState(clan);
+      const mvp = save.clanMvpPending;
+      const mvpOk = !!(mvp && mvp.week && !(save.clanMvpClaimed && save.clanMvpClaimed[mvp.week]));
+      if (!st && !mvpOk) { toast('Награда уже получена'); return; }
+
+      // Золотой сундук лучшему по урону за неделю (раз в неделю)
+      let mvpNote = '';
+      if (mvpOk) {
+        if (!save.clanMvpClaimed || typeof save.clanMvpClaimed !== 'object') save.clanMvpClaimed = {};
+        save.clanMvpClaimed[mvp.week] = true;
+        const it = grantChest(MB.topChapter(save), 'gold');
+        mvpNote = ' Золотой сундук за лучший урон недели: ' + MB.itemName(it, 'viking') + '!';
+        save.clanMvpPending = null;
+        SFX.play('chest_open_gold', 0.78);
       }
-      showClanXpPicker(save.clanBossPending);
+
+      if (st) {
+        const r = st.reward;
+        if (!save.clanBossPending || save.clanBossPending.id !== r.id) {
+          if (save.clanBossDone && save.clanBossDone[r.id]) {
+            if (mvpNote) { persist(); toast(mvpNote.trim()); showClanHall(); }
+            return;
+          }
+          save.ccoin = (save.ccoin || 0) + (r.cc || MB.CCOIN.clanKill);
+          save.clanBossPending = { id: r.id, xp: r.xp || MB.XP.clanKill, coinsGiven: true, mvpNote: mvpNote };
+          persist();
+          toast('+' + (r.cc || MB.CCOIN.clanKill) + ' клановых монет.' + mvpNote + ' Выберите героя для опыта.');
+        } else if (mvpNote) {
+          save.clanBossPending.mvpNote = (save.clanBossPending.mvpNote || '') + mvpNote;
+          persist();
+        }
+        showClanXpPicker(save.clanBossPending);
+      } else {
+        persist();
+        toast(mvpNote.trim() || 'Награда получена');
+        showClanHall();
+      }
     },
     applyclanxp: d => {
       const p = save.clanBossPending;
@@ -2349,11 +3228,12 @@
       if (!save.clanBossDone || typeof save.clanBossDone !== 'object') save.clanBossDone = {};
       save.clanBossDone[p.id] = true;
       const ups = MB.grantXp(save, [k], p.xp || MB.XP.clanKill);
+      const mvpExtra = p.mvpNote || '';
       save.clanBossPending = null;
       persist();
       closeModal();
       const upTxt = ups.length ? (' ' + heroLoc(k, 'name') + ' достиг ' + ups[0].to + ' уровня!') : '';
-      toast(heroLoc(k, 'name') + ' получил ' + (p.xp || MB.XP.clanKill) + ' XP.' + upTxt);
+      toast(heroLoc(k, 'name') + ' получил ' + (p.xp || MB.XP.clanKill) + ' XP.' + upTxt + mvpExtra);
       showClanHall();
     },
     clanactclaim: d => {
@@ -2980,8 +3860,8 @@
     $('#stage').addEventListener('pointerup', e => { if (e.pointerType === 'touch' || e.pointerType === 'pen') onUiTap(e); });
 cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointermove', onMove); cv.addEventListener('pointerup', onUp); cv.addEventListener('pointercancel', onUp); cv.addEventListener('wheel', onWheel, { passive: false });
     save = loadSave(); syncSkins();
-    if (save.musicVol == null) save.musicVol = save.musicMuted ? 0 : 0.45;
-    if (save.sfxVol == null) save.sfxVol = 1;
+    if (save.musicVol == null) save.musicVol = save.musicMuted ? 0 : 0.3;
+    if (save.sfxVol == null) save.sfxVol = 0.2;
     if (save.sfxMuted == null) save.sfxMuted = false;
     if (save.lang !== 'en' && save.lang !== 'ru') save.lang = 'ru';
     I18N.setLang(save.lang);
@@ -2993,6 +3873,7 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
     if (['#nointro', '#battle', '#heroes', '#coliseum', '#clans', '#clanhall', '#lair'].indexOf(location.hash) >= 0 || location.hash.indexOf('#fgeditor') === 0) { save.seenIntro = true; const w = MB.weekInfo(new Date()); save.daily = { week: w.week, claimed: [true, true, true, true, true, true, true] }; }
     // 1) Сначала показываем экран загрузки и ждём его картинку — только потом ART.load
     ui.innerHTML = '<div class="loading"><img class="loading-bg" src="assets/ui/loading_screen.webp" alt="" fetchpriority="high" decoding="sync"><div class="bar"><i id="ld" style="width:0"></i><div class="load-label">Идёт загрузка</div></div></div>';
+    applyUILang();
     const startAssetLoad = () => {
       const topCh = (typeof MB.topChapter === 'function') ? MB.topChapter(save) : 1;
       ART.load(p => { const b = $('#ld'); if (b) b.style.width = Math.round(p * 100) + '%'; }, { unlocked: save.unlocked || ['viking', 'knight'], topChapter: Math.max(1, topCh || 1) }).then(() => {

@@ -394,7 +394,7 @@
     const s = { v: 1, name: '', avatar: '', sparks: 0, ore: 0, ccoin: 0, heroes: {}, unlocked: ['viking', 'knight'], bag: [], nextId: 1,
       progress: {}, bosses: {}, lair: { date: '', used: {}, diff: {} }, daily: { week: '', claimed: [] },
       skins: {}, skinUse: {}, ckeys: { date: '', free: 2, paid: 0 },
-      team: ['viking', 'knight'], auto: false, speed: 1, seenIntro: false, musicMuted: false, musicVol: 0.45, sfxVol: 1, sfxMuted: false, lang: 'ru',
+      team: ['viking', 'knight'], auto: false, speed: 1, seenIntro: false, musicMuted: false, musicVol: 0.3, sfxVol: 0.2, sfxMuted: false, lang: 'ru',
       gems: 50, energy: { val: 200, ts: Date.now() }, potions: { s: 1, m: 0, l: 0 }, energyElixir: false, ads: { date: '', n: 0, potN: 0 }, col: { best: 0 }, clan: null };
     MB.HERO_ORDER.forEach(k => { s.heroes[k] = { lvl: 1, xp: 0, tr: MB.newTree(), resets: 0, equip: {} }; });
     return s;
@@ -716,10 +716,64 @@
   /* ---------- Ежедневный вход ---------- */
   MB.dayKey = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   MB.utc3DayKey = function (d) { const u = new Date(d.getTime() + 3 * 3600000); return u.getUTCFullYear() + '-' + String(u.getUTCMonth() + 1).padStart(2, '0') + '-' + String(u.getUTCDate()).padStart(2, '0'); };
+  // Реклама: сброс ровно в 03:00 UTC каждый день
+  MB.ADS_RESET_UTC_HOUR = 3;
+  MB.ADS_RESET_UTC_MINUTE = 0;
+  // Ключ «рекламного дня»: сутки идут от 03:00 UTC до 03:00 UTC следующего дня
+  MB.adsDayKey = function (d) {
+    const n = d instanceof Date ? d : new Date(d || Date.now());
+    const shifted = new Date(n.getTime() - MB.ADS_RESET_UTC_HOUR * 3600000 - (MB.ADS_RESET_UTC_MINUTE || 0) * 60000);
+    return shifted.getUTCFullYear() + '-' + String(shifted.getUTCMonth() + 1).padStart(2, '0') + '-' + String(shifted.getUTCDate()).padStart(2, '0');
+  };
+  // Момент следующего сброса рекламы (03:00 UTC)
+  MB.nextAdsResetMs = function (now) {
+    const n = now instanceof Date ? now : new Date(now || Date.now());
+    const y = n.getUTCFullYear(), m = n.getUTCMonth(), day = n.getUTCDate();
+    const h = MB.ADS_RESET_UTC_HOUR || 3;
+    const mi = MB.ADS_RESET_UTC_MINUTE || 0;
+    let target = Date.UTC(y, m, day, h, mi, 0, 0);
+    if (n.getTime() >= target) {
+      target = Date.UTC(y, m, day + 1, h, mi, 0, 0);
+    }
+    return target;
+  };
+  // Совместимость: прежнее имя → тот же момент сброса рекламы
+  MB.nextUtc3MidnightMs = function (now) { return MB.nextAdsResetMs(now); };
   MB.weekInfo = function (now) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()), idx = (d.getDay() + 6) % 7;
     const mon = new Date(d); mon.setDate(d.getDate() - idx);
     return { week: MB.dayKey(mon), idx: idx, today: MB.dayKey(d) };
+  };
+  // Следующий понедельник 00:00 (локальное время) — момент сброса кланового босса
+  MB.nextMondayMs = function (now) {
+    const n = now instanceof Date ? now : new Date(now || Date.now());
+    const d = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    const idx = (d.getDay() + 6) % 7; // 0 = понедельник
+    // В понедельник сброс уже был в 00:00 — следующий через 7 дней
+    const daysUntil = idx === 0 ? 7 : (7 - idx);
+    const next = new Date(d);
+    next.setDate(d.getDate() + daysUntil);
+    next.setHours(0, 0, 0, 0);
+    return next.getTime();
+  };
+  MB.formatDuration = function (ms, withSec, lang) {
+    ms = Math.max(0, Math.floor(ms));
+    const sec = Math.floor(ms / 1000);
+    const d = Math.floor(sec / 86400);
+    const h = Math.floor((sec % 86400) / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    const en = lang === 'en';
+    const ud = en ? 'd ' : 'д ', uh = en ? 'h ' : 'ч ', um = en ? 'm ' : 'м ', us = en ? 's' : 'с';
+    if (withSec) {
+      if (d > 0) return d + ud + h + uh + m + um + s + us;
+      if (h > 0) return h + uh + String(m).padStart(2, '0') + um + String(s).padStart(2, '0') + us;
+      return m + um + String(s).padStart(2, '0') + us;
+    }
+    if (d > 0) return d + ud + h + uh + m + (en ? 'm' : 'м');
+    if (h > 0) return h + uh + m + (en ? 'm' : 'м');
+    if (m > 0) return m + (en ? 'm' : 'м');
+    return s + us;
   };
   MB.dailyState = function (save, now) {
     const w = MB.weekInfo(now);
@@ -751,18 +805,9 @@
   };
   MB.accountPower = function (save) { return save.unlocked.reduce((a, k) => a + MB.power(save, k), 0); };
   MB.accountLevel = function (save) { return save.unlocked.reduce((a, k) => a + save.heroes[k].lvl, 0); };
-  // Тестовый рейтинг: соперники — боты с фиксированной силой (100 позиций)
+  // Рейтинг: боты отключены к релизу — только реальные игроки (локально список пуст, на площадке подтянется сеть)
   MB.ratingBots = function () {
-    const names = ['ГромоБорода', 'Лисичка_96', 'ТёмныйЛорд', 'Мурзик', 'Акела', 'Шаман_Вася', 'Кузнечик', 'Валькирия', 'DarkElf', 'Снежок', 'Рыцарь_Ордена', 'Котлетка', 'Бармалей', 'Гномик', 'Ведьмочка', 'Северянин',
-      'Хоббит', 'Медоед', 'Злой_Тролль', 'Огонёк', 'Варвар', 'ЗвёздныйМаг', 'Карамелька', 'Берсерк', 'Сова', 'Дракоша', 'Леший', 'Барсик_ПРО', 'Ниндзя', 'Ёжик',
-      'Тихий_Охотник', 'Молния', 'Хрусталь', 'Буян', 'Черепаха', 'Пират_Джо', 'Лунная_Кошка', 'Грибник', 'Стрела', 'Кочевник',
-      'Мастер_Руны', 'Пепел', 'Сивый', 'Радуга', 'Топор_Правды', 'Ночная_Фея', 'Болотник', 'Кристалл', 'Вихрь', 'Тигрица',
-      'Старейшина', 'Пирожок', 'Громила', 'Тень_Леса', 'Рубин', 'Хранитель', 'Ясный_Сокол', 'Кедр', 'Волкодав', 'Искорка',
-      'Паладин_77', 'Морозко', 'Жнец', 'Буревестник', 'Смолка', 'Купец', 'Астроном', 'Рыжая_Бестия', 'Молотобоец', 'Туман',
-      'Скиталец', 'Громозека', 'Лучница_Лэя', 'Чародей', 'Прыгун', 'Барсук', 'Змееглав', 'Травник', 'Соколиный_Глаз', 'Дуболом',
-      'Мята', 'Скальд', 'Призрак', 'Кремень', 'Лютик', 'Разбойник', 'Жнец_Душ', 'Опоссум', 'Звонарь', 'Пустынник',
-      'Кобра', 'Шипастик', 'Медвежонок', 'Витязь', 'Солнцеликий', 'Мгла', 'Проворный', 'Усач', 'Громошквал', 'Ледяной'];
-    return names.map((n, i) => { const t = i / (names.length - 1), p = Math.round(600 * Math.pow(36, 1 - t) / 10) * 10; return { name: n, power: p, level: Math.max(3, Math.min(390, Math.round(p / 600 * 9.5))) }; });
+    return [];
   };
   MB.topChapter = function (save) { let c = 1; for (let i = 1; i <= 4; i++) if (save.bosses[i]) c = i + 1; return c; };
 
@@ -791,65 +836,93 @@
     const lvl = typeof clanOrLvl === 'number' ? clanOrLvl : (clanOrLvl && clanOrLvl.lvl) || 1;
     return Math.max(10, 10 + (lvl - 1)) + (lvl >= 10 ? 1 : 0);
   };
-  // Кланы-боты, в которые можно вступить (в игре на площадке — настоящие кланы игроков)
-  MB.CLAN_NPC = [
-    { name: 'Орден Рассвета', lvl: 12, recruit: 'free' }, { name: 'Топоры Севера', lvl: 9, recruit: 'apply' },
-    { name: 'Хранители Рощи', lvl: 7, recruit: 'free' }, { name: 'Псы Войны', lvl: 15, recruit: 'apply' },
-    { name: 'Клубок Змей', lvl: 5, recruit: 'free' }, { name: 'Серебряный Легион', lvl: 20, recruit: 'closed' },
-    { name: 'Кот и Кинжал', lvl: 4, recruit: 'free' }, { name: 'Дети Грозы', lvl: 10, recruit: 'apply' }
-  ];
+  // NPC-кланы отключены к релизу — в списке только реальные кланы игроков (через сеть / создание)
+  MB.CLAN_NPC = [];
   MB.clanBossInfo = function (clan) {
     const art = 'andoor';   // постоянный клановый босс — Король Лич Андоор
     const lvl = MB.CLAN.bossLvl(clan && clan.bossLvl);
     const maxHp = MB.CLAN.bossHp(clan && clan.bossLvl);
     return { art: art, name: MB.BOSSES[art].name, lvl: lvl, displayLvl: 100, maxHp: maxHp };
   };
-  // Участники-боты: сила рядом с силой игрока (на площадке — настоящие игроки)
-  MB.clanBots = function (save, n, rng, withRoles) {
-    rng = rng || Math.random;
-    const pool = MB.ratingBots().map(b => b.name).slice(), out = [];
-    const me = Math.max(200, MB.accountPower(save));
-    let idx = 0;
-    while (out.length < n && pool.length) {
-      const i = Math.floor(rng() * pool.length), name = pool.splice(i, 1)[0];
-      const role = withRoles ? (idx === 0 ? 'leader' : (idx === 1 ? 'officer' : 'member')) : 'member';
-      out.push({ id: 'm_' + (idx++) + '_' + Math.floor(rng() * 100000), name: name, power: Math.max(100, Math.round(me * (0.5 + rng() * 1.1) / 10) * 10), role: role, contrib: 0, bossDmg: 0 });
-    }
-    return out;
+  // Участники-боты отключены к релизу
+  MB.clanBots = function (/* save, n, rng, withRoles */) {
+    return [];
   };
   MB.mkClan = function (save, name, own, lvl, emblem, desc, iconId, recruitMode) {
     const bossLvl = MB.CLAN.bossLvl(1);
     const bossHp = MB.CLAN.bossHp(1);
-    const botCount = own ? 3 : Math.min(MB.clanMaxMembers(lvl || 1) - 1, 5 + Math.floor(Math.random() * 4));
-    const bots = MB.clanBots(save, botCount, null, !own);
-    const apps = own ? [
-      { id: 'app_1', name: 'Искатель_Рун', power: Math.max(150, Math.round(MB.accountPower(save) * 0.85 / 10) * 10), level: Math.max(2, Math.round(MB.accountLevel(save) * 0.8)) },
-      { id: 'app_2', name: 'Северная_Искра', power: Math.max(150, Math.round(MB.accountPower(save) * 1.05 / 10) * 10), level: Math.max(2, MB.accountLevel(save)) }
-    ] : [];
+    const week = MB.weekInfo(new Date()).week;
     return { name: String(name || '').slice(0, MB.CLAN_NAME_MAX), desc: MB.sanitizeClanDesc(desc || ''), icon: iconId || 'axes_red',
       own: !!own, myRole: own ? 'leader' : 'member', recruit: recruitMode || 'free',
       lvl: lvl || 1, exp: 0, bossLvl: bossLvl, bossHp: bossHp, myBossDmg: 0, lastFight: '', day: '',
+      bossWeek: week,
       emblem: emblem ? Object.assign({}, emblem) : MB.defaultEmblem(),
-      members: bots,
-      applicants: apps };
+      members: [],
+      applicants: [] };
   };
-  // Ежедневная активность соклановцев: приносят клану опыт (вызывается при входе в клан)
-  MB.clanTick = function (save, now, rng) {
+  // Ежедневный тик клана (день сменился). Авто-урон/опыт от ботов отключён — только реальные действия игроков.
+  MB.clanTick = function (save, now) {
     const c = MB.ensureClan(save); if (!c) return null;
     const t = MB.dayKey(now); if (c.day === t) return null;
-    c.day = t; rng = rng || Math.random;
-    let gain = 0, bossHitTotal = 0;
-    c.members.forEach(m => {
-      gain += 2 + Math.floor(rng() * 5);
-      const hit = Math.max(120, Math.round(((m.power || 300) * (0.35 + rng() * 0.55))));
-      m.bossDmg = (m.bossDmg || 0) + hit;
-      bossHitTotal += hit;
-    });
-    if (bossHitTotal > 0 && typeof c.bossHp === 'number' && c.bossHp > 1) {
-      c.bossHp = Math.max(1, c.bossHp - bossHitTotal);
+    c.day = t;
+    return { gain: 0, ups: 0, bossHitTotal: 0 };
+  };
+  // Недельный сброс кланового босса (понедельник 00:00): HP, урон, MVP прошлой недели
+  MB.clanBossWeekTick = function (save, now) {
+    const c = MB.ensureClan(save); if (!c) return null;
+    const n = now instanceof Date ? now : new Date(now || Date.now());
+    const w = MB.weekInfo(n);
+    if (c.bossWeek === w.week) {
+      return { reset: false, week: w.week, nextMs: MB.nextMondayMs(n) };
     }
-    const ups = MB.clanAddExp(save, gain);
-    return { gain: gain, ups: ups, bossHitTotal: bossHitTotal };
+    // Определяем MVP прошлой недели по накопленному урону
+    const rows = [];
+    const myDmg = c.myBossDmg || 0;
+    if (myDmg > 0) {
+      rows.push({ id: save.playerId || 'me', name: save.name || 'Вы', dmg: myDmg, me: true });
+    }
+    (c.members || []).forEach(m => {
+      if (!m) return;
+      const dmg = m.bossDmg || 0;
+      if (dmg <= 0) return;
+      if (save.playerId && m.id === save.playerId) return;
+      rows.push({ id: m.id, name: m.name || 'Игрок', dmg: dmg, me: false });
+    });
+    rows.sort((a, b) => b.dmg - a.dmg || (a.me ? -1 : 1));
+    const mvp = rows.length && rows[0].dmg > 0 ? rows[0] : null;
+    const prevWeek = c.bossWeek || null;
+
+    // Сброс босса и недельного урона
+    c.bossWeek = w.week;
+    c.bossHp = MB.CLAN.bossHp(1);
+    c.bossLvl = MB.CLAN.bossLvl(1);
+    c.myBossDmg = 0;
+    (c.members || []).forEach(m => { if (m) m.bossDmg = 0; });
+
+    // Если MVP — текущий игрок, и награду за ту неделю ещё не забирал
+    if (mvp && mvp.me && prevWeek) {
+      if (!save.clanMvpClaimed || typeof save.clanMvpClaimed !== 'object') save.clanMvpClaimed = {};
+      if (!save.clanMvpClaimed[prevWeek]) {
+        save.clanMvpPending = { week: prevWeek, chest: 'gold', dmg: mvp.dmg };
+      }
+    }
+    c.lastBossReset = n.getTime();
+    return { reset: true, week: w.week, prevWeek: prevWeek, mvp: mvp, nextMs: MB.nextMondayMs(n) };
+  };
+  // Лидер по урону за текущую неделю (для UI и проверки награды)
+  MB.clanBossDmgLeaders = function (save) {
+    const c = MB.ensureClan(save); if (!c) return [];
+    const rows = [{ id: save.playerId || 'me', name: 'Вы', dmg: c.myBossDmg || 0, me: true }];
+    (c.members || []).forEach(m => {
+      if (!m) return;
+      if (save.playerId && m.id === save.playerId) return;
+      rows.push({ id: m.id, name: m.name || 'Игрок', dmg: m.bossDmg || 0, me: false });
+    });
+    return rows.sort((a, b) => (b.dmg || 0) - (a.dmg || 0) || (a.me ? -1 : 1));
+  };
+  MB.clanBossIsWeeklyMvp = function (save) {
+    const rows = MB.clanBossDmgLeaders(save);
+    return !!(rows[0] && rows[0].me && (rows[0].dmg || 0) > 0);
   };
   MB.clanAddExp = function (save, n) {
     const c = save.clan; if (!c) return 0;
@@ -873,27 +946,8 @@
     return (save.clan.lvl || 0) + MB.clanBuildLvl(save, 'bank') * 5;
   };
   MB.clanTop20 = function (save) {
-    const npcIcons = (MB.CLAN_ICONS && MB.CLAN_ICONS.length) ? MB.CLAN_ICONS : [{ id: 'axes_red' }];
-    const extraNames = [
-      'Железный Легион', 'Северные Волки', 'Хранители Бездны', 'Клинки Зари', 'Владыки Пепла',
-      'Крылья Бури', 'Стражи Кристалла', 'Сумеречный Дозор', 'Охотники Ночи', 'Когти Тигра',
-      'Пламя Севера', 'Щит Империи', 'Ледяные Клыки', 'Сыны Грома'
-    ];
-    const baseList = MB.CLAN_NPC.map((c, i) => {
-      const em = Object.assign({}, c.emblem || {}, { icon: c.icon || npcIcons[i % npcIcons.length].id });
-      const cap = MB.clanMaxMembers(c.lvl);
-      const cnt = Math.min(cap, 6 + (c.lvl % 6));
-      const power = c.lvl * 1450 + (8 - i) * 180;
-      return { name: c.name, lvl: c.lvl, power: power, members: cnt, maxMembers: cap, recruit: c.recruit || 'free', emblem: em, isNpc: true, npcIdx: i };
-    });
-    extraNames.forEach((nm, idx) => {
-      const lvl = Math.max(2, 18 - idx);
-      const cap = MB.clanMaxMembers(lvl);
-      const cnt = Math.min(cap, 5 + ((lvl + idx) % 6));
-      const power = lvl * 1380 + (14 - idx) * 150;
-      const em = { shape: 'shield', color: 'red', rim: 'gold', symbol: 'sword', icon: npcIcons[(idx + 3) % npcIcons.length].id };
-      baseList.push({ name: nm, lvl: lvl, power: power, members: cnt, maxMembers: cap, recruit: idx % 3 === 0 ? 'closed' : (idx % 2 === 0 ? 'apply' : 'free'), emblem: em, isNpc: false });
-    });
+    // К релизу: без NPC/фейковых кланов. На площадке список дополнится реальными кланами через сеть.
+    const baseList = [];
     if (save && save.clan) {
       const c = MB.ensureClan(save);
       const myPower = MB.accountPower(save) + (c.members || []).reduce((s, m) => s + (m.power || 0), 0) + (c.lvl || 1) * 800;
@@ -934,14 +988,18 @@
     if (c.myRole === 'leader') c.own = true;
     if (!c.recruit || !MB.CLAN_RECRUIT[c.recruit]) c.recruit = 'free';
     if (!Array.isArray(c.members)) c.members = [];
+    // Миграция с тестовых сейвов: убираем ботов (id вида m_0_12345) и оставляем только реальных
+    c.members = c.members.filter(m => m && m.id && !/^m_\d+_/.test(String(m.id)) && m.id !== 'me' && String(m.id).indexOf('me_prev_') !== 0);
     let hasLeader = c.myRole === 'leader';
     c.members.forEach((m, idx) => {
-      if (!m.id) m.id = 'm_' + idx + '_' + (idx + 1);
+      if (!m.id) m.id = 'plr_' + idx;
       if (!m.role) m.role = (!hasLeader && idx === 0) ? 'leader' : 'member';
       if (m.role === 'leader') hasLeader = true;
       if (m.contrib == null) m.contrib = 0;
     });
     if (!Array.isArray(c.applicants)) c.applicants = [];
+    // Убираем тестовые заявки (app_1, app_2)
+    c.applicants = c.applicants.filter(a => a && a.id && !/^app_/.test(String(a.id)));
     if (!c.builds) c.builds = {};
     if (c.pts == null) c.pts = 0;
     if (c.actPts == null) c.actPts = 0;
@@ -949,6 +1007,7 @@
     if (c.myContrib == null) c.myContrib = 0;
     if (c.myBossDmg == null) c.myBossDmg = 0;
     c.members.forEach(m => { if (m.bossDmg == null) m.bossDmg = 0; });
+    if (!c.bossWeek) c.bossWeek = MB.weekInfo(new Date()).week;
     const fixedLvl = MB.CLAN.bossLvl(1);
     const fixedHp = MB.CLAN.bossHp(1);
     if (c.bossLvl !== fixedLvl) c.bossLvl = fixedLvl;
