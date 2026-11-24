@@ -2784,7 +2784,7 @@
     st.style.left = (v.ox + v.w / 2) + 'px';
     st.style.top = (v.oy + v.h / 2) + 'px';
     const rot = portrait ? ' rotate(90deg)' : '';
-    st.style.transform = 'translate(-50%, -50%)' + rot + ' scale(' + k + ') translate(' + panX + 'px,' + panY + 'px)';
+    st.style.transform = 'translate(-50%, -50%)' + rot + ' scale(' + k + ')';
     let hint = document.getElementById('rot-hint');
     if (portrait) {
       if (!hint) {
@@ -2798,20 +2798,17 @@
   }
   function clampZoom() {
     zoom = Math.max(1, Math.min(3, zoom));
-    const max = 420;
-    panX = Math.max(-max, Math.min(max, panX));
-    panY = Math.max(-max, Math.min(max, panY));
+    panX = 0;
+    panY = 0;
   }
   function setupPinch() {
-    let startDist = 0, startZoom = 1, startPan = null, startMid = null;
+    let startDist = 0, startZoom = 1;
     const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
-    const mid = t => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
     document.addEventListener('touchstart', e => {
       if (e.touches.length === 2) {
         startDist = dist(e.touches);
         startZoom = zoom;
-        startPan = { x: panX, y: panY };
-        startMid = mid(e.touches);
+        panX = 0; panY = 0;
         e.preventDefault();
       }
     }, { passive: false });
@@ -2819,16 +2816,14 @@
       if (e.touches.length === 2 && startDist) {
         const d = dist(e.touches);
         zoom = startZoom * (d / startDist);
-        const m = mid(e.touches);
-        panX = startPan.x + (m.x - startMid.x) / zoom;
-        panY = startPan.y + (m.y - startMid.y) / zoom;
+        panX = 0; panY = 0;
         clampZoom();
         fit();
         e.preventDefault();
       }
     }, { passive: false });
     document.addEventListener('touchend', e => {
-      if (e.touches.length < 2) { startDist = 0; startPan = null; }
+      if (e.touches.length < 2) startDist = 0;
     });
     document.addEventListener('wheel', e => {
       if (!e.ctrlKey) return;
@@ -2848,7 +2843,15 @@
       visualViewport.addEventListener('resize', fit);
       visualViewport.addEventListener('scroll', fit);
     }
-    $('#stage').addEventListener('click', onClick);
+    let lastUiTap = 0;
+    const onUiTap = e => {
+      const now = Date.now();
+      if (now - lastUiTap < 250) return;
+      lastUiTap = now;
+      onClick(e);
+    };
+    $('#stage').addEventListener('click', onUiTap);
+    $('#stage').addEventListener('pointerup', e => { if (e.pointerType === 'touch' || e.pointerType === 'pen') onUiTap(e); });
 cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointermove', onMove); cv.addEventListener('pointerup', onUp); cv.addEventListener('pointercancel', onUp); cv.addEventListener('wheel', onWheel, { passive: false });
     save = loadSave(); syncSkins();
     if (save.musicVol == null) save.musicVol = save.musicMuted ? 0 : 0.45;
