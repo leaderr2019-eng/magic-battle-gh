@@ -17,6 +17,15 @@
   <div id="ui"></div>
   <div id="modal"></div>
 </div>
+<script>
+  window.MB_NET_CONFIG = {
+  mode: 'remote',
+  apiUrl: 'https://magic-battle-server-production.up.railway.app',
+  wsUrl:  'wss://magic-battle-server-production.up.railway.app/ws',
+  pollMs: 4000,          // ← добавил запятую
+  allowGuests: true
+  };
+</script>
 <script src="js/sprites.js"></script>
 <script src="js/core.js"></script>
 <script src="js/net.js"></script>
