@@ -3788,7 +3788,8 @@
     st.style.left = (v.ox + v.w / 2) + 'px';
     st.style.top = (v.oy + v.h / 2) + 'px';
     const rot = portrait ? ' rotate(90deg)' : '';
-    st.style.transform = 'translate(-50%, -50%)' + rot + ' scale(' + k + ')';
+    // Применяем pan только если увеличено; форма остаётся привязанной к центру
+    st.style.transform = 'translate(calc(-50% + ' + panX + 'px), calc(-50% + ' + panY + 'px))' + rot + ' scale(' + k + ')';
     let hint = document.getElementById('rot-hint');
     if (portrait) {
       if (!hint) {
@@ -3800,34 +3801,55 @@
       hint.style.display = 'block';
     } else if (hint) hint.style.display = 'none';
   }
+  function clampPan() {
+    // Ограничиваем pan так, чтобы форма не улетала полностью с экрана
+    const maxPan = (zoom - 1) * 280; // чем больше zoom, тем больше можно сдвинуть
+    panX = Math.max(-maxPan, Math.min(maxPan, panX));
+    panY = Math.max(-maxPan, Math.min(maxPan, panY));
+    if (zoom <= 1.01) { panX = 0; panY = 0; }
+  }
   function clampZoom() {
     zoom = Math.max(1, Math.min(3, zoom));
-    panX = 0;
-    panY = 0;
+    clampPan();
   }
   function setupPinch() {
     let startDist = 0, startZoom = 1;
+    let panStartX = 0, panStartY = 0, lastX = 0, lastY = 0, panning = false;
     const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
     document.addEventListener('touchstart', e => {
       if (e.touches.length === 2) {
         startDist = dist(e.touches);
         startZoom = zoom;
-        panX = 0; panY = 0;
+        panning = false;
         e.preventDefault();
+      } else if (e.touches.length === 1 && zoom > 1.05) {
+        // Однопальцевый pan только когда уже увеличено
+        panning = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        panStartX = panX;
+        panStartY = panY;
       }
     }, { passive: false });
     document.addEventListener('touchmove', e => {
       if (e.touches.length === 2 && startDist) {
         const d = dist(e.touches);
         zoom = startZoom * (d / startDist);
-        panX = 0; panY = 0;
         clampZoom();
+        fit();
+        e.preventDefault();
+      } else if (e.touches.length === 1 && panning && zoom > 1.05) {
+        const t = e.touches[0];
+        panX = panStartX + (t.clientX - lastX);
+        panY = panStartY + (t.clientY - lastY);
+        clampPan();
         fit();
         e.preventDefault();
       }
     }, { passive: false });
     document.addEventListener('touchend', e => {
       if (e.touches.length < 2) startDist = 0;
+      if (e.touches.length === 0) panning = false;
     });
     document.addEventListener('wheel', e => {
       if (!e.ctrlKey) return;
