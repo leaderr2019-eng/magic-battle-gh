@@ -3458,7 +3458,18 @@
     clanleaveok: () => { save.clan = null; persist(); closeModal(); showClans(); toast('Вы покинули клан'); },
     buygems: d => buy(+d.i), buyreal: d => buyReal(d), chance: d => showChances(d.c),
     ad: () => watchAd('sparks'), adpot: () => watchAd('pot'), closeopen: () => { closeModal(); showShop(shopTab); },
-    flee: () => { if (!BV) return; const c = BV.ctx; if (c.type === 'clan') { clanBattleDone(BV, false, true); toast('Урон засчитан. Следующая попытка — завтра'); } BV = null; clock.speed = 1; leave(c); },
+    flee: () => {
+      if (!BV) return;
+      openModal('<div class="panel win" style="width:480px"><h2 class="out">' + t('flee') + '</h2><div class="paper" style="text-align:center;font-weight:700">' +
+        T('Вы точно уверены?', 'Are you sure?') + '</div>' +
+        '<div class="foot"><button class="btn red" data-act="fleeok">' + T('Да', 'Yes') + '</button><button class="btn" data-act="close">' + T('Нет', 'No') + '</button></div></div>');
+    },
+    fleeok: () => {
+      if (!BV) { closeModal(); return; }
+      const c = BV.ctx;
+      if (c.type === 'clan') { clanBattleDone(BV, false, true); toast('Урон засчитан. Следующая попытка — завтра'); }
+      BV = null; clock.speed = 1; closeModal(); leave(c);
+    },
     auto: () => { if (!BV) return; if (!BV.cleared && isBattleCleared(BV.ctx)) BV.cleared = true; if (!BV.cleared) { toast('Доступно после прохождения уровня'); return; } BV.auto = !BV.auto; save.auto = BV.auto; persist(); renderHudToggles(); if (BV.auto && BV.waiting) BV.waiting.auto(); },
     skipresult: () => {
       if (!BV || !BV.cleared || !BV.resultReady || BV.skipping) return;
