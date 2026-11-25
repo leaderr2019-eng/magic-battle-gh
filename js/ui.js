@@ -2477,6 +2477,36 @@
     else showShop();
   }
   function buyReal(d) {
+    const sdk = window.PikabuSDK;
+    if (sdk && sdk.store && typeof sdk.store.purchase === 'function') {
+      const productId = d.hero
+        ? (d.hero === 'archer' ? 'hero_yarra' : d.hero === 'boar' ? 'hero_pig' : 'hero_' + d.hero)
+        : ('gems_' + MB.SHOP.gems[+d.g].gems);
+      sdk.store.purchase({ productId: productId }).then(result => {
+        if (!result.success) {
+          if (result.reason !== 'USER_CANCELLED') toast('Покупка не завершена');
+          return;
+        }
+        if (d.hero) {
+          if (save.unlocked.indexOf(d.hero) < 0) {
+            save.unlocked.push(d.hero);
+            setTimeout(() => SFX.play('hero_unlock', 0.84), 220);
+          }
+          toast(heroLoc(d.hero, 'full') + ' в вашем отряде!');
+        } else {
+          const amt = MB.SHOP.gems[+d.g].gems;
+          save.gems += amt;
+          setTimeout(() => SFX.play('gem_gain', 0.74), 180);
+          toast('+' + amt + ' Изумрудов');
+        }
+        persist();
+        if (result.purchase && result.purchase.isConsumable && typeof sdk.store.consumePurchase === 'function') {
+          sdk.store.consumePurchase(result.purchase.purchaseId).catch(() => {});
+        }
+        showShop();
+      }).catch(() => toast('Ошибка покупки'));
+      return;
+    }
     const what = d.hero ? heroLoc(d.hero, 'full') + ' — ' + MB.HEROES[d.hero].shop.price + ' ₽' : MB.SHOP.gems[+d.g].gems + ' Изумрудов — ' + MB.SHOP.gems[+d.g].rub + ' ₽';
     buyReal.d = d;
     openModal('<div class="panel win" style="width:600px"><h2 class="out">Покупка</h2><div class="paper" style="text-align:center;font-weight:700">' + what + '<p class="note" style="margin-top:8px">Тестовая покупка: деньги не списываются. В опубликованной игре здесь откроется оплата площадки.</p></div>' +
