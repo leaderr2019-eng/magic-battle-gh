@@ -891,23 +891,25 @@
     rows.sort((a, b) => b.dmg - a.dmg || (a.me ? -1 : 1));
     const mvp = rows.length && rows[0].dmg > 0 ? rows[0] : null;
     const prevWeek = c.bossWeek || null;
+    const bossWasDefeated = !!c.bossDefeatedThisWeek;
 
     // Сброс босса и недельного урона
     c.bossWeek = w.week;
     c.bossHp = MB.CLAN.bossHp(1);
     c.bossLvl = MB.CLAN.bossLvl(1);
     c.myBossDmg = 0;
+    c.bossDefeatedThisWeek = false;
     (c.members || []).forEach(m => { if (m) m.bossDmg = 0; });
 
-    // Если MVP — текущий игрок, и награду за ту неделю ещё не забирал
-    if (mvp && mvp.me && prevWeek) {
+    // Золотой сундук MVP только если босс был повержен на прошлой неделе
+    if (mvp && mvp.me && prevWeek && bossWasDefeated) {
       if (!save.clanMvpClaimed || typeof save.clanMvpClaimed !== 'object') save.clanMvpClaimed = {};
       if (!save.clanMvpClaimed[prevWeek]) {
         save.clanMvpPending = { week: prevWeek, chest: 'gold', dmg: mvp.dmg };
       }
     }
     c.lastBossReset = n.getTime();
-    return { reset: true, week: w.week, prevWeek: prevWeek, mvp: mvp, nextMs: MB.nextMondayMs(n) };
+    return { reset: true, week: w.week, prevWeek: prevWeek, mvp: mvp, bossDefeated: bossWasDefeated, nextMs: MB.nextMondayMs(n) };
   };
   // Лидер по урону за текущую неделю (для UI и проверки награды)
   MB.clanBossDmgLeaders = function (save) {

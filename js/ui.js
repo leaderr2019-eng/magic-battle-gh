@@ -714,8 +714,11 @@
   function topbar(title, back) {
     const e = MB.energy(save, Date.now());
     const dly = MB.dailyState(save, now());
+    const dq = MB.dailyQuestState(save, now());
+    const hasQuestReward = MB.DAILY_QUESTS.some((q, i) => dq.wins >= q.wins && !dq.claimed[i]);
+    const glow = dly.canClaim || hasQuestReward;
     return '<div class="top">' + (back ? '<button class="btn small" data-act="' + back + '">' + t('back') + '</button>' : '') + '<h1 class="out">' + title + '</h1>' +
-      '<button class="dailychest' + (dly.canClaim ? ' glow' : '') + '" data-act="daily" title="' + t('daily_reward') + '"><img src="assets/ui/daily_chest.webp" alt=""></button>' +
+      '<button class="dailychest' + (glow ? ' glow' : '') + '" data-act="daily" title="' + t('daily_reward') + '"><img src="assets/ui/daily_chest.webp" alt=""></button>' +
       '<div class="res energy" data-act="energy" title="' + t('energy') + (e.next ? ' · ' + fmtT(e.next) : '') + '"><img src="assets/ui/energy.webp" alt=""><span class="val" id="en">' + e.val + '/' + (e.max || MB.ENERGY.max) + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<div class="res sparks" data-act="shoptab" data-t="free" title="' + t('sparks') + '"><img src="assets/ui/spark.webp" alt=""><span class="val">' + save.sparks + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
       '<div class="res ore" data-act="shoptab" data-t="ore" title="' + t('ore') + '"><img src="assets/ui/ore.webp" alt=""><span class="val">' + save.ore + '</span><img class="pls" src="assets/ui/plus_btn.webp" alt="+"></div>' +
@@ -763,7 +766,7 @@
       'Логово боссов откроется после прохождения 1-й главы (победа над боссом).': 'Boss Lair unlocks after clearing chapter 1 (defeat the boss).',
       'Открыто «Логово боссов»! Теперь можно сражаться с боссами повторно.': 'Boss Lair unlocked! You can now refight bosses.',
       'Открыты «Кланы»! Вступайте в клан и сражайтесь с клановым боссом.': 'Clans unlocked! Join a clan and fight the clan boss.',
-      'Кланы откроются после прохождения 2-й главы (победа над боссом).': 'Clans unlock after clearing chapter 2 (defeat the boss).',
+      'Кланы откроются после прохождения 4-й главы (победа над боссом).': 'Clans unlock after clearing chapter 4 (defeat the boss).',
       'Весь прогресс, герои и вещи будут удалены. Это нельзя отменить.': 'All progress, heroes and items will be deleted. This cannot be undone.',
       'руды — +50 очков активности) и продвигает клан к новому уровню.': 'ore — +50 activity) and progresses the clan level.',
       'Герб выбирается только при создании клана и больше не меняется': 'The emblem is chosen at clan creation and cannot be changed',
@@ -1339,7 +1342,7 @@
       '<button class="btn purple hb" data-act="coliseum" title="' + t('coliseum') + '">' + mImg('mnu_shield_round.png') + (MB.coliseumOpen(save) ? '' : '<span class="lk">' + ic('lock') + '</span>') + '</button>' +
       '<button class="btn gold pale hb" data-act="shop" title="' + t('shop') + '">' + mImg('mnu_bag.png') + (totalAdsLeft() ? '<span class="dot">' + totalAdsLeft() + '</span>' : '') + '</button>' +
       '<button class="btn copper hb" data-act="rating" title="' + t('rating') + '">' + mImg('mnu_trophy.png') + '</button>' +
-      '<button class="btn blue hb" data-act="clans" title="' + t('clans') + '">' + mImg('mnu_shield_herald.png') + (save.bosses[2] ? (save.clan && (MB.clanKeys(save) > 0 || MB.clanHasRewards(save)) ? '<span class="dot">!</span>' : '') : '<span class="lk">' + ic('lock') + '</span>') + '</button>' +
+      '<button class="btn blue hb" data-act="clans" title="' + t('clans') + '">' + mImg('mnu_shield_herald.png') + (save.bosses[4] ? (save.clan && (MB.clanKeys(save) > 0 || MB.clanHasRewards(save)) ? '<span class="dot">!</span>' : '') : '<span class="lk">' + ic('lock') + '</span>') + '</button>' +
       '</div>';
     applyUILang();
     if (!save.name) showNamePrompt(); else if (!save.seenIntro) { save.seenIntro = true; persist(); showHelp(); } else if (d.canClaim && !showHub.shown) { showHub.shown = true; showDaily(); }
@@ -1914,6 +1917,7 @@
         out.items.push(grantChest(MB.topChapter(save), 'purple')); out.chest = 'purple';
         MB.clanAddExp(save, MB.CLAN.killExp);
         registerClanBossReward(clan);
+        clan.bossDefeatedThisWeek = true;
         out.notes.push('Клановый босс повержен! Награда ' + MB.XP.clanKill + ' XP и ' + MB.CCOIN.clanKill + ' монет доступна всем соклановцам — заберите её в зале клана.');
         clan.bossLvl = MB.CLAN.bossLvl(1);
         clan.bossHp = MB.CLAN.bossHp(1);
@@ -1951,6 +1955,7 @@
       out.items.push(grantChest(MB.topChapter(save), 'purple')); out.chest = 'purple';
       MB.clanAddExp(save, MB.CLAN.killExp);
       registerClanBossReward(clan);
+      clan.bossDefeatedThisWeek = true;
       out.notes.push('Клановый босс повержен! Награда ' + MB.XP.clanKill + ' XP и ' + MB.CCOIN.clanKill + ' монет доступна всем соклановцам — заберите её в зале клана.');
       clan.bossLvl = MB.CLAN.bossLvl(1);
       clan.bossHp = MB.CLAN.bossHp(1);
@@ -1983,7 +1988,7 @@
           if (C.unlock && save.unlocked.indexOf(C.unlock) < 0) { save.unlocked.push(C.unlock); out.notes.push(T('Новый герой: ', 'New hero: ') + heroLoc(C.unlock, 'full') + '!'); }
           if (C.amulet) out.items.push(grantChest(c.ch, 0, { slot: 'amulet', amu: C.amulet.type, r: C.amulet.r }));
           if (c.ch === 1) out.notes.push(T('Открыто «Логово боссов»! Теперь можно сражаться с боссами повторно.', 'Boss Lair unlocked! You can now refight bosses.'));
-          if (c.ch === 2) out.notes.push(T('Открыты «Кланы»! Вступайте в клан и сражайтесь с клановым боссом.', 'Clans unlocked! Join a clan and fight the clan boss.'));
+          if (c.ch === 4) out.notes.push(T('Открыты «Кланы»! Вступайте в клан и сражайтесь с клановым боссом.', 'Clans unlocked! Join a clan and fight the clan boss.'));
           if (c.ch === MB.COLISEUM.needBoss) out.notes.push(T('Колизей откроется, когда любой герой достигнет ', 'Coliseum opens when any hero reaches level ') + MB.COLISEUM.needLvl + T('-го уровня.', '.'));
           if (c.ch < 5) out.notes.push(T('Открыта глава ', 'Chapter unlocked: ') + (c.ch + 1) + '.');
           else out.notes.push(T('Кампания пройдена! Спасибо за игру.', 'Campaign complete! Thanks for playing.'));
@@ -2679,7 +2684,7 @@
     if (t && t.gain) toast('Соклановцы принесли +' + t.gain + ' опыта и +' + t.actGain + ' активности' + (t.ups ? ' — клан вырос до ' + clan.lvl + ' уровня!' : ''));
     const weekTick = MB.clanBossWeekTick(save, now());
     if (weekTick && weekTick.reset) {
-      toast('Новая неделя: клановый босс обновлён' + (weekTick.mvp && weekTick.mvp.me ? '. Вы лучший по урону — заберите золотой сундук!' : ''));
+      toast('Новая неделя: клановый босс обновлён' + (weekTick.mvp && weekTick.mvp.me && weekTick.bossDefeated ? '. Вы лучший по урону — заберите золотой сундук!' : ''));
     }
     persist();
     const info = MB.clanBossInfo(clan), keys = MB.clanKeys(save); persist();
@@ -2731,7 +2736,7 @@
       const dmgBoard =
         '<div class="paper clanboss-dmgboard">' +
           '<div class="clanboss-dmghead"><b>' + T('Урон за неделю', 'Weekly damage') + '</b>' +
-            '<span class="note">' + T('Сброс в понедельник 00:00 · 1-е место — золотой сундук', 'Resets Monday 00:00 · 1st place — golden chest') + '</span></div>' +
+            '<span class="note">' + T('Сброс в понедельник 00:00 · 1-е место — золотой сундук (если босс повержен)', 'Resets Monday 00:00 · 1st place — golden chest (if boss defeated)') + '</span></div>' +
           '<div class="clanboss-dmglist">' +
             dmgRows.map((r, i) =>
               '<div class="clanboss-dmgrow' + (r.me ? ' me' : '') + '">' +
@@ -2773,7 +2778,7 @@
           '<p>' + T('Урон сохраняется в течение недели. За урон дают', 'Damage carries through the week. Damage grants') + ' <b>' + T('Искры', 'Sparks') + '</b>, <b>' + T('опыт', 'XP') + '</b> ' + T('и', 'and') + ' <b>' + T('очки активности', 'activity points') + '</b>.</p>' +
           '<p>' + T('Каждый бой:', 'Each battle:') + ' <b>+20 XP ' + T('и', 'and') + ' +20 ' + T('клановых монет', 'clan coins') + '</b>.</p>' +
           '<p>' + T('Победа над боссом:', 'Boss victory:') + ' <b>+500 XP ' + T('и', 'and') + ' +400 ' + T('монет', 'coins') + '</b> ' + T('всем соклановцам', 'to all clan members') + '.</p>' +
-          '<p>' + T('Игрок с', 'The player with') + ' <b>' + T('наибольшим уроном за неделю', 'the highest weekly damage') + '</b> ' + T('получает', 'gets') + ' <b>' + T('золотой сундук', 'a golden chest') + '</b> ' + T('(1 раз в неделю) — забрать вместе с наградой за победу.', '(once per week) — claim with the victory reward.') + '</p>' +
+          '<p>' + T('Игрок с', 'The player with') + ' <b>' + T('наибольшим уроном за неделю', 'the highest weekly damage') + '</b> ' + T('получает', 'gets') + ' <b>' + T('золотой сундук', 'a golden chest') + '</b> ' + T('(1 раз в неделю, только если босс повержен) — забрать вместе с наградой за победу.', '(once per week, only if the boss is defeated) — claim with the victory reward.') + '</p>' +
         '</div>';
     } else if (clanTab === 'builds') {
       const bCards = MB.CLAN_BUILDINGS.map(b => {
@@ -3051,8 +3056,8 @@
     confirmbuy: () => { const d = buyReal.d; SFX.play('purchase', 0.76); if (d.hero) { if (save.unlocked.indexOf(d.hero) < 0) { save.unlocked.push(d.hero); setTimeout(() => SFX.play('hero_unlock', 0.84), 220); } toast(heroLoc(d.hero, 'full') + ' в вашем отряде!'); } else { save.gems += MB.SHOP.gems[+d.g].gems; setTimeout(() => SFX.play('gem_gain', 0.74), 180); toast('+' + MB.SHOP.gems[+d.g].gems + ' Изумрудов'); } persist(); closeModal(); showShop(); },
     bioshop: d => showBio(d.k),
     clans: () => {
-      if (!save.bosses[2]) {
-        toast(T('Кланы откроются после прохождения 2-й главы (победа над боссом).', 'Clans unlock after clearing chapter 2 (defeat the boss).'));
+      if (!save.bosses[4]) {
+        toast(T('Кланы откроются после прохождения 4-й главы (победа над боссом).', 'Clans unlock after clearing chapter 4 (defeat the boss).'));
         return;
       }
       if (save.clan) showClanHall(); else showClans();
@@ -3493,7 +3498,7 @@
       if (q.sparks) { save.sparks += q.sparks; }
       if (q.chest) { grantChest(1, q.chest); }
       if (q.pot) { save.potions[q.pot] = (save.potions[q.pot] || 0) + 1; }
-      persist(); showDaily(); toast('Награда: ' + msg);
+      persist(); showDaily(); refreshTop(); toast('Награда: ' + msg);
     },
     claim: () => {
       const d = MB.dailyState(save, now()); if (!d.canClaim) return; const R = MB.DAILY[d.idx]; save.daily.claimed[d.idx] = true;
