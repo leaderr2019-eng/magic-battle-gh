@@ -8,7 +8,8 @@
     apiUrl: '',            // например 'https://your-clan-api.example.com'
     wsUrl: '',             // например 'wss://your-clan-api.example.com/ws'
     pollMs: 4000,          // резервный опрос состояния клана (мс)
-    sharedClanId: 'global_astoria_clan' // общий клан всех игроков на площадке (или конкретный clanId)
+    sharedClanId: 'global_astoria_clan', // общий клан всех игроков на площадке (или конкретный clanId)
+    allowGuests: false     // true = можно кланы/рейтинг без SDK площадки (для тестов)
   }, root.MB_NET_CONFIG || {});
 
   const bc = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('mb_clan_sync_v1') : null;
@@ -392,6 +393,8 @@
       const s = save || currentSaveRef;
       // Локальный режим — всегда можно (одиночная игра)
       if (!isRemoteEnabled()) return true;
+      // Тесты без SDK площадки: allowGuests: true в MB_NET_CONFIG
+      if (cfg.allowGuests) return !!(s && s.playerId);
       return !!(s && validateAccount(s, { requirePlatform: true }).ok);
     },
     isAuthenticEntry: isAuthenticPlayerEntry,
