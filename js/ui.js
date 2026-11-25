@@ -348,12 +348,31 @@
     } catch (e) { /* нет сохранения */ }
     return MB.newSave();
   }
+  function cloudSaveGet() {
+    try {
+      const sdk = window.PikabuSDK;
+      if (sdk && sdk.storage && typeof sdk.storage.get === 'function') {
+        return sdk.storage.get('save');
+      }
+    } catch (e) { /* SDK недоступен */ }
+    return null;
+  }
+  function cloudSaveSet(data) {
+    try {
+      const sdk = window.PikabuSDK;
+      if (sdk && sdk.storage && typeof sdk.storage.set === 'function') {
+        sdk.storage.set('save', data);
+      }
+    } catch (e) { /* SDK недоступен */ }
+  }
   let persistTimer = 0;
   function persist() {
     if (persistTimer) return;
     persistTimer = setTimeout(() => {
       persistTimer = 0;
       try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* хранилище недоступно */ }
+      save._ts = Date.now();
+      cloudSaveSet(save);
     }, 120);
   }
   // активные облики героев -> префиксы спрайтов в ART (облик применяется только если он куплен)
@@ -2995,19 +3014,31 @@
     const profile = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId || 'me', name: save.name || 'Вы' };
     const me = { id: profile.id, name: save.name || profile.name || 'Вы', power: MB.accountPower(save), level: MB.accountLevel(save), me: true, verified: !!(profile.verified || save.authVerified) };
     const key = rateTab === 'power' ? 'power' : 'level';
-    // Только подлинные записи (+ всегда текущий игрок)
-    const others = (MB.ratingBots() || []).filter(p => {
-      if (!p) return false;
-      if (MB.net && MB.net.isAuthenticEntry) return MB.net.isAuthenticEntry(p);
-      return p.id && !/^(plr_|m_\d+_)/i.test(String(p.id));
-    });
-    const list = others.concat([me]).sort((a, b) => b[key] - a[key] || (a.me ? -1 : 1));
-    const pos = list.findIndex(p => p.me) + 1;
-    const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '"><span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
-    ui.innerHTML = topbar(t('rating'), null) + '<div class="rate"><div class="panel" style="position:relative"><button class="x" data-act="hub" title="' + t('close') + '">✕</button><div class="tabs" style="margin-bottom:10px"><button class="btn small ' + (rateTab === 'power' ? 'gold' : '') + '" data-act="ratetab" data-t="power">' + t('by_power') + '</button><button class="btn small ' + (rateTab === 'level' ? 'gold' : '') + '" data-act="ratetab" data-t="level">' + t('by_level') + '</button></div>' +
-      '<div class="paper ratelist">' + list.map((p, i) => row(p, i)).join('') + '</div>' +
-      '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ' + pos + '-м месте из ' + list.length + '. В рейтинге только проверенные аккаунты площадки.</p></div></div>';
-    applyUILang();
+    const cfg = window.MB_NET_CONFIG || {};
+    const api = (cfg.apiUrl || '').replace(/\/$/, '');
+    const drawList = (serverList) => {
+      const others = (serverList || []).filter(p => p && p.id && p.id !== me.id).map(p => ({
+        id: p.id, name: p.name || 'Игрок', power: p.power || 0, level: p.level || 0, me: false, verified: true
+      }));
+      const bots = (MB.ratingBots() || []).filter(p => p && p.id && !others.some(o => o.id === p.id));
+      const list = others.concat(bots).concat([me]).sort((a, b) => b[key] - a[key] || (a.me ? -1 : 1));
+      const pos = list.findIndex(p => p.me) + 1;
+      const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '"><span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
+      ui.innerHTML = topbar(t('rating'), null) + '<div class="rate"><div class="panel" style="position:relative"><button class="x" data-act="hub" title="' + t('close') + '">✕</button><div class="tabs" style="margin-bottom:10px"><button class="btn small ' + (rateTab === 'power' ? 'gold' : '') + '" data-act="ratetab" data-t="power">' + t('by_power') + '</button><button class="btn small ' + (rateTab === 'level' ? 'gold' : '') + '" data-act="ratetab" data-t="level">' + t('by_level') + '</button></div>' +
+        '<div class="paper ratelist">' + list.map((p, i) => row(p, i)).join('') + '</div>' +
+        '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ' + pos + '-м месте из ' + list.length + '.</p></div></div>';
+      applyUILang();
+    };
+    if (api) {
+      fetch(api + '/rating?by=' + key).then(r => r.json()).then(data => {
+        drawList(data && data.list ? data.list : []);
+      }).catch(() => drawList([]));
+    } else {
+      drawList([]);
+    }
+    if (api && me.id && me.verified) {
+      fetch(api + '/rating', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: me.id, name: me.name, power: me.power, level: me.level }) }).catch(() => {});
+    }
   }
 
   /* ---------- Действия ---------- */
@@ -3933,6 +3964,18 @@
     $('#stage').addEventListener('pointerup', e => { if (e.pointerType === 'touch' || e.pointerType === 'pen') onUiTap(e); });
 cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointermove', onMove); cv.addEventListener('pointerup', onUp); cv.addEventListener('pointercancel', onUp); cv.addEventListener('wheel', onWheel, { passive: false });
     save = loadSave(); syncSkins();
+    try {
+      const cloud = cloudSaveGet();
+      if (cloud && cloud.v === 1 && (!save.playerId || cloud.playerId === save.playerId || !cloud.playerId)) {
+        const localTs = save._ts || 0;
+        const cloudTs = cloud._ts || 0;
+        if (cloudTs > localTs) {
+          save = cloud;
+          persist();
+        }
+      }
+    } catch (e) { /* облако недоступно */ }
+    save._ts = Date.now();
     if (save.musicVol == null) save.musicVol = save.musicMuted ? 0 : 0.3;
     if (save.sfxVol == null) save.sfxVol = 0.2;
     if (save.sfxMuted == null) save.sfxMuted = false;
