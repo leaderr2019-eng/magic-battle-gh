@@ -19,12 +19,22 @@
 </div>
 <script>
   window.MB_NET_CONFIG = {
-  mode: 'remote',
-  apiUrl: 'https://magic-battle-server-production.up.railway.app',
-  wsUrl:  'wss://magic-battle-server-production.up.railway.app/ws',
-  pollMs: 4000,          // ← добавил запятую
-  allowGuests: true
+    mode: 'remote',
+    apiUrl: 'https://magic-battle-server-production.up.railway.app',
+    wsUrl:  'wss://magic-battle-server-production.up.railway.app/ws',
+    pollMs: 4000,
+    allowGuests: true
   };
+</script>
+<!-- Pikabu Games SDK — грузим только на площадке Пикабу -->
+<script>
+  if (location.hostname.indexOf('pikabu') >= 0 || document.referrer.indexOf('pikabu') >= 0) {
+    const s = document.createElement('script');
+    s.src = 'https://games.pikabu.ru/sdk/sdk.js';
+    s.async = true;
+    s.onload = () => window.__pkbSdkReady && window.__pkbSdkReady();
+    document.head.appendChild(s);
+  }
 </script>
 <script src="js/sprites.js"></script>
 <script src="js/core.js"></script>
