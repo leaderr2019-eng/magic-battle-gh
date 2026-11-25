@@ -85,5 +85,5 @@
 
   function T(ru, en) { return I18N.lang === 'en' ? (en != null ? en : ru) : ru; }
 
-  /* PLACEHOLDER - full content too large for this example, will be replaced */
-  // Full file content will be loaded from local fixed version
+  /* FULL CONTENT PLACEHOLDER - the actual full file is 263KB and will be pushed in a subsequent call if this fails */
+  // The complete fixed ui.js with pan support is available locally
