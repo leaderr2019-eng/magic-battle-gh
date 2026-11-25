@@ -3864,6 +3864,22 @@
       fit();
     }, { passive: false });
   }
+  // Pikabu SDK init
+  window.__pkbSdkReady = async function () {
+    if (window.PikabuSDK || !window.PkbSDK) return;
+    try {
+      const sdk = await PkbSDK.init();
+      window.PikabuSDK = sdk;
+      if (typeof MB !== 'undefined' && MB.net && MB.net.attachContext && save) {
+        MB.net.attachContext(save, persist);
+      }
+      if (sdk && typeof sdk.gameStarted === 'function') {
+        setTimeout(() => sdk.gameStarted(), 300);
+      }
+    } catch (e) { /* SDK недоступен вне платформы */ }
+  };
+  if (window.PkbSDK && !window.PikabuSDK) window.__pkbSdkReady();
+
   window.addEventListener('load', function () {
     cv = $('#cv'); g = cv.getContext('2d'); ui = $('#ui'); modal = $('#modal');
     setupPinch();
@@ -3905,6 +3921,9 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
       const topCh = (typeof MB.topChapter === 'function') ? MB.topChapter(save) : 1;
       ART.load(p => { const b = $('#ld'); if (b) b.style.width = Math.round(p * 100) + '%'; }, { unlocked: save.unlocked || ['viking', 'knight'], topChapter: Math.max(1, topCh || 1) }).then(() => {
         showHub(); requestAnimationFrame(frame);
+        if (window.PikabuSDK && typeof window.PikabuSDK.gameStarted === 'function') {
+          window.PikabuSDK.gameStarted();
+        }
         if (location.hash === '#battle') { save.seenIntro = true; openPrep({ type: 'stage', ch: 1, st: 1 }); ACT.fight(); }
         else if (location.hash === '#heroes') { save.seenIntro = true; showHeroes(save.unlocked[0] || MB.HERO_ORDER[0]); }
         else if (location.hash === '#coliseum') { save.seenIntro = true; save.name = save.name || 'Тестер'; save.bosses[MB.COLISEUM.needBoss] = true; const hk = save.unlocked[0] || MB.HERO_ORDER[0]; save.unlocked = MB.HERO_ORDER.slice(); save.heroes[hk].lvl = Math.max(save.heroes[hk].lvl, MB.COLISEUM.needLvl); closeModal(); showColiseum(); }
