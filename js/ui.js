@@ -2526,6 +2526,15 @@
       sdk.store.purchase({ productId: productId }).then(result => {
         if (!result.success) {
           console.log('Purchase failed:', result.reason, 'productId:', productId);
+          if (result.reason === 'NON_CONSUMABLE_ALREADY_OWNED' && d.hero) {
+            if (save.unlocked.indexOf(d.hero) < 0) {
+              save.unlocked.push(d.hero);
+              persist();
+              toast(heroLoc(d.hero, 'full') + ' уже куплен — добавлен в отряд');
+              showShop();
+            }
+            return;
+          }
           if (result.reason !== 'USER_CANCELLED') toast('Покупка не завершена: ' + (result.reason || 'ошибка'));
           return;
         }
@@ -3172,12 +3181,13 @@
       const api = (cfg.apiUrl || '').replace(/\/$/, '');
       const showProf = (p) => {
         if (!p) { toast('Профиль не найден'); return; }
-        const heroes = (p.unlocked || []).map(k => '<div style="display:inline-block;margin:4px;text-align:center">' + pt(k, '', '<b>' + (p.level || 1) + '</b>', 48) + '<br><span style="font-size:11px">' + heroLoc(k, 'name') + '</span></div>').join('');
-        openModal('<div class="panel win" style="width:420px"><button class="x" data-act="close">✕</button><h2 class="out">' + (p.name || 'Игрок') + '</h2><div class="paper" style="text-align:center">' +
-          pt(p.avatar || 'viking', '', '<b>' + (p.level || 1) + '</b>', 72) +
-          '<p style="margin:8px 0"><b>Уровень:</b> ' + (p.level || 1) + ' &nbsp; ' + ic('power') + (p.power || 0) + '</p>' +
-          '<p style="font-weight:700;margin:6px 0">Герои (' + (p.unlocked || []).length + ')</p>' +
-          '<div>' + (heroes || '<span class="note">Нет данных</span>') + '</div></div></div>');
+        const heroes = (p.unlocked || []).map(k => '<div style="display:inline-block;margin:6px;text-align:center;vertical-align:top">' + pt(k, '', '<b>' + (p.level || 1) + '</b>', 56) + '<br><span style="font-size:12px">' + heroLoc(k, 'name') + '</span></div>').join('');
+        openModal('<div class="panel win" style="width:480px"><button class="x" data-act="close">✕</button><h2 class="out">' + (p.name || 'Игрок') + '</h2><div class="paper" style="text-align:center">' +
+          '<div style="margin-bottom:8px">' + pt(p.avatar || 'viking', '', '<b>' + (p.level || 1) + '</b>', 64) + '</div>' +
+          '<p style="margin:6px 0;font-size:15px"><b>Уровень:</b> ' + (p.level || 1) + '</p>' +
+          '<p style="margin:6px 0;font-size:15px"><img src="assets/ui/power.webp" style="width:18px;height:18px;vertical-align:middle"> ' + (p.power || 0) + '</p>' +
+          '<p style="font-weight:700;margin:10px 0 6px">Герои (' + (p.unlocked || []).length + ')</p>' +
+          '<div style="line-height:1.2">' + (heroes || '<span class="note">Нет данных</span>') + '</div></div></div>');
       };
       if (id === save.playerId) {
         showProf({ name: save.name, level: MB.accountLevel(save), power: MB.accountPower(save), avatar: save.avatar, unlocked: save.unlocked });
