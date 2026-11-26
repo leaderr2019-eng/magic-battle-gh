@@ -4113,6 +4113,18 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
     save = loadSave(); syncSkins();
     try {
       const cloud = cloudSaveGet();
+      if (cloud && cloud.v === 1 && cloud._ts && (!save._ts || cloud._ts > save._ts)) {
+        const d = MB.newSave();
+        for (const k in d) if (cloud[k] === undefined) cloud[k] = d[k];
+        MB.HERO_ORDER.forEach(k => { if (!cloud.heroes[k]) cloud.heroes[k] = d.heroes[k]; });
+        save = cloud;
+        syncSkins();
+        try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
+        toast('Прогресс загружен из облака');
+      }
+    } catch (e) { /* облако недоступно */ }
+    try {
+      const cloud = cloudSaveGet();
       if (cloud && cloud.v === 1 && (!save.playerId || cloud.playerId === save.playerId || !cloud.playerId)) {
         const localTs = save._ts || 0;
         const cloudTs = cloud._ts || 0;
