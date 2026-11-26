@@ -3523,9 +3523,11 @@
       const c = MB.ensureClan(save); if (!c) return;
       const myRole = c.myRole || (c.own ? 'leader' : 'member');
       if (myRole === 'leader') {
-        const candidates = (c.members || []).filter(m => m.id !== 'me');
+        const candidates = (c.members || []).filter(m => m.id !== 'me' && m.id !== save.playerId);
         if (!candidates.length) {
-          toast('Вы единственный участник клана — сначала примите игрока и передайте ему статус лидера');
+          openModal('<div class="panel win" style="position:relative;width:560px"><button class="x" data-act="close">✕</button><h2 class="out">Распустить клан?</h2>' +
+            '<div class="paper" style="text-align:center;font-weight:700">Вы единственный участник клана «' + c.name + '».<br>Распустить клан и выйти?</div>' +
+            '<div class="foot"><button class="btn red" data-act="clandisband" style="min-width:140px">Распустить</button><button class="btn" data-act="close" style="min-width:140px">Отмена</button></div></div>');
           return;
         }
         const candHtml = candidates.map(m =>
@@ -3541,6 +3543,11 @@
         return;
       }
       openModal('<div class="panel win" style="position:relative;width:560px"><button class="x" data-act="close">✕</button><h2 class="out">Вы точно уверены?</h2><div class="paper" style="text-align:center;font-weight:700">Вы действительно хотите покинуть клан «' + save.clan.name + '»?</div><div class="foot"><button class="btn green" data-act="clanleaveok" style="min-width:140px">Да</button><button class="btn red" data-act="close" style="min-width:140px">Нет</button></div></div>');
+    },
+    clandisband: () => {
+      save.clan = null;
+      persist(); closeModal(); showClans();
+      toast('Клан распущен');
     },
     clanpassleaveask: d => {
       const c = MB.ensureClan(save); if (!c) return;
