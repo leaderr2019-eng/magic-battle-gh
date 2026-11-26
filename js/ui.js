@@ -3081,7 +3081,7 @@
       const pos = list.findIndex(p => p.me) + 1;
       const posText = pos > 0 && pos <= 100 ? ('Вы на ' + pos + '-м месте из ' + list.length) : 'Вы вне топ-100';
       const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '" data-act="viewprofile" data-id="' + p.id + '" style="cursor:pointer">' +
-        '<span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span>' +
+        '<span class="rn">' + (i < 3 ? '<img src="assets/ui/medal_' + ['gold','silver','bronze'][i] + '.png" style="width:44px;height:44px;vertical-align:middle">' : i + 1) + '</span>' +
         pt(p.avatar || 'viking', '', '', 36) +
         '<b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
       ui.innerHTML = topbar(t('rating'), null) + '<div class="rate"><div class="panel" style="position:relative"><button class="x" data-act="hub" title="' + t('close') + '">✕</button><div class="tabs" style="margin-bottom:10px"><button class="btn small ' + (rateTab === 'power' ? 'gold' : '') + '" data-act="ratetab" data-t="power">' + t('by_power') + '</button><button class="btn small ' + (rateTab === 'level' ? 'gold' : '') + '" data-act="ratetab" data-t="level">' + t('by_level') + '</button></div>' +
@@ -3464,7 +3464,7 @@
       const rows = list.map((item, idx) => {
         const recName = (MB.CLAN_RECRUIT[item.recruit] && MB.CLAN_RECRUIT[item.recruit].name) || 'Свободный вход';
         return '<div class="rrow clan-top-row' + (item.isMe ? ' me' : '') + '">' +
-          '<span class="rn">' + (idx < 3 ? ['🥇', '🥈', '🥉'][idx] : (idx + 1)) + '</span>' +
+          '<span class="rn">' + (idx < 3 ? '<img src="assets/ui/medal_' + ['gold','silver','bronze'][idx] + '.png" style="width:44px;height:44px;vertical-align:middle">' : (idx + 1)) + '</span>' +
           '<div style="display:flex;align-items:center;gap:8px;min-width:0">' +
             ART.clanEmblem(item.emblem, 32) +
             '<div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + item.name + (item.isMe ? ' (Ваш клан)' : '') + '</div>' +
