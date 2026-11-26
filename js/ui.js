@@ -3036,8 +3036,9 @@
     } else {
       drawList([]);
     }
-    if (api && me.id && me.verified) {
-      fetch(api + '/rating', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: me.id, name: me.name, power: me.power, level: me.level }) }).catch(() => {});
+    if (api && me.id) {
+      const isPlatform = !!(profile.verified || save.authVerified || (me.id && !/^plr_/i.test(me.id)));
+      fetch(api + '/players/upsert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: me.id, name: me.name, power: me.power, level: me.level, verified: isPlatform }) }).catch(() => {});
     }
   }
 
