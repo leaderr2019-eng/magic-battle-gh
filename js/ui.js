@@ -3313,6 +3313,15 @@
       save.clan = MB.mkClan(save, chk.value, true, 1, embDraft, desc, iconId);
       save.clan.id = 'clan_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
       console.log('clan created:', save.clan.name, save.clan.id);
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api) {
+        fetch(api + '/clans/' + encodeURIComponent(save.clan.id) + '/rename', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: chk.value })
+        }).catch(() => {});
+      }
       if (MB.net && MB.net.getPlayerProfile) {
         const p = MB.net.getPlayerProfile(save);
         if (p && p.id) {
