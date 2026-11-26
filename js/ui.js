@@ -2573,6 +2573,7 @@
     const isPot = kind === 'pot';
     if (isPot ? !potAdsLeft() : !adsLeft()) return;
     const sdk = window.PikabuSDK;
+    console.log('watchAd SDK:', !!sdk, sdk && sdk.ads ? Object.keys(sdk.ads) : 'no ads');
     const grantReward = () => {
       const adState = ensureAdsDay();
       if (isPot) {
@@ -2592,16 +2593,20 @@
         toast('+' + a + ' Искр');
       }
     };
-    if (sdk && sdk.ads && sdk.ads.rewarded && typeof sdk.ads.rewarded.show === 'function') {
-      sdk.ads.rewarded.canShow().then(can => {
+    const rewarded = sdk && sdk.ads && sdk.ads.rewarded;
+    if (rewarded && typeof rewarded.show === 'function') {
+      rewarded.canShow().then(can => {
+        console.log('canShow rewarded:', can);
         if (!can) { toast('Реклама сейчас недоступна'); return; }
-        sdk.ads.rewarded.show().then(result => {
+        rewarded.show().then(result => {
+          console.log('rewarded result:', result);
           if (result && result.reward) grantReward();
           else toast('Реклама не просмотрена');
-        }).catch(() => toast('Ошибка показа рекламы'));
-      }).catch(() => toast('Реклама недоступна'));
+        }).catch(e => { console.error('rewarded show error:', e); toast('Ошибка показа рекламы'); });
+      }).catch(e => { console.error('canShow error:', e); toast('Реклама недоступна'); });
       return;
     }
+    console.log('SDK rewarded not available, using fallback');
     let t = 5;
     openModal('<div class="panel win" style="width:560px"><h2 class="out">Реклама</h2><div class="paper adbox"><b id="adt">' + t + '</b><p>Здесь будет рекламный ролик площадки</p></div></div>');
     const iv = setInterval(() => {
