@@ -3043,15 +3043,16 @@
       const bots = (MB.ratingBots() || []).filter(p => p && p.id && !others.some(o => o.id === p.id));
       const list = others.concat(bots).concat([me]).sort((a, b) => b[key] - a[key] || (a.me ? -1 : 1));
       const pos = list.findIndex(p => p.me) + 1;
+      const posText = pos > 0 && pos <= 100 ? ('Вы на ' + pos + '-м месте из ' + list.length) : 'Вы вне топ-100';
       const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '"><span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
       ui.innerHTML = topbar(t('rating'), null) + '<div class="rate"><div class="panel" style="position:relative"><button class="x" data-act="hub" title="' + t('close') + '">✕</button><div class="tabs" style="margin-bottom:10px"><button class="btn small ' + (rateTab === 'power' ? 'gold' : '') + '" data-act="ratetab" data-t="power">' + t('by_power') + '</button><button class="btn small ' + (rateTab === 'level' ? 'gold' : '') + '" data-act="ratetab" data-t="level">' + t('by_level') + '</button></div>' +
-        '<div class="paper ratelist">' + list.map((p, i) => row(p, i)).join('') + '</div>' +
-        '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ' + pos + '-м месте из ' + list.length + '.</p></div></div>';
+        '<div class="paper ratelist">' + list.slice(0, 100).map((p, i) => row(p, i)).join('') + '</div>' +
+        '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. ' + posText + '.</p></div></div>';
       applyUILang();
     };
     const fetchRating = () => {
       if (api) {
-        fetch(api + '/rating?by=' + key).then(r => r.json()).then(data => {
+        fetch(api + '/rating?by=' + key + '&limit=100').then(r => r.json()).then(data => {
           drawList(data && data.list ? data.list : []);
         }).catch(() => drawList([]));
       } else {
