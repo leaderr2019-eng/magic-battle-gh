@@ -3257,7 +3257,7 @@
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
         const list = (data && data.list) || [];
         if (!list.length) { toast('Пока нет кланов'); return; }
-        const rows = list.map((c, i) => '<div class="rrow"><span class="rn">' + (i + 1) + '</span><b>' + (c.name || 'Клан') + '</b><span>Ур. ' + (c.lvl || 1) + '</span><span>' + (c.members || 0) + ' уч.</span></div>').join('');
+        const rows = list.map((c, i) => '<div class="rrow" style="gap:12px"><span class="rn">' + (i + 1) + '</span><b style="min-width:120px">' + (c.name || 'Клан') + '</b><span>Ур. ' + (c.lvl || 1) + '</span><span>Сила: ' + (c.power || 0) + '</span><span>' + (c.members || 0) + ' уч.</span></div>').join('');
         openModal('<div class="panel win" style="position:relative;width:480px"><button class="x" data-act="close">✕</button><h2 class="out">Топ кланов</h2><div class="paper ratelist">' + rows + '</div></div>');
       }).catch(() => toast('Ошибка загрузки'));
     },
@@ -3566,9 +3566,19 @@
       openModal('<div class="panel win" style="position:relative;width:560px"><button class="x" data-act="close">✕</button><h2 class="out">Вы точно уверены?</h2><div class="paper" style="text-align:center;font-weight:700">Вы действительно хотите покинуть клан «' + save.clan.name + '»?</div><div class="foot"><button class="btn green" data-act="clanleaveok" style="min-width:140px">Да</button><button class="btn red" data-act="close" style="min-width:140px">Нет</button></div></div>');
     },
     clandisband: () => {
+      const clanId = save.clan && save.clan.id;
       save.clan = null;
       persist(); closeModal(); showClans();
       toast('Клан распущен');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && clanId) {
+        fetch(api + '/clans/' + encodeURIComponent(clanId) + '/rename', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: '' })
+        }).catch(() => {});
+      }
     },
     clanpassleaveask: d => {
       const c = MB.ensureClan(save); if (!c) return;
