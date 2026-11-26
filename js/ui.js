@@ -2959,7 +2959,8 @@
           const rName = MB.CLAN_ROLE_NAME[m.role] || 'Участник';
           const canKick = !m.me && m.role !== 'leader' && (isLeader || (isOfficer && m.role === 'member'));
           const canRole = isLeader && !m.me && m.role !== 'leader';
-          return '<div class="mrow' + (m.me ? ' me' : '') + '">' +
+          return '<div class="mrow' + (m.me ? ' me' : '') + '" data-act="viewprofile" data-id="' + m.id + '" style="cursor:pointer">' +
+            pt(m.avatar || 'viking', '', '', 32) +
             '<div class="m-info"><b>' + (idx + 1) + '. ' + m.name + '</b><span class="m-role role-' + (m.role || 'member') + '">' + rName + '</span></div>' +
             '<div class="m-right">' +
               '<span>' + (memberSort === 'contrib' ? '★ ' + (m.contrib || 0) : ic('power') + m.power) + '</span>' +
@@ -3045,6 +3046,8 @@
         name: save.name || profile.name || 'Игрок',
         power: MB.accountPower(save),
         level: MB.accountLevel(save),
+        avatar: save.avatar || 'viking',
+        unlocked: save.unlocked || ['viking'],
         verified: isPlatform
       })
     }).catch(() => {});
@@ -3054,19 +3057,23 @@
     MUSIC.sync('menu'); BV = null;
     if (rateRefreshTimer) { clearInterval(rateRefreshTimer); rateRefreshTimer = 0; }
     const profile = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId || 'me', name: save.name || 'Вы' };
-    const me = { id: profile.id, name: save.name || profile.name || 'Вы', power: MB.accountPower(save), level: MB.accountLevel(save), me: true, verified: !!(profile.verified || save.authVerified) };
+    const me = { id: profile.id, name: save.name || profile.name || 'Вы', power: MB.accountPower(save), level: MB.accountLevel(save), me: true, verified: !!(profile.verified || save.authVerified), avatar: save.avatar || 'viking', unlocked: save.unlocked || ['viking'] };
     const key = rateTab === 'power' ? 'power' : 'level';
     const cfg = window.MB_NET_CONFIG || {};
     const api = (cfg.apiUrl || '').replace(/\/$/, '');
     const drawList = (serverList) => {
       const others = (serverList || []).filter(p => p && p.id && p.id !== me.id).map(p => ({
-        id: p.id, name: p.name || 'Игрок', power: p.power || 0, level: p.level || 0, me: false, verified: true
+        id: p.id, name: p.name || 'Игрок', power: p.power || 0, level: p.level || 0, me: false, verified: true,
+        avatar: p.avatar || 'viking', unlocked: p.unlocked || ['viking']
       }));
       const bots = (MB.ratingBots() || []).filter(p => p && p.id && !others.some(o => o.id === p.id));
       const list = others.concat(bots).concat([me]).sort((a, b) => b[key] - a[key] || (a.me ? -1 : 1));
       const pos = list.findIndex(p => p.me) + 1;
       const posText = pos > 0 && pos <= 100 ? ('Вы на ' + pos + '-м месте из ' + list.length) : 'Вы вне топ-100';
-      const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '"><span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span><b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
+      const row = (p, i) => '<div class="rrow ' + (p.me ? 'me' : '') + '" data-act="viewprofile" data-id="' + p.id + '" style="cursor:pointer">' +
+        '<span class="rn">' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</span>' +
+        pt(p.avatar || 'viking', '', '', 36) +
+        '<b>' + p.name + '</b><span>' + ic('power') + p.power + '</span><span>Ур. ' + p.level + '</span></div>';
       ui.innerHTML = topbar(t('rating'), null) + '<div class="rate"><div class="panel" style="position:relative"><button class="x" data-act="hub" title="' + t('close') + '">✕</button><div class="tabs" style="margin-bottom:10px"><button class="btn small ' + (rateTab === 'power' ? 'gold' : '') + '" data-act="ratetab" data-t="power">' + t('by_power') + '</button><button class="btn small ' + (rateTab === 'level' ? 'gold' : '') + '" data-act="ratetab" data-t="level">' + t('by_level') + '</button></div>' +
         '<div class="paper ratelist">' + list.slice(0, 100).map((p, i) => row(p, i)).join('') + '</div>' +
         '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. ' + posText + '.</p></div></div>';
@@ -3157,6 +3164,30 @@
       if (f > (save.col && save.col.best || 0) + 1) { toast(T('Сначала пройдите предыдущую арену', 'Clear the previous arena first')); return; }
       openPrep({ type: 'col', ch: 5, f: f });
     }, rating: () => showRating(), ratetab: d => showRating(d.t),
+    viewprofile: d => {
+      const id = d.id;
+      if (!id) return;
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      const showProf = (p) => {
+        if (!p) { toast('Профиль не найден'); return; }
+        const heroes = (p.unlocked || []).map(k => '<div style="display:inline-block;margin:4px;text-align:center">' + pt(k, '', '<b>' + (p.level || 1) + '</b>', 48) + '<br><span style="font-size:11px">' + heroLoc(k, 'name') + '</span></div>').join('');
+        openModal('<div class="panel win" style="width:420px"><button class="x" data-act="close">✕</button><h2 class="out">' + (p.name || 'Игрок') + '</h2><div class="paper" style="text-align:center">' +
+          pt(p.avatar || 'viking', '', '<b>' + (p.level || 1) + '</b>', 72) +
+          '<p style="margin:8px 0"><b>Уровень:</b> ' + (p.level || 1) + ' &nbsp; ' + ic('power') + (p.power || 0) + '</p>' +
+          '<p style="font-weight:700;margin:6px 0">Герои (' + (p.unlocked || []).length + ')</p>' +
+          '<div>' + (heroes || '<span class="note">Нет данных</span>') + '</div></div></div>');
+      };
+      if (id === save.playerId) {
+        showProf({ name: save.name, level: MB.accountLevel(save), power: MB.accountPower(save), avatar: save.avatar, unlocked: save.unlocked });
+        return;
+      }
+      if (api) {
+        fetch(api + '/players/profile?id=' + encodeURIComponent(id)).then(r => r.json()).then(data => {
+          showProf(data && data.profile);
+        }).catch(() => toast('Ошибка загрузки профиля'));
+      }
+    },
     elixir: d => elixirConfirm(d.from),
     elixirbuy: () => { if (!MB.buyEnergyElixir(save, Date.now())) { closeModal(); return; } SFX.play('energy_elixir', 0.8); persist(); refreshTop(); toast('Максимум энергии: ' + MB.energyMax(save)); if (elixirConfirm.from === 'modal') showEnergy(showEnergy.need); else showShop(); },
     elixircancel: () => { if (elixirConfirm.from === 'modal') showEnergy(showEnergy.need); else closeModal(); },
