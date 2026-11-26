@@ -2525,7 +2525,8 @@
         : ('gems_' + MB.SHOP.gems[+d.g].gems);
       sdk.store.purchase({ productId: productId }).then(result => {
         if (!result.success) {
-          if (result.reason !== 'USER_CANCELLED') toast('Покупка не завершена');
+          console.log('Purchase failed:', result.reason, 'productId:', productId);
+          if (result.reason !== 'USER_CANCELLED') toast('Покупка не завершена: ' + (result.reason || 'ошибка'));
           return;
         }
         if (d.hero) {
