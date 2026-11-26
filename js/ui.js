@@ -4011,6 +4011,36 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
       }
     } catch (e) { /* облако недоступно */ }
     save._ts = Date.now();
+    const sessionStart = Date.now();
+    const sendAnalytics = (event, extra) => {
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (!api || !save || !save.playerId) return;
+      const payload = {
+        playerId: save.playerId,
+        name: save.name || '',
+        event: event,
+        level: MB.accountLevel(save),
+        power: MB.accountPower(save),
+        sessionMs: Date.now() - sessionStart,
+        extra: extra || null
+      };
+      fetch(api + '/analytics', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => {});
+    };
+    setTimeout(() => sendAnalytics('login'), 2000);
+    window.addEventListener('beforeunload', () => {
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (!api || !save || !save.playerId) return;
+      navigator.sendBeacon(api + '/analytics', JSON.stringify({
+        playerId: save.playerId,
+        name: save.name || '',
+        event: 'logout',
+        level: MB.accountLevel(save),
+        power: MB.accountPower(save),
+        sessionMs: Date.now() - sessionStart
+      }));
+    });
     if (save.musicVol == null) save.musicVol = save.musicMuted ? 0 : 0.3;
     if (save.sfxVol == null) save.sfxVol = 0.2;
     if (save.sfxMuted == null) save.sfxMuted = false;
