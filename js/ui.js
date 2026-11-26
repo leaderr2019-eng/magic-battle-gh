@@ -3296,19 +3296,23 @@
     },
     embsave: () => { toast('Герб клана нельзя изменить после создания'); },
     clancreateok: () => {
+      console.log('clancreateok called, gems:', save.gems, 'clan:', !!save.clan, 'cost:', MB.CLAN.createCost);
       if (MB.net && MB.net.isRemote && MB.net.isRemote() && MB.net.canJoinCompetitive && !MB.net.canJoinCompetitive(save)) {
         toast('Для создания клана на площадке нужен вход через аккаунт');
         return;
       }
       const el = $('#clanname'), descEl = $('#clandesc');
+      console.log('name input:', el ? el.value : 'no element');
       const chk = MB.validateClanName(el ? el.value : '');
       if (!chk.ok) { toast(chk.reason); return; }
       const desc = MB.sanitizeClanDesc(descEl ? descEl.value : '');
-      if (save.gems < MB.CLAN.createCost || save.clan) return;
+      if (save.gems < MB.CLAN.createCost) { toast('Недостаточно изумрудов'); return; }
+      if (save.clan) { toast('Вы уже состоите в клане'); return; }
       save.gems -= MB.CLAN.createCost;
       const iconId = (embDraft && embDraft.icon) || 'axes_red';
       save.clan = MB.mkClan(save, chk.value, true, 1, embDraft, desc, iconId);
       save.clan.id = 'clan_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+      console.log('clan created:', save.clan.name, save.clan.id);
       if (MB.net && MB.net.getPlayerProfile) {
         const p = MB.net.getPlayerProfile(save);
         if (p && p.id) {
