@@ -3037,7 +3037,6 @@
     const cfg = window.MB_NET_CONFIG || {};
     const api = (cfg.apiUrl || '').replace(/\/$/, '');
     const drawList = (serverList) => {
-      if (scene.mode !== 'menu' || !$('#ui').querySelector('.rate')) return;
       const others = (serverList || []).filter(p => p && p.id && p.id !== me.id).map(p => ({
         id: p.id, name: p.name || 'Игрок', power: p.power || 0, level: p.level || 0, me: false, verified: true
       }));
