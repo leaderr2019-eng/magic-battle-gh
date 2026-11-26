@@ -2572,33 +2572,43 @@
   function watchAd(kind) {
     const isPot = kind === 'pot';
     if (isPot ? !potAdsLeft() : !adsLeft()) return;
-    let t = 5; openModal('<div class="panel win" style="width:560px"><h2 class="out">Реклама</h2><div class="paper adbox"><b id="adt">' + t + '</b><p>Здесь будет рекламный ролик площадки</p></div></div>');
+    const sdk = window.PikabuSDK;
+    const grantReward = () => {
+      const adState = ensureAdsDay();
+      if (isPot) {
+        const pKey = MB.SHOP.ads.potType || 's';
+        const P = MB.POTIONS[pKey];
+        adState.potN = (adState.potN || 0) + 1;
+        save.potions[pKey] = (save.potions[pKey] || 0) + 1;
+        persist();
+        showShop('free');
+        toast('Получено: ' + P.name + ' (+' + P.amt + ' энергии)');
+      } else {
+        const a = adReward();
+        adState.n++;
+        save.sparks += a;
+        persist();
+        showShop('free');
+        toast('+' + a + ' Искр');
+      }
+    };
+    if (sdk && sdk.ads && sdk.ads.rewarded && typeof sdk.ads.rewarded.show === 'function') {
+      sdk.ads.rewarded.canShow().then(can => {
+        if (!can) { toast('Реклама сейчас недоступна'); return; }
+        sdk.ads.rewarded.show().then(result => {
+          if (result && result.reward) grantReward();
+          else toast('Реклама не просмотрена');
+        }).catch(() => toast('Ошибка показа рекламы'));
+      }).catch(() => toast('Реклама недоступна'));
+      return;
+    }
+    let t = 5;
+    openModal('<div class="panel win" style="width:560px"><h2 class="out">Реклама</h2><div class="paper adbox"><b id="adt">' + t + '</b><p>Здесь будет рекламный ролик площадки</p></div></div>');
     const iv = setInterval(() => {
       t--;
       const el = $('#adt');
       if (el) el.textContent = t;
-      if (t <= 0) {
-        clearInterval(iv);
-        const adState = ensureAdsDay();
-        if (isPot) {
-          const pKey = MB.SHOP.ads.potType || 's';
-          const P = MB.POTIONS[pKey];
-          adState.potN = (adState.potN || 0) + 1;
-          save.potions[pKey] = (save.potions[pKey] || 0) + 1;
-          persist();
-          closeModal();
-          showShop('free');
-          toast('Получено: ' + P.name + ' (+' + P.amt + ' энергии)');
-        } else {
-          const a = adReward();
-          adState.n++;
-          save.sparks += a;
-          persist();
-          closeModal();
-          showShop('free');
-          toast('+' + a + ' Искр');
-        }
-      }
+      if (t <= 0) { clearInterval(iv); closeModal(); grantReward(); }
     }, 1000);
   }
 
