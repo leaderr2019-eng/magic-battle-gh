@@ -3257,7 +3257,10 @@
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
         const list = (data && data.list) || [];
         if (!list.length) { toast('Пока нет кланов'); return; }
-        const rows = list.map((c, i) => '<div class="rrow" style="gap:12px"><span class="rn">' + (i + 1) + '</span><b style="min-width:120px">' + (c.name || 'Клан') + '</b><span>Ур. ' + (c.lvl || 1) + '</span><span>Сила: ' + (c.power || 0) + '</span><span>' + (c.members || 0) + ' уч.</span></div>').join('');
+        const rows = list.map((c, i) => {
+          const emblem = c.emblem ? ART.clanEmblem(c.emblem, 28) : '<span style="width:28px;height:28px;display:inline-block"></span>';
+          return '<div class="rrow" style="gap:10px"><span class="rn">' + (i + 1) + '</span>' + emblem + '<b style="min-width:100px">' + (c.name || 'Клан') + '</b><span>Ур. ' + (c.lvl || 1) + '</span><span>Сила: ' + (c.power || 0) + '</span><span>' + (c.members || 0) + ' уч.</span></div>';
+        }).join('');
         openModal('<div class="panel win" style="position:relative;width:480px"><button class="x" data-act="close">✕</button><h2 class="out">Топ кланов</h2><div class="paper ratelist">' + rows + '</div></div>');
       }).catch(() => toast('Ошибка загрузки'));
     },
