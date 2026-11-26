@@ -3261,6 +3261,7 @@
         openModal('<div class="panel win" style="position:relative;width:480px"><button class="x" data-act="close">✕</button><h2 class="out">Топ кланов</h2><div class="paper ratelist">' + rows + '</div></div>');
       }).catch(() => toast('Ошибка загрузки'));
     },
+    claneditdesc: () => {
       const c = MB.ensureClan(save); if (!c) return;
       const myRole = c.myRole || (c.own ? 'leader' : 'member');
       if (myRole !== 'leader') { toast('Менять описание клана может только Лидер'); return; }
