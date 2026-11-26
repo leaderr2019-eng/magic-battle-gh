@@ -3308,6 +3308,7 @@
       save.gems -= MB.CLAN.createCost;
       const iconId = (embDraft && embDraft.icon) || 'axes_red';
       save.clan = MB.mkClan(save, chk.value, true, 1, embDraft, desc, iconId);
+      save.clan.id = 'clan_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
       if (MB.net && MB.net.getPlayerProfile) {
         const p = MB.net.getPlayerProfile(save);
         if (p && p.id) {

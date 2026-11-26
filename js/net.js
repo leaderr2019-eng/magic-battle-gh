@@ -409,7 +409,7 @@
       resolvePlayerProfile(save);
       if (typeof persistFn === 'function') persistFn();
       if (save && save.clan && isRemoteEnabled()) {
-        connectRealtime(save.clan.id || cfg.sharedClanId);
+        connectRealtime(save.clan && save.clan.id ? save.clan.id : cfg.sharedClanId);
       }
     },
     async refreshClanState(save, persistFn) {
