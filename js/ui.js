@@ -1685,6 +1685,25 @@
     }
     return false;
   }
+  function preloadSkillIcons(units) {
+    const urls = new Set();
+    units.forEach(u => {
+      if (!u.skills) return;
+      u.skills.forEach((s, i) => {
+        if (ART.fx('sk_' + u.key + '_' + (i + 1))) urls.add('assets/fx/sk_' + u.key + '_' + (i + 1) + '.webp');
+        const FX_ALIAS = { firehammer: 'hammer', buff: 'warcry' };
+        let n = s.proj || s.fx;
+        if (n && FX_ALIAS[n]) n = FX_ALIAS[n];
+        if (n && ART.fx(n)) urls.add('assets/fx/' + n + '.webp');
+        if (s.melee) urls.add('assets/ui/w_' + u.key + '.webp');
+      });
+    });
+    return Promise.all(Array.from(urls).map(src => new Promise(resolve => {
+      const img = new Image();
+      img.onload = img.onerror = resolve;
+      img.src = src;
+    })));
+  }
   function startBattle(ctx) {
     closeModal();
     if (ctx && ctx.type === 'lair') {
@@ -1694,27 +1713,30 @@
     persist();
     const fighters = ctx.type === 'col' ? [ctx.hero || save.unlocked[0]] : save.team.slice(0, 3);
     const C = MB.CHAPTERS[ctx.ch - 1], b = MB.createBattle(save, fighters, ctx.enemies);
-    const BGS = MB.CHAPTERS.map(c => c.bg);
-    const cleared = isBattleCleared(ctx);
-    const bv = { b: b, ctx: ctx, units: {}, fx: [], sfx: [], floats: [], projs: [], current: null, pick: null, sel: 0, shake: 0, dim: 0, waiting: null, cleared: cleared, auto: cleared ? !!save.auto : false, startMs: Date.now(), resultReady: false, skipping: false };
-    const bossFight = b.units.some(u => u.boss); let mi = 0;
-    SFX.play('battle_start', 0.78);
-    if (bossFight) setTimeout(() => SFX.play('boss_intro', 0.82), 260);
-    const layKey = (ctx.type === 'col' ? 'fon_coliseum' : ctx.type === 'clan' ? 'fon_lich' : C.bg) + (bossFight ? '#boss' : '');
-    b.units.forEach(u => {
-      const idle = ART.sprite(u.key, 'idle'), hero = u.side === 'hero';
-      let px = (hero ? HX[u.slot] : 1 - HX[u.slot]), py = HY[u.slot], ds = DS[u.slot];
-      let slotKey = (hero ? 'h' : 'e') + u.slot;
-      if (!hero && bossFight) { slotKey = u.boss ? 'b' : 'm' + mi; const p = u.boss ? BOSSPOS.boss : BOSSPOS.m[mi++]; px = p[0]; py = p[1]; ds = p[2]; }
-      const own = (LAYOUT[layKey] || {})[slotKey]; if (own) { px = own[0]; py = own[1]; }
-      u.slotKey = slotKey;
-      const th = (hero ? 185 * ART.skinScale(u.key) : u.boss ? 280 * (u.def0.size || 1) : (u.elite ? 190 : 170) * (u.def0.size || 1)) * ds;
-      bv.units[u.id] = { u: u, x: px * W, y: py * H, k: th / idle.h, h: th, w: idle.w * th / idle.h, pose: 'idle', ox: 0, oy: 0, alpha: 1, shakeT: -999, ph: Math.random() * 6,
-        hp: u.hp, maxHp: u.maxHp, shield: 0, st: [], alive: true, turnN: 0 };
+    ui.innerHTML = '<div class="loading"><img class="loading-bg" src="assets/ui/loading_screen.webp" alt=""><div class="bar"><i style="width:30%"></i><div class="load-label">' + T('Подготовка боя...', 'Preparing battle...') + '</div></div></div>';
+    preloadSkillIcons(b.units).then(() => {
+      const BGS = MB.CHAPTERS.map(c => c.bg);
+      const cleared = isBattleCleared(ctx);
+      const bv = { b: b, ctx: ctx, units: {}, fx: [], sfx: [], floats: [], projs: [], current: null, pick: null, sel: 0, shake: 0, dim: 0, waiting: null, cleared: cleared, auto: cleared ? !!save.auto : false, startMs: Date.now(), resultReady: false, skipping: false };
+      const bossFight = b.units.some(u => u.boss); let mi = 0;
+      SFX.play('battle_start', 0.78);
+      if (bossFight) setTimeout(() => SFX.play('boss_intro', 0.82), 260);
+      const layKey = (ctx.type === 'col' ? 'fon_coliseum' : ctx.type === 'clan' ? 'fon_lich' : C.bg) + (bossFight ? '#boss' : '');
+      b.units.forEach(u => {
+        const idle = ART.sprite(u.key, 'idle'), hero = u.side === 'hero';
+        let px = (hero ? HX[u.slot] : 1 - HX[u.slot]), py = HY[u.slot], ds = DS[u.slot];
+        let slotKey = (hero ? 'h' : 'e') + u.slot;
+        if (!hero && bossFight) { slotKey = u.boss ? 'b' : 'm' + mi; const p = u.boss ? BOSSPOS.boss : BOSSPOS.m[mi++]; px = p[0]; py = p[1]; ds = p[2]; }
+        const own = (LAYOUT[layKey] || {})[slotKey]; if (own) { px = own[0]; py = own[1]; }
+        u.slotKey = slotKey;
+        const th = (hero ? 185 * ART.skinScale(u.key) : u.boss ? 280 * (u.def0.size || 1) : (u.elite ? 190 : 170) * (u.def0.size || 1)) * ds;
+        bv.units[u.id] = { u: u, x: px * W, y: py * H, k: th / idle.h, h: th, w: idle.w * th / idle.h, pose: 'idle', ox: 0, oy: 0, alpha: 1, shakeT: -999, ph: Math.random() * 6,
+          hp: u.hp, maxHp: u.maxHp, shield: 0, st: [], alive: true, turnN: 0 };
+      });
+      bv.layKey = layKey; BV = bv; scene = { mode: 'battle', bg: ctx.type === 'col' ? 'fon_coliseum' : ctx.type === 'clan' ? 'fon_lich' : C.bg }; clock.speed = save.speed || 1;
+      MUSIC.sync('battle');
+      renderHud(); battleLoop(bv);
     });
-    bv.layKey = layKey; BV = bv; scene = { mode: 'battle', bg: ctx.type === 'col' ? 'fon_coliseum' : ctx.type === 'clan' ? 'fon_lich' : C.bg }; clock.speed = save.speed || 1;
-    MUSIC.sync('battle');
-    renderHud(); battleLoop(bv);
   }
   function renderHud() {
     const c = BV.ctx;
