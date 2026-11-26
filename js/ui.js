@@ -2913,9 +2913,9 @@
         '</div>';
       }).join('');
 
-      const resetMs = MB.lairNextResetMs(now());
-      const rem = Math.max(0, resetMs - now());
-      const rd = Math.floor(rem / 86400000), rh = Math.floor((rem % 86400000) / 3600000), rm = Math.floor((rem % 3600000) / 60000);
+      const resetMs = MB.lairNextResetMs ? MB.lairNextResetMs(Date.now()) : (Date.now() + 7 * 86400000);
+      const rem = Math.max(0, resetMs - Date.now());
+      const rd = Math.floor(rem / 86400000) || 0, rh = Math.floor((rem % 86400000) / 3600000) || 0, rm = Math.floor((rem % 3600000) / 60000) || 0;
       const resetTxt = rd + 'д ' + rh + 'ч ' + rm + 'м';
       rightBody =
         '<div class="paper">' +
@@ -2947,7 +2947,6 @@
             '<h2 class="out" style="text-align:left;margin:0;font-size:24px">Уровень ' + clan.lvl + ' · <span style="font-size:16px;color:#ffd45e">Ваша роль: ' + (MB.CLAN_ROLE_NAME[myRole] || 'Участник') + '</span></h2>' +
             '<div class="expbar" style="margin:6px 0"><i style="width:' + Math.min(100, Math.round(100 * clan.exp / expNeed)) + '%"></i><span>Опыт: ' + clan.exp + ' / ' + expNeed + '</span></div>' +
             '<div class="note">Бонус к Искрам: <b style="color:#ffd45e">+' + totalSparksBon + '%</b> · Ваш вклад: <b>' + (clan.myContrib || 0) + '</b></div>' +
-            '<div style="margin-top:6px"><button type="button" class="btn small gold" data-act="clantop" style="min-height:28px;padding:1px 9px;font-size:12px">🏆 Топ кланов</button></div>' +
             (clan.desc ? '<div class="clan-desc-box" title="' + clan.desc.replace(/"/g, '&quot;') + '">' + clan.desc.replace(/</g, '&lt;') + '</div>' : '') + (isLeader ? '<div style="margin-top:5px;display:flex;gap:6px"><button type="button" class="btn small" data-act="claneditdesc" style="min-height:28px;padding:1px 9px;font-size:12px">✎ ' + (clan.desc ? 'Изменить описание' : 'Добавить описание') + '</button><button type="button" class="btn small gold" data-act="clantop" style="min-height:28px;padding:1px 9px;font-size:12px">🏆 Топ кланов</button></div>' : '<div style="margin-top:5px"><button type="button" class="btn small gold" data-act="clantop" style="min-height:28px;padding:1px 9px;font-size:12px">🏆 Топ кланов</button></div>') +
           '</div>' +
         '</div>' +
@@ -3334,7 +3333,7 @@
         fetch(api + '/clans/' + encodeURIComponent(save.clan.id) + '/rename', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: chk.value })
+          body: JSON.stringify({ name: chk.value, emblem: embDraft })
         }).catch(() => {});
       }
       if (MB.net && MB.net.getPlayerProfile) {
@@ -3369,6 +3368,15 @@
       MB.clanTaskProgress(save, 'donate', cost);
       persist(); showClanHall();
       toast('Клан получил +' + (MB.CLAN.donateExp * n) + ' опыта и +' + (10 * n) + ' активности' + (ups ? ' — уровень ' + save.clan.lvl + '!' : ''));
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && save.clan.id) {
+        fetch(api + '/clans/' + encodeURIComponent(save.clan.id) + '/donate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ player: { id: save.playerId, name: save.name }, count: n })
+        }).catch(() => {});
+      }
     },
     clanbuildup: d => {
       const c = MB.ensureClan(save); if (!c) return;
