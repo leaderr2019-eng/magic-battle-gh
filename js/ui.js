@@ -3008,15 +3008,36 @@
 
   /* ---------- Рейтинг ---------- */
   let rateTab = 'power';
+  let rateRefreshTimer = 0;
+  function pushRating() {
+    const cfg = window.MB_NET_CONFIG || {};
+    const api = (cfg.apiUrl || '').replace(/\/$/, '');
+    if (!api || !save || !save.playerId) return;
+    const profile = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId, name: save.name || 'Вы' };
+    const isPlatform = !!(profile.verified || save.authVerified || (save.playerId && !/^plr_/i.test(save.playerId)));
+    fetch(api + '/players/upsert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: save.playerId,
+        name: save.name || profile.name || 'Игрок',
+        power: MB.accountPower(save),
+        level: MB.accountLevel(save),
+        verified: isPlatform
+      })
+    }).catch(() => {});
+  }
   function showRating(tab) {
     if (tab) rateTab = tab; scene = { mode: 'menu', bg: scene.bg };
     MUSIC.sync('menu'); BV = null;
+    if (rateRefreshTimer) { clearInterval(rateRefreshTimer); rateRefreshTimer = 0; }
     const profile = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId || 'me', name: save.name || 'Вы' };
     const me = { id: profile.id, name: save.name || profile.name || 'Вы', power: MB.accountPower(save), level: MB.accountLevel(save), me: true, verified: !!(profile.verified || save.authVerified) };
     const key = rateTab === 'power' ? 'power' : 'level';
     const cfg = window.MB_NET_CONFIG || {};
     const api = (cfg.apiUrl || '').replace(/\/$/, '');
     const drawList = (serverList) => {
+      if (scene.mode !== 'menu' || !$('#ui').querySelector('.rate')) return;
       const others = (serverList || []).filter(p => p && p.id && p.id !== me.id).map(p => ({
         id: p.id, name: p.name || 'Игрок', power: p.power || 0, level: p.level || 0, me: false, verified: true
       }));
@@ -3029,18 +3050,20 @@
         '<p class="note out" style="margin-top:8px">Сила аккаунта — сумма силы всех ваших героев, уровень — сумма их уровней. Вы на ' + pos + '-м месте из ' + list.length + '.</p></div></div>';
       applyUILang();
     };
-    if (api) {
-      fetch(api + '/rating?by=' + key).then(r => r.json()).then(data => {
-        drawList(data && data.list ? data.list : []);
-      }).catch(() => drawList([]));
-    } else {
-      drawList([]);
-    }
-    if (api && me.id) {
-      const isPlatform = !!(profile.verified || save.authVerified || (me.id && !/^plr_/i.test(me.id)));
-      fetch(api + '/players/upsert', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: me.id, name: me.name, power: me.power, level: me.level, verified: isPlatform }) }).catch(() => {});
-    }
+    const fetchRating = () => {
+      if (api) {
+        fetch(api + '/rating?by=' + key).then(r => r.json()).then(data => {
+          drawList(data && data.list ? data.list : []);
+        }).catch(() => drawList([]));
+      } else {
+        drawList([]);
+      }
+    };
+    pushRating();
+    fetchRating();
+    rateRefreshTimer = setInterval(fetchRating, 10000);
   }
+  setInterval(pushRating, 45000);
 
   /* ---------- Действия ---------- */
   const ACT = {
@@ -3073,7 +3096,7 @@
       refreshAfterLang();
     },
     settings: () => showSettings(),
-    hub: showHub, campaign: () => showCampaign(), heroes: () => { showHeroes.back = 'hub'; showHeroes(); },
+    hub: () => { if (rateRefreshTimer) { clearInterval(rateRefreshTimer); rateRefreshTimer = 0; } showHub(); }, campaign: () => showCampaign(), heroes: () => { showHeroes.back = 'hub'; showHeroes(); },
     lair: () => {
       if (!save.bosses[1]) {
         toast(T('Логово боссов откроется после прохождения 1-й главы (победа над боссом).', 'Boss Lair unlocks after clearing chapter 1 (defeat the boss).'));
@@ -3497,7 +3520,7 @@
     layoutcopy: () => { const txt = JSON.stringify(LAYOUT, (k, v) => typeof v === 'number' ? Math.round(v * 1000) / 1000 : v);
       try { navigator.clipboard.writeText(txt); } catch (e) { /* нет буфера */ }
       openModal('<div class="panel win" style="position:relative;width:640px"><button class="x" data-act="close">✕</button><h2 class="out">Позиции бойцов</h2><p>Текст уже скопирован. Если нет — выделите его и скопируйте вручную, потом пришлите мне, и я сделаю эти позиции стандартными для всех.</p><textarea style="width:100%;height:140px;font:13px monospace" readonly onclick="this.select()">' + txt + '</textarea></div>'); },
-    speed: () => { if (!BV) return; if (!BV.cleared && isBattleCleared(BV.ctx)) BV.cleared = true; if (!BV.cleared) { toast('Доступно после прохождения уровня'); return; } clock.speed = clock.speed > 1 ? 1 : 2; save.speed = clock.speed; persist(); renderHudToggles(); },
+    speed: () => { if (!BV) return; clock.speed = clock.speed > 1 ? 1 : 2; save.speed = clock.speed; persist(); renderHudToggles(); },
     skill: d => { if (BV && BV.waiting) BV.waiting.skill(+d.i); },
     openchest: () => {
       const its = showResult.items || [], box = $('#chestbox'); if (!box) return;
