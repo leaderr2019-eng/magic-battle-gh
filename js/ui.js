@@ -3276,6 +3276,7 @@
       }
       persist(); showClanHall(); toast('Вы вступили в клан «' + clanName + '»');
     },
+    clanjoin: d => {
       if (MB.net && MB.net.isRemote && MB.net.isRemote() && MB.net.canJoinCompetitive && !MB.net.canJoinCompetitive(save)) {
         toast('Для вступления в клан на площадке нужен вход через аккаунт');
         return;
