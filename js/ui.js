@@ -3382,6 +3382,13 @@
       const c = MB.ensureClan(save); if (!c) return;
       const myRole = c.myRole || (c.own ? 'leader' : 'member');
       if (myRole !== 'leader') { toast('Улучшать постройки клана может только Лидер'); return; }
+      if (MB.net && MB.net.submitClanBuildUpgrade) {
+        MB.net.submitClanBuildUpgrade(save, d.k, persist).then(ok => {
+          if (ok) { showClanHall('builds'); toast('Постройка клана улучшена!'); }
+          else toast('Недостаточно очков или ошибка сервера');
+        });
+        return;
+      }
       if (!MB.clanUpgradeBuild(save, d.k)) { toast('Недостаточно очков прокачки или достигнут максимум (20 ур.)'); return; }
       persist(); showClanHall('builds'); toast('Постройка клана улучшена!');
     },
