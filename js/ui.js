@@ -3748,15 +3748,25 @@
       if (idx < 0) return;
       const target = c.members[idx];
       if (target.role === 'leader') { toast('Нельзя исключить лидера клана'); return; }
-      if (myRole === 'leader') {
+      const doKick = () => {
         c.members.splice(idx, 1);
         persist(); showClanHall();
         toast(target.name + ' исключён из клана');
+        const cfg = window.MB_NET_CONFIG || {};
+        const api = (cfg.apiUrl || '').replace(/\/$/, '');
+        if (api && c.id) {
+          fetch(api + '/clans/' + encodeURIComponent(c.id) + '/leave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playerId: target.id })
+          }).catch(() => {});
+        }
+      };
+      if (myRole === 'leader') {
+        doKick();
       } else if (myRole === 'officer') {
         if (target.role !== 'member') { toast('Офицер может исключать только обычных участников'); return; }
-        c.members.splice(idx, 1);
-        persist(); showClanHall();
-        toast(target.name + ' исключён из клана');
+        doKick();
       } else {
         toast('Недостаточно прав для исключения игроков');
       }
@@ -3824,10 +3834,21 @@
       toast('Статус лидера передан игроку ' + target.name + '. Вы покинули клан');
     },
     clanleaveok: () => { 
+      const clanId = save.clan && save.clan.id;
+      const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       save.clanLeaveCooldown = Date.now() + 7 * 86400000;
       save.clan = null; 
       persist(); closeModal(); showClans(); 
-      toast('Вы покинули клан. Кулдаун на босса: 7 дней'); 
+      toast('Вы покинули клан. Кулдаун на босса: 7 дней');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && clanId && myId) {
+        fetch(api + '/clans/' + encodeURIComponent(clanId) + '/leave', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerId: myId })
+        }).catch(() => {});
+      }
     },
     buygems: d => buy(+d.i), buyreal: d => buyReal(d), chance: d => showChances(d.c),
     ad: () => watchAd('sparks'), adpot: () => watchAd('pot'), closeopen: () => { closeModal(); showShop(shopTab); },
