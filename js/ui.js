@@ -3073,7 +3073,10 @@
         level: MB.accountLevel(save),
         avatar: save.avatar || 'viking',
         unlocked: save.unlocked || ['viking'],
-        heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => [k, (save.heroes[k] && save.heroes[k].lvl) || 1])),
+        heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => {
+          const lvl = (save.heroes[k] && save.heroes[k].lvl) || 1;
+          return [k, Math.max(1, Math.min(999, Math.floor(lvl)))];
+        })),
         verified: isPlatform
       })
     }).catch(() => {});
@@ -3209,7 +3212,10 @@
           '<div style="line-height:1.2">' + (heroes || '<span class="note">Нет данных</span>') + '</div></div></div>');
       };
       if (id === save.playerId) {
-        showProf({ name: save.name, level: MB.accountLevel(save), power: MB.accountPower(save), avatar: save.avatar, unlocked: save.unlocked, heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => [k, (save.heroes[k] && save.heroes[k].lvl) || 1])) });
+        showProf({ name: save.name, level: MB.accountLevel(save), power: MB.accountPower(save), avatar: save.avatar, unlocked: save.unlocked, heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => {
+        const lvl = (save.heroes[k] && save.heroes[k].lvl) || 1;
+        return [k, Math.max(1, Math.min(999, Math.floor(lvl)))];
+      })) });
         return;
       }
       if (api) {

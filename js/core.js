@@ -72,7 +72,7 @@
       [['spd', 1], ['boss', 3], ['crit', 2], ['pierce', 4], ['spd', 1], ['boss', 4], ['crit', 2], ['pierce', 5], ['spd', 1], ['first', 1]]] }
   ];
   MB.newTree = function () { return { atk: [0, 0, 0], def: [0, 0, 0], mas: [0, 0, 0] }; };
-  MB.MAX_LEVEL = 50;
+  MB.MAX_LEVEL = 999;
   MB.STATUS = {
     poison: { name: 'Яд', color: '#5fd35f', ch: 'Я' },
     freeze: { name: 'Заморозка', color: '#7fd6ff', ch: 'Л' },
