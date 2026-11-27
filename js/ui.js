@@ -772,7 +772,7 @@
       'Дуэли 1 на 1: выберите одного героя. Каждую арену можно пройти только один раз. На 5-й — босс, на 10-й — финал.': '1v1 duels: pick one hero. Each arena can be cleared only once. Arena 5 is a boss, arena 10 is the finale.',
       'Пока нет открытых кланов для вступления. Создайте свой или дождитесь, когда появятся кланы других игроков.': 'No open clans to join yet. Create your own or wait for other players’ clans.',
       'Это прототип: покупки за рубли тестовые, деньги не списываются. В игре здесь откроется оплата площадки.': 'Prototype: ruble purchases are simulated and not charged. Platform billing will appear in the live build.',
-      'За бой с клановым боссом: +20 монет, за победу: +400 всем соклановцам. Ключи: 2 бесплатно каждый день.': 'Clan boss battle: +20 coins, victory: +400 to all members. Keys: 2 free every day.',
+      'За бой с клановым боссом: +20 монет, за победу: +400 всем соклановцам. Ключи: 2 бесплатно раз в неделю.': 'Clan boss battle: +20 coins, victory: +400 to all members. Keys: 2 free every day.',
       'за успешный бой с нанесением урона боссу начисляется +5 очков активности (и +5 к личному вкладу).': 'a successful fight that damages the boss grants +5 activity (+5 personal contribution).',
       'Монеты уже начислены. Если закрыть окно, опыт можно будет забрать позже — награда не пропадёт.': 'Coins already granted. If you close this, XP can be claimed later — the reward will not be lost.',
       'Нет ключей кланового босса — 2 новых дадут завтра, ещё можно купить в клановом магазине': 'No clan boss keys — 2 free tomorrow, or buy more in the clan shop',
@@ -803,7 +803,7 @@
       'Колизей откроется после победы над боссом главы ': 'Coliseum unlocks after defeating the chapter ',
       'Пройдите 10 уровней, чтобы открыть бой с боссом.': 'Clear 10 stages to unlock the boss fight.',
       'а с ростом уровня расширяется (на 10 уровне — до': 'and grows with level (at level 10 — up to',
-      '(+2 бесплатно каждый день, ещё — в лавке клана)': '(+2 free every day, more in the clan shop)',
+      '(+2 бесплатно раз в неделю, ещё — в лавке клана)': '(+2 free per week, more in the clan shop)',
       'Урон сохраняется в течение недели. За урон дают': 'Damage carries through the week. Damage grants',
       '— нажмите на героя, и он станет вашим аватаром': '— tap a hero to set as your avatar',
       'В отряде уже 3 героя — сначала уберите одного': 'Team already has 3 heroes — remove one first',
@@ -2397,7 +2397,7 @@
     if (shopTab === 'clan') {
       gridCls = 'shopgrid clan-grid';
       const ccImg = '<img class="mb-ic" src="assets/ui/clan_coin.webp" alt="" style="width:20px;height:20px;vertical-align:-4px">';
-      banner = '<div class="paper shopbanner"><img src="assets/ui/clan_coin.webp" alt=""><div><b>Клановые монеты: ' + (save.ccoin || 0) + '</b><span class="note">За бой с клановым боссом: +20 монет, за победу: +400 всем соклановцам. Ключи: 2 бесплатно каждый день.</span></div></div>';
+      banner = '<div class="paper shopbanner"><img src="assets/ui/clan_coin.webp" alt=""><div><b>Клановые монеты: ' + (save.ccoin || 0) + '</b><span class="note">За бой с клановым боссом: +20 монет, за победу: +400 всем соклановцам. Ключи: 2 бесплатно раз в неделю.</span></div></div>';
       MB.CLAN_SHOP.forEach(x => {
         const i = add(x);
         if (x.kind === 'sparks') cards += '<div class="shopcard">' + ic('spark') + '<b>' + x.n + ' Искр</b><span>пак за монеты</span><div class="shopcard-btns"><button class="btn small gold" data-act="buygems" data-i="' + i + '" ' + ((save.ccoin || 0) < x.cc ? 'disabled' : '') + '>' + ccImg + x.cc + '</button></div></div>';
@@ -2845,7 +2845,7 @@
       const iAmTop = !!(top && top.me && (top.dmg || 0) > 0);
       const bossDefeated = !!clan.bossDefeatedThisWeek;
       const fightBtn = bossDefeated
-        ? '<div class="paper" style="text-align:center;padding:12px"><b style="color:#3f9a24">Босс повержен!</b><div style="margin-top:6px">Следующий босс появится в понедельник</div><div style="margin-top:4px;color:#ffd45e;font-size:18px" id="clan-boss-reset-timer" data-target="' + resetTargetMs + '">' + resetLeftStr + '</div></div>'
+        ? '<div class="paper" style="text-align:center;padding:12px"><b style="color:#3f9a24">Босс повержен!</b><div style="margin-top:6px">Следующий босс появится в понедельник</div><div style="margin-top:4px;color:#e74c3c;font-size:18px" id="clan-boss-reset-timer" data-target="' + resetTargetMs + '">' + resetLeftStr + '</div></div>'
         : '<button class="btn ' + (keys ? 'red' : 'gold') + ' clanfight" data-act="' + (keys ? 'clanboss' : 'clanbuykeys') + '">' +
           (keys ? T('В бой с боссом! (1 ключ)', 'Fight the boss! (1 key)') : T('Нет ключей — докупить в лавке', 'No keys — buy in the shop')) +
           '</button>';
@@ -2869,13 +2869,13 @@
             dmgBoard +
             '<div class="paper clanboss-reset">' +
               '<b>' + T('Сброс босса:', 'Boss reset:') + '</b> ' + T('каждый', 'every') + ' <b>' + T('понедельник в 00:00', 'Monday at 00:00') + '</b>' +
-              '<div style="margin-top:4px">' + T('До обновления:', 'Until reset:') + ' <b id="clan-boss-reset-timer" style="color:#ffd45e" data-target="' + resetTargetMs + '">' + resetLeftStr + '</b></div>' +
+              '<div style="margin-top:4px">' + T('До обновления:', 'Until reset:') + ' <b id="clan-boss-reset-timer" style="color:#e74c3c" data-target="' + resetTargetMs + '">' + resetLeftStr + '</b></div>' +
               (mvpPending ? '<div class="note" style="margin-top:6px;color:#3f9a24">★ ' + T('Вам доступен золотой сундук за лучший урон прошлой недели — нажмите «Забрать награду».', 'Golden chest for last week’s top damage is ready — tap “Claim reward”.') + '</div>' : '') +
               (iAmTop && !mvpPending ? '<div class="note" style="margin-top:6px">' + T('Вы лидируете по урону на этой неделе.', 'You lead in damage this week.') + '</div>' : '') +
             '</div>' +
             '<div class="clanboss-keys">' +
               '<img src="assets/ui/key_clan.webp" alt="">' +
-              '<div><b>' + T('Ключей:', 'Keys:') + ' ' + keys + '</b><small>' + T('(+2 бесплатно каждый день, ещё — в лавке клана)', '(+2 free every day, more in the clan shop)') + '</small></div>' +
+              '<div><b>' + T('Ключей:', 'Keys:') + ' ' + keys + '</b><small>' + T('(+2 бесплатно раз в неделю, ещё — в лавке клана)', '(+2 free per week, more in the clan shop)') + '</small></div>' +
             '</div>' +
           '</div>' +
           '<div class="clanboss-right">' +

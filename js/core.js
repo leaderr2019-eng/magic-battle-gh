@@ -302,7 +302,7 @@
     return ups;
   };
   // Ключи кланового босса: 2 бесплатных каждый день, купленные не сгорают
-  MB.clanKeys = function (save) { const t = MB.dayKey(new Date()), k = save.ckeys; if (k.date !== t) { k.date = t; k.free = 2; } return k.free + k.paid; };
+  MB.clanKeys = function (save) { const w = MB.weekInfo(new Date()).week, k = save.ckeys; if (k.date !== w) { k.date = w; k.free = 2; } return k.free + k.paid; };
   MB.spendClanKey = function (save) { MB.clanKeys(save); const k = save.ckeys; if (k.free > 0) { k.free--; return true; } if (k.paid > 0) { k.paid--; return true; } return false; };
   // Клановый магазин: товары за клановые монеты (cc) и ключ за изумруды (gems)
   MB.CLAN_SHOP = [
