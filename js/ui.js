@@ -2762,15 +2762,17 @@
             console.log('Membership response:', mem);
             if (mem && mem.clanId && !save.clan) {
               const found = list.find(c => c.id === mem.clanId);
-              if (found) {
-                save.clan = MB.mkClan(save, found.name, false, found.lvl || 1, null, '', found.emblem || 'axes_red', found.recruit || 'free');
-                save.clan.id = found.id;
-                save.clanApps = {};
-                persist();
-                showClanHall();
-                toast('Вы приняты в клан «' + found.name + '»');
-                return;
-              }
+              const clanName = (found && found.name) || mem.clanName || 'Клан';
+              const clanLvl = (found && found.lvl) || 1;
+              const clanEmblem = (found && found.emblem) || 'axes_red';
+              const clanRecruit = (found && found.recruit) || 'free';
+              save.clan = MB.mkClan(save, clanName, false, clanLvl, null, '', clanEmblem, clanRecruit);
+              save.clan.id = mem.clanId;
+              save.clanApps = {};
+              persist();
+              showClanHall();
+              toast('Вы в клане «' + clanName + '»');
+              return;
             }
             if (save.clanApps && Object.keys(save.clanApps).length) {
               const checks = Object.keys(save.clanApps).map(clanId =>
