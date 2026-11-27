@@ -2722,8 +2722,12 @@
       }).join('');
       const realCards = (serverClans || []).map(c => {
         const emblem = c.emblem ? ART.clanEmblem(c.emblem, 68) : ART.clanEmblem(MB.defaultEmblem(), 68);
+        const rec = c.recruit || 'free';
+        const btnLbl = rec === 'closed' ? 'Закрыт' : rec === 'apply' ? 'Подать заявку' : 'Вступить';
+        const btnCls = rec === 'closed' ? 'red' : rec === 'apply' ? 'blue' : 'green';
+        const btnDis = rec === 'closed' ? 'disabled' : '';
         return '<div class="shopcard">' + emblem + '<b>' + (c.name || 'Клан') + '</b><span>Уровень ' + (c.lvl || 1) + ' · ' + (c.members || 0) + ' уч.</span><span>Сила: ' + (c.power || 0) + '</span>' +
-          '<button class="btn small green" data-act="clanjoinreal" data-id="' + c.id + '" data-name="' + (c.name || '') + '">Вступить</button></div>';
+          '<button class="btn small ' + btnCls + '" data-act="clanjoinreal" data-id="' + c.id + '" data-name="' + (c.name || '') + '" ' + btnDis + '>' + btnLbl + '</button></div>';
       }).join('');
       const allCards = realCards + npcCards;
       const emptyNote = allCards
@@ -3278,7 +3282,17 @@
           return;
         }
         if (serverClan && serverClan.recruit === 'apply') {
-          toast('Клан «' + clanName + '» принимает по заявкам. Заявка отправлена.');
+          const cfg = window.MB_NET_CONFIG || {};
+          const api = (cfg.apiUrl || '').replace(/\/$/, '');
+          if (api) {
+            const p = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId, name: save.name };
+            fetch(api + '/clans/' + encodeURIComponent(clanId) + '/apply', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ player: { id: p.id, name: p.name || save.name, power: MB.accountPower(save) } })
+            }).catch(() => {});
+          }
+          toast('Заявка в клан «' + clanName + '» отправлена');
           return;
         }
         save.clan = MB.mkClan(save, clanName, false, serverClan ? serverClan.lvl : 1, null, '', 'axes_red', 'free');
@@ -3587,6 +3601,15 @@
       c.members.push({ id: ap.id, name: ap.name, power: ap.power, role: 'member', contrib: 0 });
       persist(); showClanHall();
       toast('Игрок ' + ap.name + ' принят в клан');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && c.id) {
+        fetch(api + '/clans/' + encodeURIComponent(c.id) + '/approve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appId: ap.id })
+        }).catch(() => {});
+      }
     },
     clanappno: d => {
       const c = MB.ensureClan(save); if (!c) return;
@@ -3597,6 +3620,15 @@
       const ap = c.applicants.splice(idx, 1)[0];
       persist(); showClanHall();
       toast('Заявка игрока ' + ap.name + ' отклонена');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && c.id) {
+        fetch(api + '/clans/' + encodeURIComponent(c.id) + '/reject', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appId: ap.id })
+        }).catch(() => {});
+      }
     },
     clantoggleoff: d => {
       const c = MB.ensureClan(save); if (!c) return;
