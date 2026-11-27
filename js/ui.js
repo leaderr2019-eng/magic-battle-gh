@@ -2745,31 +2745,7 @@
     if (api) {
       const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
-        const list = data && data.list ? data.list : [];
-        if (myId) {
-          fetch(api + '/clans/mymembership?id=' + encodeURIComponent(myId)).then(r => r.json()).then(mem => {
-            if (mem && mem.clanId) {
-              if (!save.clan || save.clan.id !== mem.clanId) {
-                const found = list.find(c => c.id === mem.clanId);
-                if (found) {
-                  save.clan = MB.mkClan(save, found.name, false, found.lvl || 1, null, '', found.emblem || 'axes_red', found.recruit || 'free');
-                  save.clan.id = found.id;
-                  persist();
-                  showClanHall();
-                  toast('Вы в клане «' + found.name + '»');
-                  return;
-                }
-              }
-            } else if (save.clan) {
-              save.clan = null;
-              persist();
-              toast('Вы больше не в клане');
-            }
-            renderCards(list);
-          }).catch(() => renderCards(list));
-        } else {
-          renderCards(list);
-        }
+        renderCards(data && data.list ? data.list : []);
       }).catch(() => renderCards([]));
     } else {
       renderCards([]);
