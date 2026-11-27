@@ -3488,6 +3488,20 @@
           const p = MB.net.getPlayerProfile(save);
           if (p && p.id) {
             save.clan.members = [{ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'leader', contrib: 0, bossDmg: 0, verified: !!p.verified }];
+            if (api) {
+              fetch(api + '/clans/' + encodeURIComponent(save.clan.id) + '/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ player: { id: p.id, name: p.name || save.name, power: p.power || 0, role: 'leader' } })
+              }).then(() => {
+                skipExistingClanRewards(save.clan);
+                persist(); closeModal(); showClanHall(); toast('Клан «' + chk.value + '» создан!');
+              }).catch(() => {
+                skipExistingClanRewards(save.clan);
+                persist(); closeModal(); showClanHall(); toast('Клан «' + chk.value + '» создан!');
+              });
+              return;
+            }
           }
         }
         skipExistingClanRewards(save.clan);
