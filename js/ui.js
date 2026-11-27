@@ -3713,6 +3713,15 @@
       m.role = m.role === 'officer' ? 'member' : 'officer';
       persist(); showClanHall();
       toast(m.role === 'officer' ? (m.name + ' назначен офицером') : ('С игрока ' + m.name + ' снята роль офицера'));
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && c.id) {
+        fetch(api + '/clans/' + encodeURIComponent(c.id) + '/role', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerId: m.id, role: m.role })
+        }).catch(() => {});
+      }
     },
     clanmakeleader: d => {
       const c = MB.ensureClan(save); if (!c) return;
