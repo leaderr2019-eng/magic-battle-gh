@@ -2736,7 +2736,7 @@
         } else {
           btnLbl = 'Вступить'; btnCls = 'green'; btnDis = '';
         }
-        return '<div class="shopcard">' + emblem + '<b>' + (c.name || 'Клан') + '</b><span>Уровень ' + (c.lvl || 1) + ' · ' + (c.members || 0) + ' уч.</span><span>Сила: ' + (c.power || 0) + '</span>' +
+        return '<div class="shopcard clan-card" data-name="' + (c.name || '') + '">' + emblem + '<b>' + (c.name || 'Клан') + '</b><span>Уровень ' + (c.lvl || 1) + ' · ' + (c.members || 0) + ' уч.</span><span>Сила: ' + (c.power || 0) + '</span>' +
           '<button class="btn small ' + btnCls + '" data-act="clanjoinreal" data-id="' + c.id + '" data-name="' + (c.name || '') + '" ' + btnDis + '>' + btnLbl + '</button></div>';
       }).join('');
       const allCards = realCards + npcCards;
@@ -2746,6 +2746,7 @@
       ui.innerHTML = topbar(t('clans'), 'hub') + '<div class="shop"><div class="paper" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-weight:700;font-size:16px;line-height:1.45">' +
         '<div>В клане вас ждёт общий <b>клановый босс</b>, <b>прокачка построек клана</b>, <b>роли (Лидер, Офицер, Участник)</b> и <b>награды за активность</b>. При создании клан вмещает <b>10 игроков</b>, а с ростом уровня расширяется (на 10 уровне — до <b>20 игроков</b>).</div>' +
         '<button type="button" class="btn small gold" data-act="clantop20" style="flex:none">Топ-20 кланов</button></div>' +
+        '<div style="margin-bottom:12px"><input id="clansearch" type="text" placeholder="Поиск клана..." style="width:100%;padding:10px 14px;font-size:16px;border:3px solid #3a2414;border-radius:10px;background:#fff8e8" oninput="document.querySelectorAll(\'.clan-card\').forEach(c=>c.style.display=c.dataset.name.toLowerCase().includes(this.value.toLowerCase())?\'\':\'none\')"></div>' +
         emptyNote +
         '<div class="shopgrid">' +
         '<div class="shopcard">' + ART.clanEmblem(MB.defaultEmblem(), 68) + '<b>Свой клан</b><span>Вы станете лидером</span><span>Вместимость: 10 игроков</span>' +
