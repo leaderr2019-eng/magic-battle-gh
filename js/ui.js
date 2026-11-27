@@ -2844,7 +2844,11 @@
       const top = dmgRows[0];
       const iAmTop = !!(top && top.me && (top.dmg || 0) > 0);
       const bossDefeated = !!clan.bossDefeatedThisWeek;
-      const fightBtn = bossDefeated
+      const onCooldown = save.clanLeaveCooldown && Date.now() < save.clanLeaveCooldown;
+      const cooldownLeft = onCooldown ? Math.ceil((save.clanLeaveCooldown - Date.now()) / 86400000) : 0;
+      const fightBtn = onCooldown
+        ? '<div class="paper" style="text-align:center;padding:12px"><b style="color:#e74c3c">Кулдаун на босса</b><div style="margin-top:6px">Осталось: ' + cooldownLeft + ' дн.</div></div>'
+        : bossDefeated
         ? '<div class="paper" style="text-align:center;padding:12px"><b style="color:#3f9a24">Босс повержен!</b><div style="margin-top:6px">Следующий босс появится в понедельник</div><div style="margin-top:4px;color:#e74c3c;font-size:18px" id="clan-boss-reset-timer" data-target="' + resetTargetMs + '">' + resetLeftStr + '</div></div>'
         : '<button class="btn ' + (keys ? 'red' : 'gold') + ' clanfight" data-act="' + (keys ? 'clanboss' : 'clanbuykeys') + '">' +
           (keys ? T('В бой с боссом! (1 ключ)', 'Fight the boss! (1 key)') : T('Нет ключей — докупить в лавке', 'No keys — buy in the shop')) +
@@ -3418,6 +3422,11 @@
     },
     clanboss: () => { 
       if (!save.clan) return; 
+      if (save.clanLeaveCooldown && Date.now() < save.clanLeaveCooldown) {
+        const left = Math.ceil((save.clanLeaveCooldown - Date.now()) / 86400000);
+        toast('Кулдаун на босса: ' + left + ' дн.');
+        return;
+      }
       if (save.clan.bossDefeatedThisWeek) { toast('Босс уже повержен на этой неделе'); return; }
       if (!MB.clanKeys(save)) { ACT.clanbuykeys(); return; } 
       openPrep({ type: 'clan', ch: MB.topChapter(save) }); 
@@ -3655,9 +3664,10 @@
     },
     clandisband: () => {
       const clanId = save.clan && save.clan.id;
+      save.clanLeaveCooldown = Date.now() + 7 * 86400000;
       save.clan = null;
       persist(); closeModal(); showClans();
-      toast('Клан распущен');
+      toast('Клан распущен. Кулдаун на босса: 7 дней');
       const cfg = window.MB_NET_CONFIG || {};
       const api = (cfg.apiUrl || '').replace(/\/$/, '');
       if (api && clanId) {
@@ -3689,7 +3699,12 @@
       persist(); closeModal(); showClans();
       toast('Статус лидера передан игроку ' + target.name + '. Вы покинули клан');
     },
-    clanleaveok: () => { save.clan = null; persist(); closeModal(); showClans(); toast('Вы покинули клан'); },
+    clanleaveok: () => { 
+      save.clanLeaveCooldown = Date.now() + 7 * 86400000;
+      save.clan = null; 
+      persist(); closeModal(); showClans(); 
+      toast('Вы покинули клан. Кулдаун на босса: 7 дней'); 
+    },
     buygems: d => buy(+d.i), buyreal: d => buyReal(d), chance: d => showChances(d.c),
     ad: () => watchAd('sparks'), adpot: () => watchAd('pot'), closeopen: () => { closeModal(); showShop(shopTab); },
     flee: () => {
