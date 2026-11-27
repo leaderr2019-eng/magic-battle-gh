@@ -2702,32 +2702,49 @@
     MUSIC.sync('menu'); BV = null; clock.speed = 1;
     const npcIcons = (MB.CLAN_ICONS && MB.CLAN_ICONS.length) ? MB.CLAN_ICONS : [{ id: 'axes_red' }];
     save.clanApps = save.clanApps || {};
-    const cards = MB.CLAN_NPC.map((c, i) => {
-      const em = Object.assign({}, c.emblem || {}, { icon: c.icon || npcIcons[i % npcIcons.length].id });
-      const recMode = c.recruit || 'free';
-      const recLbl = (MB.CLAN_RECRUIT[recMode] && MB.CLAN_RECRUIT[recMode].name) || 'Свободный вход';
-      const cap = MB.clanMaxMembers(c.lvl);
-      const curCnt = Math.min(cap, 5 + (c.lvl % 5));
-      const sent = !!save.clanApps[i];
-      const btnHtml = recMode === 'closed'
-        ? '<button class="btn small red" data-act="clanjoin" data-i="' + i + '">Заявки отклоняются</button>'
-        : recMode === 'apply'
-          ? '<button class="btn small ' + (sent ? 'gold' : 'blue') + '" data-act="clanjoin" data-i="' + i + '">' + (sent ? 'Заявка подана' : 'Подать заявку') + '</button>'
-          : '<button class="btn small green" data-act="clanjoin" data-i="' + i + '">Вступить</button>';
-      return '<div class="shopcard">' + ART.clanEmblem(em, 68) + '<b>' + c.name + '</b><span>Уровень ' + c.lvl + ' · мест: ' + curCnt + '/' + cap + '</span><span>Приём: ' + recLbl + ' · Искры +' + c.lvl + '%</span>' +
-        btnHtml + '</div>';
-    }).join('');
-    const emptyNote = cards
-      ? ''
-      : '<div class="paper" style="margin-bottom:12px;font-weight:600;font-size:15px;line-height:1.45">Пока нет открытых кланов для вступления. Создайте свой или дождитесь, когда появятся кланы других игроков.</div>';
-    ui.innerHTML = topbar(t('clans'), 'hub') + '<div class="shop"><div class="paper" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-weight:700;font-size:16px;line-height:1.45">' +
-      '<div>В клане вас ждёт общий <b>клановый босс</b>, <b>прокачка построек клана</b>, <b>роли (Лидер, Офицер, Участник)</b> и <b>награды за активность</b>. При создании клан вмещает <b>10 игроков</b>, а с ростом уровня расширяется (на 10 уровне — до <b>20 игроков</b>).</div>' +
-      '<button type="button" class="btn small gold" data-act="clantop20" style="flex:none">Топ-20 кланов</button></div>' +
-      emptyNote +
-      '<div class="shopgrid">' +
-      '<div class="shopcard">' + ART.clanEmblem(MB.defaultEmblem(), 68) + '<b>Свой клан</b><span>Вы станете лидером</span><span>Вместимость: 10 игроков</span>' +
-      '<button class="btn small gold" data-act="clancreate" ' + (save.gems < MB.CLAN.createCost ? 'disabled' : '') + '>Создать ' + ic('gem') + MB.CLAN.createCost + '</button></div>' + cards + '</div></div>';
-    applyUILang();
+    const cfg = window.MB_NET_CONFIG || {};
+    const api = (cfg.apiUrl || '').replace(/\/$/, '');
+    const renderCards = (serverClans) => {
+      const npcCards = MB.CLAN_NPC.map((c, i) => {
+        const em = Object.assign({}, c.emblem || {}, { icon: c.icon || npcIcons[i % npcIcons.length].id });
+        const recMode = c.recruit || 'free';
+        const recLbl = (MB.CLAN_RECRUIT[recMode] && MB.CLAN_RECRUIT[recMode].name) || 'Свободный вход';
+        const cap = MB.clanMaxMembers(c.lvl);
+        const curCnt = Math.min(cap, 5 + (c.lvl % 5));
+        const sent = !!save.clanApps[i];
+        const btnHtml = recMode === 'closed'
+          ? '<button class="btn small red" data-act="clanjoin" data-i="' + i + '">Заявки отклоняются</button>'
+          : recMode === 'apply'
+            ? '<button class="btn small ' + (sent ? 'gold' : 'blue') + '" data-act="clanjoin" data-i="' + i + '">' + (sent ? 'Заявка подана' : 'Подать заявку') + '</button>'
+            : '<button class="btn small green" data-act="clanjoin" data-i="' + i + '">Вступить</button>';
+        return '<div class="shopcard">' + ART.clanEmblem(em, 68) + '<b>' + c.name + '</b><span>Уровень ' + c.lvl + ' · мест: ' + curCnt + '/' + cap + '</span><span>Приём: ' + recLbl + ' · Искры +' + c.lvl + '%</span>' +
+          btnHtml + '</div>';
+      }).join('');
+      const realCards = (serverClans || []).map(c => {
+        const emblem = c.emblem ? ART.clanEmblem(c.emblem, 68) : ART.clanEmblem(MB.defaultEmblem(), 68);
+        return '<div class="shopcard">' + emblem + '<b>' + (c.name || 'Клан') + '</b><span>Уровень ' + (c.lvl || 1) + ' · ' + (c.members || 0) + ' уч.</span><span>Сила: ' + (c.power || 0) + '</span>' +
+          '<button class="btn small green" data-act="clanjoinreal" data-id="' + c.id + '" data-name="' + (c.name || '') + '">Вступить</button></div>';
+      }).join('');
+      const allCards = realCards + npcCards;
+      const emptyNote = allCards
+        ? ''
+        : '<div class="paper" style="margin-bottom:12px;font-weight:600;font-size:15px;line-height:1.45">Пока нет открытых кланов для вступления. Создайте свой или дождитесь, когда появятся кланы других игроков.</div>';
+      ui.innerHTML = topbar(t('clans'), 'hub') + '<div class="shop"><div class="paper" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-weight:700;font-size:16px;line-height:1.45">' +
+        '<div>В клане вас ждёт общий <b>клановый босс</b>, <b>прокачка построек клана</b>, <b>роли (Лидер, Офицер, Участник)</b> и <b>награды за активность</b>. При создании клан вмещает <b>10 игроков</b>, а с ростом уровня расширяется (на 10 уровне — до <b>20 игроков</b>).</div>' +
+        '<button type="button" class="btn small gold" data-act="clantop20" style="flex:none">Топ-20 кланов</button></div>' +
+        emptyNote +
+        '<div class="shopgrid">' +
+        '<div class="shopcard">' + ART.clanEmblem(MB.defaultEmblem(), 68) + '<b>Свой клан</b><span>Вы станете лидером</span><span>Вместимость: 10 игроков</span>' +
+        '<button class="btn small gold" data-act="clancreate" ' + (save.gems < MB.CLAN.createCost ? 'disabled' : '') + '>Создать ' + ic('gem') + MB.CLAN.createCost + '</button></div>' + allCards + '</div></div>';
+      applyUILang();
+    };
+    if (api) {
+      fetch(api + '/clans/top').then(r => r.json()).then(data => {
+        renderCards(data && data.list ? data.list : []);
+      }).catch(() => renderCards([]));
+    } else {
+      renderCards([]);
+    }
   }
   function registerClanBossReward(clan) {
     if (!clan) return;
@@ -2826,9 +2843,12 @@
       const dmgRows = MB.clanBossDmgLeaders(save);
       const top = dmgRows[0];
       const iAmTop = !!(top && top.me && (top.dmg || 0) > 0);
-      const fightBtn = '<button class="btn ' + (keys ? 'red' : 'gold') + ' clanfight" data-act="' + (keys ? 'clanboss' : 'clanbuykeys') + '">' +
-        (keys ? T('В бой с боссом! (1 ключ)', 'Fight the boss! (1 key)') : T('Нет ключей — докупить в лавке', 'No keys — buy in the shop')) +
-        '</button>';
+      const bossDefeated = !!clan.bossDefeatedThisWeek;
+      const fightBtn = bossDefeated
+        ? '<div class="paper" style="text-align:center;padding:12px"><b style="color:#3f9a24">Босс повержен!</b><div style="margin-top:6px">Следующий босс появится в понедельник</div><div style="margin-top:4px;color:#ffd45e;font-size:18px" id="clan-boss-reset-timer" data-target="' + resetTargetMs + '">' + resetLeftStr + '</div></div>'
+        : '<button class="btn ' + (keys ? 'red' : 'gold') + ' clanfight" data-act="' + (keys ? 'clanboss' : 'clanbuykeys') + '">' +
+          (keys ? T('В бой с боссом! (1 ключ)', 'Fight the boss! (1 key)') : T('Нет ключей — докупить в лавке', 'No keys — buy in the shop')) +
+          '</button>';
       const dmgBoard =
         '<div class="paper clanboss-dmgboard">' +
           '<div class="clanboss-dmghead"><b>' + T('Урон за неделю', 'Weekly damage') + '</b>' +
@@ -3243,7 +3263,19 @@
     },
     clantab: d => showClanHall(d.t),
     clansort: d => { memberSort = d.s; showClanHall(); },
-    clanjoin: d => {
+    clanjoinreal: d => {
+      if (save.clan) { toast('Вы уже в клане'); return; }
+      const clanId = d.id, clanName = d.name || 'Клан';
+      save.clan = MB.mkClan(save, clanName, false, 1, null, '', 'axes_red', 'free');
+      save.clan.id = clanId;
+      if (MB.net && MB.net.getPlayerProfile) {
+        const p = MB.net.getPlayerProfile(save);
+        if (p && p.id) {
+          save.clan.members = [{ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'member', contrib: 0, bossDmg: 0, verified: !!p.verified }];
+        }
+      }
+      persist(); showClanHall(); toast('Вы вступили в клан «' + clanName + '»');
+    },
       if (MB.net && MB.net.isRemote && MB.net.isRemote() && MB.net.canJoinCompetitive && !MB.net.canJoinCompetitive(save)) {
         toast('Для вступления в клан на площадке нужен вход через аккаунт');
         return;
@@ -3364,7 +3396,12 @@
         finishCreate();
       }
     },
-    clanboss: () => { if (!save.clan) return; if (!MB.clanKeys(save)) { ACT.clanbuykeys(); return; } openPrep({ type: 'clan', ch: MB.topChapter(save) }); },
+    clanboss: () => { 
+      if (!save.clan) return; 
+      if (save.clan.bossDefeatedThisWeek) { toast('Босс уже повержен на этой неделе'); return; }
+      if (!MB.clanKeys(save)) { ACT.clanbuykeys(); return; } 
+      openPrep({ type: 'clan', ch: MB.topChapter(save) }); 
+    },
     clanbuykeys: () => {
       const keyItem = (MB.CLAN_SHOP || []).find(x => x.kind === 'key');
       const price = keyItem ? keyItem.gems : 50;
