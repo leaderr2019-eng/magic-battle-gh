@@ -3813,10 +3813,29 @@
       if (myRole !== 'leader') return;
       const target = (c.members || []).find(m => m.id === d.id);
       if (!target) return;
+      const clanId = c.id;
+      const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       target.role = 'leader';
       save.clan = null;
       persist(); closeModal(); showClans();
       toast('Статус лидера передан игроку ' + target.name + '. Вы покинули клан');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && clanId) {
+        fetch(api + '/clans/' + encodeURIComponent(clanId) + '/role', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerId: target.id, role: 'leader' })
+        }).then(() => {
+          if (myId) {
+            fetch(api + '/clans/' + encodeURIComponent(clanId) + '/leave', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ playerId: myId })
+            }).catch(() => {});
+          }
+        }).catch(() => {});
+      }
     },
     clanleaveok: () => { 
       const clanId = save.clan && save.clan.id;
