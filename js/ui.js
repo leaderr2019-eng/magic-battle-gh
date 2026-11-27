@@ -2743,8 +2743,33 @@
       applyUILang();
     };
     if (api) {
+      const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
-        renderCards(data && data.list ? data.list : []);
+        const list = data && data.list ? data.list : [];
+        if (myId) {
+          fetch(api + '/clans/mymembership?id=' + encodeURIComponent(myId)).then(r => r.json()).then(mem => {
+            if (mem && mem.clanId) {
+              if (!save.clan || save.clan.id !== mem.clanId) {
+                const found = list.find(c => c.id === mem.clanId);
+                if (found) {
+                  save.clan = MB.mkClan(save, found.name, false, found.lvl || 1, null, '', found.emblem || 'axes_red', found.recruit || 'free');
+                  save.clan.id = found.id;
+                  persist();
+                  showClanHall();
+                  toast('Вы в клане «' + found.name + '»');
+                  return;
+                }
+              }
+            } else if (save.clan) {
+              save.clan = null;
+              persist();
+              toast('Вы больше не в клане');
+            }
+            renderCards(list);
+          }).catch(() => renderCards(list));
+        } else {
+          renderCards(list);
+        }
       }).catch(() => renderCards([]));
     } else {
       renderCards([]);
@@ -2786,6 +2811,19 @@
   function showClanHall(tab) {
     if (tab) clanTab = tab;
     const clan = MB.ensureClan(save); if (!clan) return showClans();
+    const cfg = window.MB_NET_CONFIG || {};
+    const api = (cfg.apiUrl || '').replace(/\/$/, '');
+    const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
+    if (api && myId && clan.id) {
+      fetch(api + '/clans/mymembership?id=' + encodeURIComponent(myId)).then(r => r.json()).then(mem => {
+        if (!mem || !mem.clanId || mem.clanId !== clan.id) {
+          save.clan = null;
+          persist();
+          showClans();
+          toast('Вы больше не в этом клане');
+        }
+      }).catch(() => {});
+    }
     if (MB.net && typeof MB.net.attachContext === 'function') {
       MB.net.attachContext(save, persist);
       if (!showClanHall._unsub && typeof MB.net.subscribe === 'function') {
