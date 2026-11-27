@@ -2756,19 +2756,36 @@
       const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
         const list = data && data.list ? data.list : [];
-        if (myId && save.clanApps && Object.keys(save.clanApps).length) {
-          console.log('Checking apps:', Object.keys(save.clanApps), 'myId:', myId);
-          const checks = Object.keys(save.clanApps).map(clanId =>
-            fetch(api + '/clans/' + encodeURIComponent(clanId) + '/appstatus?id=' + encodeURIComponent(myId))
-              .then(r => r.json())
-              .then(d => { console.log('AppStatus response:', clanId, d); return { clanId, pending: d && d.pending }; })
-              .catch(e => { console.log('AppStatus error:', clanId, e); return { clanId, pending: false }; })
-          );
-          Promise.all(checks).then(results => {
-            results.forEach(r => { if (!r.pending) delete save.clanApps[r.clanId]; });
-            persist();
-            renderCards(list);
-          });
+        if (myId) {
+          fetch(api + '/clans/mymembership?id=' + encodeURIComponent(myId)).then(r => r.json()).then(mem => {
+            if (mem && mem.clanId && !save.clan) {
+              const found = list.find(c => c.id === mem.clanId);
+              if (found) {
+                save.clan = MB.mkClan(save, found.name, false, found.lvl || 1, null, '', found.emblem || 'axes_red', found.recruit || 'free');
+                save.clan.id = found.id;
+                save.clanApps = {};
+                persist();
+                showClanHall();
+                toast('Вы приняты в клан «' + found.name + '»');
+                return;
+              }
+            }
+            if (save.clanApps && Object.keys(save.clanApps).length) {
+              const checks = Object.keys(save.clanApps).map(clanId =>
+                fetch(api + '/clans/' + encodeURIComponent(clanId) + '/appstatus?id=' + encodeURIComponent(myId))
+                  .then(r => r.json())
+                  .then(d => ({ clanId, pending: d && d.pending }))
+                  .catch(() => ({ clanId, pending: false }))
+              );
+              Promise.all(checks).then(results => {
+                results.forEach(r => { if (!r.pending) delete save.clanApps[r.clanId]; });
+                persist();
+                renderCards(list);
+              });
+            } else {
+              renderCards(list);
+            }
+          }).catch(() => renderCards(list));
         } else {
           renderCards(list);
         }
@@ -3736,12 +3753,30 @@
       if (myRole !== 'leader') { toast('Передавать статус лидера может только лидер клана'); return; }
       const target = (c.members || []).find(m => m.id === d.id);
       if (!target || target.role === 'leader') return;
+      const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       c.members.push({ id: 'me_prev_' + Date.now(), name: 'Вы', power: MB.accountPower(save), role: 'officer', contrib: c.myContrib || 0 });
       target.role = 'leader';
       c.myRole = 'officer';
       c.own = false;
       persist(); showClanHall();
       toast('Статус лидера передан игроку ' + target.name + '. Ваша роль: Офицер');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && c.id) {
+        fetch(api + '/clans/' + encodeURIComponent(c.id) + '/role', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerId: target.id, role: 'leader' })
+        }).then(() => {
+          if (myId) {
+            fetch(api + '/clans/' + encodeURIComponent(c.id) + '/role', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ playerId: myId, role: 'officer' })
+            }).catch(() => {});
+          }
+        }).catch(() => {});
+      }
     },
     clantop20: () => {
       const cfg = window.MB_NET_CONFIG || {};
