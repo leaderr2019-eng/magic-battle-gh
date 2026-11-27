@@ -2755,7 +2755,22 @@
     if (api) {
       const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
-        renderCards(data && data.list ? data.list : []);
+        const list = data && data.list ? data.list : [];
+        if (myId && save.clanApps && Object.keys(save.clanApps).length) {
+          const checks = Object.keys(save.clanApps).map(clanId =>
+            fetch(api + '/clans/' + encodeURIComponent(clanId) + '/appstatus?id=' + encodeURIComponent(myId))
+              .then(r => r.json())
+              .then(d => ({ clanId, pending: d && d.pending }))
+              .catch(() => ({ clanId, pending: false }))
+          );
+          Promise.all(checks).then(results => {
+            results.forEach(r => { if (!r.pending) delete save.clanApps[r.clanId]; });
+            persist();
+            renderCards(list);
+          });
+        } else {
+          renderCards(list);
+        }
       }).catch(() => renderCards([]));
     } else {
       renderCards([]);
