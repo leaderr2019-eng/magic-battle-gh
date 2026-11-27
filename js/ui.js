@@ -3273,6 +3273,14 @@
       const cfg = window.MB_NET_CONFIG || {};
       const api = (cfg.apiUrl || '').replace(/\/$/, '');
       const joinClan = (serverClan) => {
+        if (serverClan && serverClan.recruit === 'closed') {
+          toast('Клан «' + clanName + '» закрыт для вступления');
+          return;
+        }
+        if (serverClan && serverClan.recruit === 'apply') {
+          toast('Клан «' + clanName + '» принимает по заявкам. Заявка отправлена.');
+          return;
+        }
         save.clan = MB.mkClan(save, clanName, false, serverClan ? serverClan.lvl : 1, null, '', 'axes_red', 'free');
         save.clan.id = clanId;
         if (serverClan) {
@@ -3280,6 +3288,7 @@
           save.clan.exp = serverClan.exp || 0;
           save.clan.bossHp = serverClan.bossHp || MB.CLAN.bossHp(1);
           save.clan.bossDefeatedThisWeek = !!serverClan.bossDefeatedThisWeek;
+          save.clan.recruit = serverClan.recruit || 'free';
           save.clan.members = serverClan.members || [];
         }
         if (MB.net && MB.net.getPlayerProfile) {
@@ -3555,6 +3564,15 @@
       }
       persist(); showClanHall();
       toast('Режим приёма: «' + MB.CLAN_RECRUIT[d.m].name + '»');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (api && c.id) {
+        fetch(api + '/clans/' + encodeURIComponent(c.id) + '/recruit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recruit: d.m })
+        }).catch(() => {});
+      }
     },
     clanappok: d => {
       const c = MB.ensureClan(save); if (!c) return;
