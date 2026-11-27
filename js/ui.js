@@ -3266,15 +3266,34 @@
     clanjoinreal: d => {
       if (save.clan) { toast('Вы уже в клане'); return; }
       const clanId = d.id, clanName = d.name || 'Клан';
-      save.clan = MB.mkClan(save, clanName, false, 1, null, '', 'axes_red', 'free');
-      save.clan.id = clanId;
-      if (MB.net && MB.net.getPlayerProfile) {
-        const p = MB.net.getPlayerProfile(save);
-        if (p && p.id) {
-          save.clan.members = [{ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'member', contrib: 0, bossDmg: 0, verified: !!p.verified }];
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      const joinClan = (serverClan) => {
+        save.clan = MB.mkClan(save, clanName, false, serverClan ? serverClan.lvl : 1, null, '', 'axes_red', 'free');
+        save.clan.id = clanId;
+        if (serverClan) {
+          save.clan.lvl = serverClan.lvl || 1;
+          save.clan.exp = serverClan.exp || 0;
+          save.clan.bossHp = serverClan.bossHp || MB.CLAN.bossHp(1);
+          save.clan.bossDefeatedThisWeek = !!serverClan.bossDefeatedThisWeek;
+          save.clan.members = serverClan.members || [];
         }
+        if (MB.net && MB.net.getPlayerProfile) {
+          const p = MB.net.getPlayerProfile(save);
+          if (p && p.id && !(save.clan.members || []).some(m => m.id === p.id)) {
+            save.clan.members = save.clan.members || [];
+            save.clan.members.push({ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'member', contrib: 0, bossDmg: 0, verified: !!p.verified });
+          }
+        }
+        persist(); showClanHall(); toast('Вы вступили в клан «' + clanName + '»');
+      };
+      if (api) {
+        fetch(api + '/clans/' + encodeURIComponent(clanId)).then(r => r.json()).then(data => {
+          joinClan(data && data.clan);
+        }).catch(() => joinClan(null));
+      } else {
+        joinClan(null);
       }
-      persist(); showClanHall(); toast('Вы вступили в клан «' + clanName + '»');
     },
     clanjoin: d => {
       if (MB.net && MB.net.isRemote && MB.net.isRemote() && MB.net.canJoinCompetitive && !MB.net.canJoinCompetitive(save)) {
