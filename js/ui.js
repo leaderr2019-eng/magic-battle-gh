@@ -2757,7 +2757,9 @@
       fetch(api + '/clans/top').then(r => r.json()).then(data => {
         const list = data && data.list ? data.list : [];
         if (myId) {
+          console.log('Checking membership for:', myId);
           fetch(api + '/clans/mymembership?id=' + encodeURIComponent(myId)).then(r => r.json()).then(mem => {
+            console.log('Membership response:', mem);
             if (mem && mem.clanId && !save.clan) {
               const found = list.find(c => c.id === mem.clanId);
               if (found) {
