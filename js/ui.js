@@ -2815,12 +2815,34 @@
     const api = (cfg.apiUrl || '').replace(/\/$/, '');
     const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
     if (api && myId && clan.id) {
-      fetch(api + '/clans/mymembership?id=' + encodeURIComponent(myId)).then(r => r.json()).then(mem => {
-        if (!mem || !mem.clanId || mem.clanId !== clan.id) {
+      fetch(api + '/clans/' + encodeURIComponent(clan.id)).then(r => r.json()).then(data => {
+        if (!data || !data.clan) return;
+        const sc = data.clan;
+        const members = sc.members || [];
+        const me = members.find(m => m.id === myId);
+        if (!me) {
           save.clan = null;
           persist();
           showClans();
           toast('Вы больше не в этом клане');
+          return;
+        }
+        if (me.role && me.role !== clan.myRole) {
+          clan.myRole = me.role;
+          clan.own = me.role === 'leader';
+          persist();
+          showClanHall(clanTab);
+        }
+        if (sc.lvl && sc.lvl !== clan.lvl) {
+          clan.lvl = sc.lvl;
+          clan.exp = sc.exp || 0;
+          persist();
+          showClanHall(clanTab);
+        }
+        if (sc.bossDefeatedThisWeek !== undefined && sc.bossDefeatedThisWeek !== clan.bossDefeatedThisWeek) {
+          clan.bossDefeatedThisWeek = sc.bossDefeatedThisWeek;
+          persist();
+          showClanHall(clanTab);
         }
       }).catch(() => {});
     }
