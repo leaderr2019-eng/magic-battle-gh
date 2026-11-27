@@ -210,6 +210,7 @@
     if (typeof snap.pts === 'number') c.pts = Math.max(0, snap.pts);
     if (typeof snap.bossHp === 'number') c.bossHp = Math.max(0, snap.bossHp);
     if (typeof snap.bossLvl === 'number') c.bossLvl = snap.bossLvl;
+    if (typeof snap.bossDefeatedThisWeek === 'boolean') c.bossDefeatedThisWeek = snap.bossDefeatedThisWeek;
     if (typeof snap.actPts === 'number') c.actPts = Math.max(0, snap.actPts);
     if (Array.isArray(snap.actClaimed)) c.actClaimed = snap.actClaimed.slice();
     if (snap.builds && typeof snap.builds === 'object') c.builds = Object.assign({}, snap.builds);
