@@ -204,7 +204,7 @@
   function applyServerClanSnapshot(save, snap, persistFn) {
     if (!snap || typeof snap !== 'object') return null;
     const c = MB.ensureClan(save) || MB.mkClan(save, snap.name || 'Астория', false, snap.lvl || 1);
-    if (snap.name && !snap.name.startsWith('clan_')) c.name = String(snap.name).slice(0, MB.CLAN_NAME_MAX || 20);
+    if (snap.name && !snap.name.startsWith('clan_') && snap.name !== 'Astoria' && snap.name !== 'Астория') c.name = String(snap.name).slice(0, MB.CLAN_NAME_MAX || 20);
     if (typeof snap.lvl === 'number') c.lvl = Math.max(1, snap.lvl);
     if (typeof snap.exp === 'number') c.exp = Math.max(0, snap.exp);
     if (typeof snap.pts === 'number') c.pts = Math.max(0, snap.pts);

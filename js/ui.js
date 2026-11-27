@@ -3344,21 +3344,25 @@
       console.log('clan created:', save.clan.name, save.clan.id);
       const cfg = window.MB_NET_CONFIG || {};
       const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      const finishCreate = () => {
+        if (MB.net && MB.net.getPlayerProfile) {
+          const p = MB.net.getPlayerProfile(save);
+          if (p && p.id) {
+            save.clan.members = [{ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'leader', contrib: 0, bossDmg: 0, verified: !!p.verified }];
+          }
+        }
+        skipExistingClanRewards(save.clan);
+        persist(); closeModal(); showClanHall(); toast('Клан «' + chk.value + '» создан!');
+      };
       if (api) {
         fetch(api + '/clans/' + encodeURIComponent(save.clan.id) + '/rename', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: chk.value, emblem: embDraft })
-        }).catch(() => {});
+        }).then(() => finishCreate()).catch(() => finishCreate());
+      } else {
+        finishCreate();
       }
-      if (MB.net && MB.net.getPlayerProfile) {
-        const p = MB.net.getPlayerProfile(save);
-        if (p && p.id) {
-          save.clan.members = [{ id: p.id, name: p.name || save.name || 'Игрок', power: p.power || 0, role: 'leader', contrib: 0, bossDmg: 0, verified: !!p.verified }];
-        }
-      }
-      skipExistingClanRewards(save.clan);
-      persist(); closeModal(); showClanHall(); toast('Клан «' + chk.value + '» создан!');
     },
     clanboss: () => { if (!save.clan) return; if (!MB.clanKeys(save)) { ACT.clanbuykeys(); return; } openPrep({ type: 'clan', ch: MB.topChapter(save) }); },
     clanbuykeys: () => {
