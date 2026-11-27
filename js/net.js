@@ -314,21 +314,35 @@
 
   function connectRealtime(clanId) {
     if (!isRemoteEnabled()) return;
+    const targetId = clanId || cfg.sharedClanId;
     if (cfg.wsUrl && typeof WebSocket !== 'undefined') {
-      try {
-        if (ws) { try { ws.close(); } catch (e) { /* */ } }
-        const sep = cfg.wsUrl.indexOf('?') >= 0 ? '&' : '?';
-        ws = new WebSocket(cfg.wsUrl + sep + 'clanId=' + encodeURIComponent(clanId || cfg.sharedClanId));
-        ws.onmessage = evt => {
-          try {
-            const msg = JSON.parse(evt.data);
-            if (msg && msg.type === 'clan_state' && msg.clan && currentSaveRef) {
-              applyServerClanSnapshot(currentSaveRef, msg.clan, currentPersistRef);
-              notifySubscribers({ source: 'ws', event: msg.event || null, clan: currentSaveRef.clan });
-            }
-          } catch (e) { /* */ }
-        };
-      } catch (e) { /* fallback на polling */ }
+      const connect = () => {
+        try {
+          if (ws) { try { ws.close(); } catch (e) { /* */ } }
+          const sep = cfg.wsUrl.indexOf('?') >= 0 ? '&' : '?';
+          ws = new WebSocket(cfg.wsUrl + sep + 'clanId=' + encodeURIComponent(targetId));
+          ws.onopen = () => { console.log('[ws] connected', targetId); };
+          ws.onmessage = evt => {
+            try {
+              const msg = JSON.parse(evt.data);
+              if (msg && msg.type === 'ping') {
+                ws.send(JSON.stringify({ type: 'pong', ts: Date.now() }));
+                return;
+              }
+              if (msg && msg.type === 'clan_state' && msg.clan && currentSaveRef) {
+                applyServerClanSnapshot(currentSaveRef, msg.clan, currentPersistRef);
+                notifySubscribers({ source: 'ws', event: msg.event || null, clan: currentSaveRef.clan });
+              }
+            } catch (e) { /* */ }
+          };
+          ws.onclose = () => {
+            console.log('[ws] disconnected, reconnecting...');
+            setTimeout(connect, 3000);
+          };
+          ws.onerror = () => { try { ws.close(); } catch (e) {} };
+        } catch (e) { setTimeout(connect, 5000); }
+      };
+      connect();
     }
 
     if (pollTimer) clearInterval(pollTimer);
