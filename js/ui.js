@@ -3073,6 +3073,7 @@
         level: MB.accountLevel(save),
         avatar: save.avatar || 'viking',
         unlocked: save.unlocked || ['viking'],
+        heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => [k, (save.heroes[k] && save.heroes[k].lvl) || 1])),
         verified: isPlatform
       })
     }).catch(() => {});
@@ -3196,7 +3197,10 @@
       const api = (cfg.apiUrl || '').replace(/\/$/, '');
       const showProf = (p) => {
         if (!p) { toast('Профиль не найден'); return; }
-        const heroes = (p.unlocked || []).map(k => '<div style="display:inline-block;margin:6px;text-align:center;vertical-align:top">' + pt(k, '', '<b>' + (p.level || 1) + '</b>', 56) + '<br><span style="font-size:12px">' + heroLoc(k, 'name') + '</span></div>').join('');
+        const heroes = (p.unlocked || []).map(k => {
+          const heroLvl = (p.heroLevels && p.heroLevels[k]) || 1;
+          return '<div style="display:inline-block;margin:6px;text-align:center;vertical-align:top">' + pt(k, '', '<b>' + heroLvl + '</b>', 56) + '<br><span style="font-size:12px">' + heroLoc(k, 'name') + '</span></div>';
+        }).join('');
         openModal('<div class="panel win" style="width:420px;position:relative"><button class="x" data-act="close">✕</button><h2 class="out">' + (p.name || 'Игрок') + '</h2><div class="paper" style="text-align:center">' +
           '<div style="margin-bottom:8px">' + pt(p.avatar || 'viking', '', '<b>' + (p.level || 1) + '</b>', 64) + '</div>' +
           '<p style="margin:6px 0;font-size:15px"><b>Уровень:</b> ' + (p.level || 1) + '</p>' +
@@ -3205,7 +3209,7 @@
           '<div style="line-height:1.2">' + (heroes || '<span class="note">Нет данных</span>') + '</div></div></div>');
       };
       if (id === save.playerId) {
-        showProf({ name: save.name, level: MB.accountLevel(save), power: MB.accountPower(save), avatar: save.avatar, unlocked: save.unlocked });
+        showProf({ name: save.name, level: MB.accountLevel(save), power: MB.accountPower(save), avatar: save.avatar, unlocked: save.unlocked, heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => [k, (save.heroes[k] && save.heroes[k].lvl) || 1])) });
         return;
       }
       if (api) {
