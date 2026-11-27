@@ -2723,9 +2723,19 @@
       const realCards = (serverClans || []).map(c => {
         const emblem = c.emblem ? ART.clanEmblem(c.emblem, 68) : ART.clanEmblem(MB.defaultEmblem(), 68);
         const rec = c.recruit || 'free';
-        const btnLbl = rec === 'closed' ? 'Закрыт' : rec === 'apply' ? 'Подать заявку' : 'Вступить';
-        const btnCls = rec === 'closed' ? 'red' : rec === 'apply' ? 'blue' : 'green';
-        const btnDis = rec === 'closed' ? 'disabled' : '';
+        const sent = save.clanApps && save.clanApps[c.id];
+        let btnLbl, btnCls, btnDis;
+        if (rec === 'closed') {
+          btnLbl = 'Закрыт'; btnCls = 'red'; btnDis = 'disabled';
+        } else if (rec === 'apply') {
+          if (sent) {
+            btnLbl = 'Заявка отправлена'; btnCls = 'gold'; btnDis = 'disabled';
+          } else {
+            btnLbl = 'Подать заявку'; btnCls = 'blue'; btnDis = '';
+          }
+        } else {
+          btnLbl = 'Вступить'; btnCls = 'green'; btnDis = '';
+        }
         return '<div class="shopcard">' + emblem + '<b>' + (c.name || 'Клан') + '</b><span>Уровень ' + (c.lvl || 1) + ' · ' + (c.members || 0) + ' уч.</span><span>Сила: ' + (c.power || 0) + '</span>' +
           '<button class="btn small ' + btnCls + '" data-act="clanjoinreal" data-id="' + c.id + '" data-name="' + (c.name || '') + '" ' + btnDis + '>' + btnLbl + '</button></div>';
       }).join('');
@@ -3318,6 +3328,9 @@
           return;
         }
         if (serverClan && serverClan.recruit === 'apply') {
+          save.clanApps = save.clanApps || {};
+          save.clanApps[clanId] = true;
+          persist();
           const cfg = window.MB_NET_CONFIG || {};
           const api = (cfg.apiUrl || '').replace(/\/$/, '');
           if (api) {
@@ -3329,10 +3342,12 @@
             }).catch(() => {});
           }
           toast('Заявка в клан «' + clanName + '» отправлена');
+          showClans();
           return;
         }
         save.clan = MB.mkClan(save, clanName, false, serverClan ? serverClan.lvl : 1, null, '', 'axes_red', 'free');
         save.clan.id = clanId;
+        save.clanApps = {};
         if (serverClan) {
           save.clan.lvl = serverClan.lvl || 1;
           save.clan.exp = serverClan.exp || 0;
