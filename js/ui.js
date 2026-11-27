@@ -3798,13 +3798,22 @@
     },
     clandisband: () => {
       const clanId = save.clan && save.clan.id;
+      const myId = save.playerId || (MB.net && MB.net.getPlayerProfile && MB.net.getPlayerProfile(save).id);
       save.clanLeaveCooldown = Date.now() + 7 * 86400000;
       save.clan = null;
+      save.clanApps = {};
       persist(); closeModal(); showClans();
       toast('Клан распущен. Кулдаун на босса: 7 дней');
       const cfg = window.MB_NET_CONFIG || {};
       const api = (cfg.apiUrl || '').replace(/\/$/, '');
       if (api && clanId) {
+        if (myId) {
+          fetch(api + '/clans/' + encodeURIComponent(clanId) + '/leave', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playerId: myId })
+          }).catch(() => {});
+        }
         fetch(api + '/clans/' + encodeURIComponent(clanId) + '/rename', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
