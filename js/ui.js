@@ -3063,6 +3063,14 @@
     if (!api || !save || !save.playerId) return;
     const profile = MB.net && MB.net.getPlayerProfile ? MB.net.getPlayerProfile(save) : { id: save.playerId, name: save.name || 'Вы' };
     const isPlatform = !!(profile.verified || save.authVerified || (save.playerId && !/^plr_/i.test(save.playerId)));
+    const heroLevels = Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => {
+      const lvl = (save.heroes[k] && save.heroes[k].lvl) || 1;
+      return [k, Math.max(1, Math.min(999, Math.floor(lvl)))];
+    }));
+    const hash = JSON.stringify(heroLevels);
+    if (pushRating._lastHash === hash && pushRating._lastPower === MB.accountPower(save)) return;
+    pushRating._lastHash = hash;
+    pushRating._lastPower = MB.accountPower(save);
     fetch(api + '/players/upsert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -3073,10 +3081,7 @@
         level: MB.accountLevel(save),
         avatar: save.avatar || 'viking',
         unlocked: save.unlocked || ['viking'],
-        heroLevels: Object.fromEntries(MB.HERO_ORDER.filter(k => (save.unlocked || []).includes(k)).map(k => {
-          const lvl = (save.heroes[k] && save.heroes[k].lvl) || 1;
-          return [k, Math.max(1, Math.min(999, Math.floor(lvl)))];
-        })),
+        heroLevels: heroLevels,
         verified: isPlatform
       })
     }).catch(() => {});
