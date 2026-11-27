@@ -3538,24 +3538,18 @@
       toast('Статус лидера передан игроку ' + target.name + '. Ваша роль: Офицер');
     },
     clantop20: () => {
-      const list = MB.clanTop20(save);
-      const rows = list.map((item, idx) => {
-        const recName = (MB.CLAN_RECRUIT[item.recruit] && MB.CLAN_RECRUIT[item.recruit].name) || 'Свободный вход';
-        return '<div class="rrow clan-top-row' + (item.isMe ? ' me' : '') + '">' +
-          '<span class="rn">' + (idx < 3 ? '<img src="assets/ui/medal_' + ['gold','silver','bronze'][idx] + '.png" style="width:44px;height:44px;vertical-align:middle">' : (idx + 1)) + '</span>' +
-          '<div style="display:flex;align-items:center;gap:8px;min-width:0">' +
-            ART.clanEmblem(item.emblem, 32) +
-            '<div style="min-width:0"><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + item.name + (item.isMe ? ' (Ваш клан)' : '') + '</div>' +
-            '<small class="note">Ур. ' + item.lvl + ' · мест ' + item.members + '/' + item.maxMembers + ' · ' + recName + '</small></div>' +
-          '</div>' +
-          '<span>' + ic('power') + item.power + '</span>' +
-          '<span>Ур. ' + item.lvl + '</span>' +
-        '</div>';
-      }).join('');
-      openModal('<div class="panel win" style="position:relative;width:820px"><button class="x" data-act="close">✕</button>' +
-        '<h2 class="out">Топ-20 кланов по силе</h2>' +
-        '<div class="paper ratelist" style="max-height:460px">' + rows + '</div>' +
-        '<div class="foot"><button class="btn green" data-act="close">Закрыть</button></div></div>');
+      const cfg = window.MB_NET_CONFIG || {};
+      const api = (cfg.apiUrl || '').replace(/\/$/, '');
+      if (!api) { toast('Сервер недоступен'); return; }
+      fetch(api + '/clans/top').then(r => r.json()).then(data => {
+        const list = (data && data.list) || [];
+        if (!list.length) { toast('Пока нет кланов'); return; }
+        const rows = list.map((c, i) => {
+          const emblem = c.emblem ? ART.clanEmblem(c.emblem, 32) : '<span style="width:32px;height:32px;display:inline-block"></span>';
+          return '<div class="rrow" style="gap:10px"><span class="rn">' + (i < 3 ? '<img src="assets/ui/medal_' + ['gold','silver','bronze'][i] + '.png" style="width:44px;height:44px;vertical-align:middle">' : (i + 1)) + '</span>' + emblem + '<b style="min-width:100px">' + (c.name || 'Клан') + '</b><span>Ур. ' + (c.lvl || 1) + '</span><span>Сила: ' + (c.power || 0) + '</span><span>' + (c.members || 0) + ' уч.</span></div>';
+        }).join('');
+        openModal('<div class="panel win" style="position:relative;width:600px"><button class="x" data-act="close">✕</button><h2 class="out">Топ-20 кланов по силе</h2><div class="paper ratelist">' + rows + '</div><div class="foot"><button class="btn green" data-act="close">Закрыть</button></div></div>');
+      }).catch(() => toast('Ошибка загрузки'));
     },
     clankick: d => {
       const c = MB.ensureClan(save); if (!c) return;
