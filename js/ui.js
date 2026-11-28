@@ -365,16 +365,23 @@
       }
     } catch (e) { /* SDK недоступен */ }
   }
-  let persistTimer = 0;
   function persist() {
     if (persistTimer) return;
     persistTimer = setTimeout(() => {
       persistTimer = 0;
-      try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* хранилище недоступно */ }
+      try { 
+        localStorage.setItem(SAVE_KEY, JSON.stringify(save)); 
+        console.log('Saved to localStorage, ts:', save._ts, 'level:', MB.accountLevel(save));
+      } catch (e) { console.log('localStorage error:', e); }
       save._ts = Date.now();
       cloudSaveSet(save);
+      console.log('Sent to cloud, ts:', save._ts);
     }, 120);
   }
+  window.addEventListener('beforeunload', () => {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
+    cloudSaveSet(save);
+  });
   // активные облики героев -> префиксы спрайтов в ART (облик применяется только если он куплен)
   function syncSkins() { ART.heroArt = {}; if (save.skinUse) for (const k in save.skinUse) if (save.skins && save.skins[k] && save.skinUse[k]) ART.heroArt[k] = save.skinUse[k]; }
 
@@ -4455,27 +4462,25 @@ cv.addEventListener('click', onCanvas); cv.addEventListener('pointerdown', onDow
     save = loadSave(); syncSkins();
     try {
       const cloud = cloudSaveGet();
-      if (cloud && cloud.v === 1 && cloud._ts && (!save._ts || cloud._ts > save._ts)) {
-        const d = MB.newSave();
-        for (const k in d) if (cloud[k] === undefined) cloud[k] = d[k];
-        MB.HERO_ORDER.forEach(k => { if (!cloud.heroes[k]) cloud.heroes[k] = d.heroes[k]; });
-        save = cloud;
-        syncSkins();
-        try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
-        toast('Прогресс загружен из облака');
-      }
-    } catch (e) { /* облако недоступно */ }
-    try {
-      const cloud = cloudSaveGet();
-      if (cloud && cloud.v === 1 && (!save.playerId || cloud.playerId === save.playerId || !cloud.playerId)) {
+      console.log('Cloud save:', cloud ? 'found' : 'none', 'ts:', cloud && cloud._ts, 'local ts:', save._ts);
+      if (cloud && cloud.v === 1 && cloud._ts) {
         const localTs = save._ts || 0;
         const cloudTs = cloud._ts || 0;
-        if (cloudTs > localTs) {
+        console.log('Comparing timestamps: cloud', cloudTs, 'local', localTs);
+        if (cloudTs > localTs + 5000) {
+          console.log('Using cloud save (newer)');
+          const d = MB.newSave();
+          for (const k in d) if (cloud[k] === undefined) cloud[k] = d[k];
+          MB.HERO_ORDER.forEach(k => { if (!cloud.heroes[k]) cloud.heroes[k] = d.heroes[k]; });
           save = cloud;
-          persist();
+          syncSkins();
+          try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
+          toast('Прогресс загружен из облака');
+        } else {
+          console.log('Using local save');
         }
       }
-    } catch (e) { /* облако недоступно */ }
+    } catch (e) { console.log('Cloud error:', e); }
     save._ts = Date.now();
     const sessionStart = Date.now();
     const sendAnalytics = (event, extra) => {
