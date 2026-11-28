@@ -365,6 +365,7 @@
       }
     } catch (e) { /* SDK недоступен */ }
   }
+  let persistTimer = 0;
   function persist() {
     if (persistTimer) return;
     persistTimer = setTimeout(() => {
